@@ -4,6 +4,6 @@
     "watch"     : true,
     "script"    : "build/main.js",
     "sourceDir" : "/opt/web-proxy/",
-    "logFile"   : "access.log",
-    "errFile"   : "error.log"
+    "logFile"   : "log/access.log",
+    "errFile"   : "log/error.log"
 }
