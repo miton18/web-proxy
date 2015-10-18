@@ -1,0 +1,9 @@
+{
+    // Comments are supported
+    "append"    : true,
+    "watch"     : true,
+    "script"    : "build/main.js",
+    "sourceDir" : "/opt/",
+    "logFile"   : "access.log",
+    "errFile"   : "error.log"
+}

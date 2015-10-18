@@ -1,0 +1,12 @@
+[
+    {
+        "sdom"  : "test",
+        "port"  : "8001",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "test2",
+        "port"  : "8002",
+        "ssl"   : "8443"
+    }
+]
