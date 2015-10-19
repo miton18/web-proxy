@@ -33,9 +33,11 @@
       fn(route);
     }
     if (!routed) {
-      return proxy.web(req, res, {
-        target: "http://localhost:9999"
+      res.writeHead(418, {
+        'Content-Type': 'text/plain'
       });
+      res.write("Quelque chose me dit que vous ne savez pas ce que vous faites içi, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez</a> là ");
+      return res.end();
     }
   }).listen(80, function() {
     return console.log('Server started...');
@@ -56,18 +58,7 @@
                       target: "http://localhost:#{route.ssl}"
   .listen 443, ->
       console.log 'Server started...'
-   */
 
-  http.createServer(function(req, res) {
-    res.writeHead(200, {
-      'Content-Type': 'text/plain'
-    });
-    res.write("proxy default: " + req.url + " \n " + (JSON.stringify(req.headers, true, 2)));
-    return res.end();
-  }).listen(9999);
-
-
-  /*
   http.createServer (req, res)->
       console.log req.url
       res.writeHead 200,

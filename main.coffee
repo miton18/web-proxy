@@ -23,8 +23,12 @@ http.createServer (req, res)->
                     target: "http://localhost:#{route.port}"
                 console.log "-> http://localhost:#{route.port}"
 
-    unless routed then proxy.web req, res,
-                    target: "http://localhost:9999"
+    unless routed
+        res.writeHead 418,
+            'Content-Type': 'text/plain'
+        #res.write "proxy default: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
+        res.write "Quelque chose me dit que vous ne savez pas ce que vous faites içi, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez</a> là "
+        res.end()
 
 
 .listen 80, ->
@@ -46,17 +50,6 @@ http.createServer (req, res)->
 .listen 443, ->
     console.log 'Server started...'
 
-
-
-###
-# USED FOR TEST
-http.createServer (req, res)->
-    res.writeHead 200,
-        'Content-Type': 'text/plain'
-    res.write "proxy default: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
-    res.end()
-.listen(9999)
-###
 http.createServer (req, res)->
     console.log req.url
     res.writeHead 200,
