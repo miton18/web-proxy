@@ -19,7 +19,7 @@ http.createServer (req, res)->
 
                 proxy.web req, res,
                     target: "http://localhost:#{route.port}"
-.listen 8000, ->
+.listen 80, ->
     console.log 'Server started...'
 
 # SSL Proxy
@@ -39,7 +39,7 @@ http.createServer (req, res)->
     console.log 'Server started...'
 
 
-###
+
 
 # USED FOR TEST
 http.createServer (req, res)->
@@ -65,3 +65,4 @@ http.createServer (req, res)->
     res.end()
 .listen(8003)
 
+###
