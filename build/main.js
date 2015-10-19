@@ -23,7 +23,7 @@
       if ((route.sdom + "." + domain) === hostname) {
         routed = true;
         return proxy.web(req, res, {
-          target: "http://localhost:" + route.port
+          target: "http://127.0.0.1:" + route.port
         });
       }
     };

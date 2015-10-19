@@ -20,10 +20,11 @@ http.createServer (req, res)->
 
                 routed = true
                 proxy.web req, res,
-                    target: "http://localhost:#{route.port}"
+                    target: "http://127.0.0.1:#{route.port}"
 
     unless routed then proxy.web req, res,
                     target: "http://localhost:9999"
+
 
 .listen 80, ->
     console.log 'Server started...'
