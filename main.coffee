@@ -25,9 +25,9 @@ http.createServer (req, res)->
 
     unless routed
         res.writeHead 418,
-            'Content-Type': 'text/plain'
+            'Content-Type': 'text/html'
         #res.write "proxy default: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
-        res.write "Quelque chose me dit que vous ne savez pas ce que vous faites içi, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez</a> là "
+        res.write "Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez la</a>."
         res.end()
 
 
