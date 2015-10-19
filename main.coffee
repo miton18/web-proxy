@@ -53,7 +53,7 @@ http.createServer (req, res)->
         'Content-Type': 'text/plain'
     res.write "proxy default: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
     res.end()
-.listen(9000)
+.listen(9999)
 ###
 http.createServer (req, res)->
     console.log req.url
