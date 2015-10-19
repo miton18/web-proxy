@@ -1,7 +1,7 @@
 [
     {
         "sdom"  : "stat",
-        "port"  : "8081",
+        "port"  : "8500",
         "ssl"   : false
     }
 
