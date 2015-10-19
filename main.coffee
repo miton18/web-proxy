@@ -5,6 +5,7 @@ Routes      = require "./routes.json"
 
 domain      = 'rcdinfo.fr'
 routes      = {}
+routed      = false
 proxy       = httpProxy.createProxyServer({})
 
 

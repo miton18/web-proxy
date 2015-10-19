@@ -1,5 +1,5 @@
 (function() {
-  var Routes, domain, http, httpProxy, proxy, routes;
+  var Routes, domain, http, httpProxy, proxy, routed, routes;
 
   http = require('http');
 
@@ -11,6 +11,8 @@
 
   routes = {};
 
+  routed = false;
+
   proxy = httpProxy.createProxyServer({});
 
   http.createServer(function(req, res) {
@@ -18,7 +20,6 @@
     hostname = req.headers.host.split(":")[0];
     console.log("Request on " + hostname);
     fn = function(route) {
-      var routed;
       if ((route.sdom + "." + domain) === hostname) {
         routed = true;
         return proxy.web(req, res, {
