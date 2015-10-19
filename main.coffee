@@ -17,8 +17,13 @@ http.createServer (req, res)->
         do (route)->
             if "#{route.sdom}.#{domain}" == hostname
 
+                routed = true
                 proxy.web req, res,
                     target: "http://localhost:#{route.port}"
+
+    unless routed then proxy.web req, res,
+                    target: "http://localhost:9999"
+
 .listen 80, ->
     console.log 'Server started...'
 
@@ -40,15 +45,15 @@ http.createServer (req, res)->
 
 
 
-
+###
 # USED FOR TEST
 http.createServer (req, res)->
     res.writeHead 200,
         'Content-Type': 'text/plain'
-    res.write "proxy 1: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
+    res.write "proxy default: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
     res.end()
-.listen(8001)
-
+.listen(9000)
+###
 http.createServer (req, res)->
     console.log req.url
     res.writeHead 200,

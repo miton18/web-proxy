@@ -14,21 +14,27 @@
   proxy = httpProxy.createProxyServer({});
 
   http.createServer(function(req, res) {
-    var hostname, i, len, results, route;
+    var fn, hostname, i, len, route;
     hostname = req.headers.host.split(":")[0];
     console.log("Request on " + hostname);
-    results = [];
+    fn = function(route) {
+      var routed;
+      if ((route.sdom + "." + domain) === hostname) {
+        routed = true;
+        return proxy.web(req, res, {
+          target: "http://localhost:" + route.port
+        });
+      }
+    };
     for (i = 0, len = Routes.length; i < len; i++) {
       route = Routes[i];
-      results.push((function(route) {
-        if ((route.sdom + "." + domain) === hostname) {
-          return proxy.web(req, res, {
-            target: "http://localhost:" + route.port
-          });
-        }
-      })(route));
+      fn(route);
     }
-    return results;
+    if (!routed) {
+      return proxy.web(req, res, {
+        target: "http://localhost:9999"
+      });
+    }
   }).listen(80, function() {
     return console.log('Server started...');
   });
@@ -48,18 +54,18 @@
                       target: "http://localhost:#{route.ssl}"
   .listen 443, ->
       console.log 'Server started...'
+   */
+
+  http.createServer(function(req, res) {
+    res.writeHead(200, {
+      'Content-Type': 'text/plain'
+    });
+    res.write("proxy default: " + req.url + " \n " + (JSON.stringify(req.headers, true, 2)));
+    return res.end();
+  }).listen(9000);
 
 
-
-
-   * USED FOR TEST
-  http.createServer (req, res)->
-      res.writeHead 200,
-          'Content-Type': 'text/plain'
-      res.write "proxy 1: #{req.url} \n #{JSON.stringify(req.headers, true, 2)}"
-      res.end()
-  .listen(8001)
-
+  /*
   http.createServer (req, res)->
       console.log req.url
       res.writeHead 200,
