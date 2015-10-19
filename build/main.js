@@ -22,9 +22,10 @@
     fn = function(route) {
       if ((route.sdom + "." + domain) === hostname) {
         routed = true;
-        return proxy.web(req, res, {
-          target: "http://127.0.0.1:" + route.port
+        proxy.web(req, res, {
+          target: "http://" + domain + ":" + route.port
         });
+        return console.log("-> http://" + domain + ":" + route.port);
       }
     };
     for (i = 0, len = Routes.length; i < len; i++) {
