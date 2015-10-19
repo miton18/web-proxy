@@ -20,8 +20,8 @@ http.createServer (req, res)->
 
                 routed = true
                 proxy.web req, res,
-                    target: "http://#{domain}:#{route.port}"
-                console.log "-> http://#{domain}:#{route.port}"
+                    target: "http://localhost:#{route.port}"
+                console.log "-> http://localhost:#{route.port}"
 
     unless routed then proxy.web req, res,
                     target: "http://localhost:9999"

@@ -23,9 +23,9 @@
       if ((route.sdom + "." + domain) === hostname) {
         routed = true;
         proxy.web(req, res, {
-          target: "http://" + domain + ":" + route.port
+          target: "http://localhost:" + route.port
         });
-        return console.log("-> http://" + domain + ":" + route.port);
+        return console.log("-> http://localhost:" + route.port);
       }
     };
     for (i = 0, len = Routes.length; i < len; i++) {
