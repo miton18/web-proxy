@@ -33,25 +33,22 @@
     return console.log('Server started...');
   });
 
-  http.createServer(function(req, res) {
-    var hostname, i, len, results, route;
-    hostname = req.headers.host.split(":")[0];
-    console.log("Request on " + hostname);
-    results = [];
-    for (i = 0, len = Routes.length; i < len; i++) {
-      route = Routes[i];
-      results.push((function(route) {
-        if ((route.sdom + "." + domain) === hostname) {
-          return proxy.web(req, res, {
-            target: "http://localhost:" + route.ssl
-          });
-        }
-      })(route));
-    }
-    return results;
-  }).listen(443, function() {
-    return console.log('Server started...');
-  });
+
+  /*
+  http.createServer (req, res)->
+      hostname = req.headers.host.split(":")[0]
+
+      console.log "Request on #{hostname}"
+
+      for route in Routes
+          do (route)->
+              if "#{route.sdom}.#{domain}" == hostname
+
+                  proxy.web req, res,
+                      target: "http://localhost:#{route.ssl}"
+  .listen 443, ->
+      console.log 'Server started...'
+   */
 
   http.createServer(function(req, res) {
     res.writeHead(200, {
