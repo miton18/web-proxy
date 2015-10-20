@@ -8,5 +8,10 @@
         "sdom"  : "docker",
         "port"  : "8081",
         "ssl"   : false
+    },
+    {
+        "sdom"  : "remi",
+        "port"  : "8082",
+        "ssl"   : false
     }
 ]

@@ -1,8 +1,17 @@
 [
     {
         "sdom"  : "stat",
+        "port"  : "8080",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "docker",
         "port"  : "8081",
         "ssl"   : false
+    },
+    {
+        "sdom"  : "remi",
+        "port"  : "8082",
+        "ssl"   : false
     }
-
 ]
