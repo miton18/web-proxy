@@ -3,5 +3,10 @@
         "sdom"  : "stat",
         "port"  : "8080",
         "ssl"   : false
+    },
+    {
+        "sdom"  : "docker",
+        "port"  : "8081",
+        "ssl"   : false
     }
 ]
