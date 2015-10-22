@@ -21,22 +21,24 @@
     var err, error, fn, hostname, i, len, link, route;
     hostname = req.headers.host.split(":")[0];
     winston.log('info', "Request on " + hostname);
-    fn = function(route) {
-      var link;
-      winston.log('info', "boucle " + route.sdom + "." + domain + " == " + hostname);
-      if ((route.sdom + "." + domain) === hostname) {
-        link = "http://localhost:" + route.port;
-        return winston.log('info', 'found!!!!');
+    fn = (function(_this) {
+      return function(route) {
+        var link;
+        winston.log('info', "boucle " + route.sdom + "." + domain + " == " + hostname);
+        if ((route.sdom + "." + domain) === hostname) {
+          link = "http://localhost:" + route.port;
+          return winston.log('info', 'found!!!!');
 
-        /*try
-            proxy.web req, res,
-                target: "http://localhost:#{route.port}"
-        winston.log 'info', "-> http://localhost:#{route.port}"
-        catch error
-            winston.log 'error', "routage #{error}"
-         */
-      }
-    };
+          /*try
+              proxy.web req, res,
+                  target: "http://localhost:#{route.port}"
+          winston.log 'info', "-> http://localhost:#{route.port}"
+          catch error
+              winston.log 'error', "routage #{error}"
+           */
+        }
+      };
+    })(this);
     for (i = 0, len = Routes.length; i < len; i++) {
       route = Routes[i];
       fn(route);

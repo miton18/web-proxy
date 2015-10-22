@@ -16,7 +16,7 @@ http.createServer (req, res)->
     winston.log 'info', "Request on #{hostname}"
 
     for route in Routes
-        do (route)->
+        do (route)=>
             winston.log 'info', "boucle #{route.sdom}.#{domain} == #{hostname}"
             if "#{route.sdom}.#{domain}" == hostname
 
