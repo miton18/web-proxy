@@ -1,5 +1,6 @@
 http        = require 'http'
 httpProxy   = require 'http-proxy'
+winston     = require 'winston'
 
 Routes      = require "./routes.json"
 
@@ -8,6 +9,8 @@ routes      = {}
 routed      = false
 proxy       = httpProxy.createProxyServer({})
 
+winston.add winston.transports.File,
+    filename: 'test.log'
 
 http.createServer (req, res)->
     hostname = req.headers.host.split(":")[0]
@@ -21,15 +24,16 @@ http.createServer (req, res)->
                 routed = true
                 proxy.web req, res,
                     target: "http://localhost:#{route.port}"
-                console.log "-> http://localhost:#{route.port}"
+                winston.log 'info', "-> http://localhost:#{route.port}"
 
     unless routed
         proxy.web req, res,
             target: "http://localhost:9999"
+        winston.log 'error', "not route for: #{hostname}"
 
 
 .listen 80, ->
-    console.log 'Server started...'
+    winston.log 'info', "Server started... ###################"
 
 http.createServer (req, res)->
 
