@@ -1,5 +1,5 @@
 (function() {
-  var Routes, domain, http, httpProxy, proxy, routed, routes, winston;
+  var Routes, domain, http, httpProxy, proxy, routes, winston;
 
   http = require('http');
 
@@ -13,8 +13,6 @@
 
   routes = {};
 
-  routed = false;
-
   proxy = httpProxy.createProxyServer({});
 
   winston.add(winston.transports.File, {
@@ -22,33 +20,39 @@
   });
 
   http.createServer(function(req, res) {
-    var fn, hostname, i, len, route;
+    var err, error, fn, hostname, i, len, route;
     hostname = req.headers.host.split(":")[0];
-    console.log("Request on " + hostname);
+    winston.log('info', "Request on " + hostname);
     fn = function(route) {
-      var error, error1;
       if ((route.sdom + "." + domain) === hostname) {
-        routed = true;
-        try {
-          proxy.web(req, res, {
-            target: "http://localhost:" + route.port
-          });
-          return winston.log('info', "-> http://localhost:" + route.port);
-        } catch (error1) {
-          error = error1;
-          return winston.log('error', "routage " + error);
-        }
+        route = "http://localhost:" + route.port;
+        return winston.log('info', "-> http://localhost:" + route.port);
+
+        /*try
+            proxy.web req, res,
+                target: "http://localhost:#{route.port}"
+        winston.log 'info', "-> http://localhost:#{route.port}"
+        catch error
+            winston.log 'error', "routage #{error}"
+         */
       }
     };
     for (i = 0, len = Routes.length; i < len; i++) {
       route = Routes[i];
       fn(route);
     }
-    if (!routed) {
+    if (!route) {
+      route = "http://localhost:9000";
+      winston.log('error', "no route for: " + hostname);
+    }
+    try {
       proxy.web(req, res, {
-        target: "http://localhost:9999"
+        target: route
       });
-      return winston.log('error', "no route for: " + hostname);
+      return winston.info("-> " + route);
+    } catch (error) {
+      err = error;
+      return winston.log('error', err);
     }
   }).listen(80, function() {
     return winston.log('info', "Server started... ###################");
@@ -60,6 +64,6 @@
     });
     res.write("Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez la</a>.");
     return res.end();
-  }).listen(9999);
+  }).listen(9000);
 
 }).call(this);
