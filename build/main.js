@@ -33,18 +33,26 @@
       fn(route);
     }
     if (!routed) {
-      res.writeHead(418, {
-        'Content-Type': 'text/html'
+      return proxy.web(req, res, {
+        target: "http://localhost:9999"
       });
-      res.write("Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez la</a>.");
-      return res.end();
     }
   }).listen(80, function() {
     return console.log('Server started...');
   });
 
+  http.createServer(function(req, res) {
+    res.writeHead(418, {
+      'Content-Type': 'text/html'
+    });
+    res.write("Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez la</a>.");
+    return res.end();
+  }).listen(9999);
+
 
   /*
+   * SSL Proxy
+
   http.createServer (req, res)->
       hostname = req.headers.host.split(":")[0]
 
