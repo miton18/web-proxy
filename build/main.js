@@ -18,14 +18,13 @@
   });
 
   http.createServer(function(req, res) {
-    var err, error, fn, hostname, i, len, link, route;
+    var err, error, fn, hostname, i, len, route;
     hostname = req.headers.host.split(":")[0];
     winston.log('info', "Request on " + hostname);
     fn = (function(_this) {
       return function(route) {
-        var link;
         if ((route.sdom + "." + domain) === hostname) {
-          return link = "http://localhost:" + route.port;
+          return Routes.link = "http://localhost:" + route.port;
 
           /*try
               proxy.web req, res,
@@ -42,15 +41,15 @@
       fn(route);
     }
     winston.log('info', "link: " + link);
-    if (typeof link === "undefined" || link === null) {
-      link = "http://localhost:9000";
+    if (Routes.link == null) {
+      Routes.link = "http://localhost:9000";
       winston.log('error', "no route for: " + hostname);
     }
     try {
       proxy.web(req, res, {
-        target: link
+        target: Routes.link
       });
-      return winston.info("-> " + link);
+      return winston.info("-> " + Routes.link);
     } catch (error) {
       err = error;
       return winston.log('error', err);
