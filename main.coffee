@@ -20,6 +20,7 @@ http.createServer (req, res)->
             if "#{route.sdom}.#{domain}" == hostname
 
                 link = "http://localhost:#{route.port}"
+                winston.log 'info', link
                 ###try
                     proxy.web req, res,
                         target: "http://localhost:#{route.port}"

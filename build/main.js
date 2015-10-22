@@ -24,7 +24,8 @@
     fn = function(route) {
       var link;
       if ((route.sdom + "." + domain) === hostname) {
-        return link = "http://localhost:" + route.port;
+        link = "http://localhost:" + route.port;
+        return winston.log('info', link);
 
         /*try
             proxy.web req, res,
