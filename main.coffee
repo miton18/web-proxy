@@ -21,6 +21,7 @@ http.createServer (req, res)->
             if "#{route.sdom}.#{domain}" == hostname
 
                 link = "http://localhost:#{route.port}"
+                break
                 ###try
                     proxy.web req, res,
                         target: "http://localhost:#{route.port}"
