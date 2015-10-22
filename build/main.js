@@ -14,7 +14,7 @@
   proxy = httpProxy.createProxyServer({});
 
   winston.add(winston.transports.File, {
-    filename: 'test.log'
+    filename: 'access.log'
   });
 
   http.createServer(function(req, res) {
@@ -25,14 +25,6 @@
       return function(route) {
         if ((route.sdom + "." + domain) === hostname) {
           return Routes.link = "http://localhost:" + route.port;
-
-          /*try
-              proxy.web req, res,
-                  target: "http://localhost:#{route.port}"
-          winston.log 'info', "-> http://localhost:#{route.port}"
-          catch error
-              winston.log 'error', "routage #{error}"
-           */
         }
       };
     })(this);
@@ -40,7 +32,6 @@
       route = Routes[i];
       fn(route);
     }
-    winston.log('info', "link: " + Routes.link);
     if (Routes.link == null) {
       Routes.link = "http://localhost:9000";
       winston.log('error', "no route for: " + hostname);
@@ -48,7 +39,6 @@
     proxy.web(req, res, {
       target: Routes.link
     });
-    winston.info("-> " + Routes.link);
     Routes.link = null;
     return proxy.on('error', function(err, req, res) {
       return winston.log('error', err);
