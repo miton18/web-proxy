@@ -23,9 +23,9 @@
     winston.log('info', "Request on " + hostname);
     fn = function(route) {
       var link;
+      winston.log('info', "boucle");
       if ((route.sdom + "." + domain) === hostname) {
-        link = "http://localhost:" + route.port;
-        return winston.log('info', link);
+        return link = "http://localhost:" + route.port;
 
         /*try
             proxy.web req, res,

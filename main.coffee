@@ -17,10 +17,10 @@ http.createServer (req, res)->
 
     for route in Routes
         do (route)->
+            winston.log 'info', "boucle"
             if "#{route.sdom}.#{domain}" == hostname
 
                 link = "http://localhost:#{route.port}"
-                winston.log 'info', link
                 ###try
                     proxy.web req, res,
                         target: "http://localhost:#{route.port}"
