@@ -36,6 +36,7 @@ http.createServer (req, res)->
         proxy.web req, res,
             target: Routes.link
         winston.info "-> #{Routes.link}"
+        Routes.link = null;
     catch err
         winston.log 'error', err
 

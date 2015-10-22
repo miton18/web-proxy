@@ -49,7 +49,8 @@
       proxy.web(req, res, {
         target: Routes.link
       });
-      return winston.info("-> " + Routes.link);
+      winston.info("-> " + Routes.link);
+      return Routes.link = null;
     } catch (error) {
       err = error;
       return winston.log('error', err);
