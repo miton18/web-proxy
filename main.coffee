@@ -17,11 +17,9 @@ http.createServer (req, res)->
 
     for route in Routes
         do (route)=>
-            winston.log 'info', "boucle #{route.sdom}.#{domain} == #{hostname}"
             if "#{route.sdom}.#{domain}" == hostname
 
                 link = "http://localhost:#{route.port}"
-                winston.log 'info', 'found!!!!'
                 ###try
                     proxy.web req, res,
                         target: "http://localhost:#{route.port}"
@@ -29,7 +27,7 @@ http.createServer (req, res)->
                 catch error
                     winston.log 'error', "routage #{error}"
                 ###
-
+    winston.log 'info', "link: #{link}"
     unless link?
         link =  "http://localhost:9000"
         winston.log 'error', "no route for: #{hostname}"

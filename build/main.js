@@ -24,10 +24,8 @@
     fn = (function(_this) {
       return function(route) {
         var link;
-        winston.log('info', "boucle " + route.sdom + "." + domain + " == " + hostname);
         if ((route.sdom + "." + domain) === hostname) {
-          link = "http://localhost:" + route.port;
-          return winston.log('info', 'found!!!!');
+          return link = "http://localhost:" + route.port;
 
           /*try
               proxy.web req, res,
@@ -43,6 +41,7 @@
       route = Routes[i];
       fn(route);
     }
+    winston.log('info', "link: " + link);
     if (typeof link === "undefined" || link === null) {
       link = "http://localhost:9000";
       winston.log('error', "no route for: " + hostname);
