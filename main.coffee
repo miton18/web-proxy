@@ -17,7 +17,7 @@ http.createServer (req, res)->
 
     for route in Routes
         do (route)->
-            winston.log 'info', "boucle"
+            winston.log 'info', "boucle #{route.sdom}.#{domain} == #{hostname}"
             if "#{route.sdom}.#{domain}" == hostname
 
                 link = "http://localhost:#{route.port}"

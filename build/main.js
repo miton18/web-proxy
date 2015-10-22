@@ -23,7 +23,7 @@
     winston.log('info', "Request on " + hostname);
     fn = function(route) {
       var link;
-      winston.log('info', "boucle");
+      winston.log('info', "boucle " + route.sdom + "." + domain + " == " + hostname);
       if ((route.sdom + "." + domain) === hostname) {
         return link = "http://localhost:" + route.port;
 
