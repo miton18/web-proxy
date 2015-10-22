@@ -1,8 +1,8 @@
 {
     // Comments are supported
     "append"    : true,
-    "watch"     : true,
-    "script"    : "/opt/web-proxy/build/main.js",
+    "watch"     : false,
+    "script"    : "build/main.js",
     //"sourceDir" : "/opt/web-proxy/",
     "logFile"   : "/opt/web-proxy/log/access.log",
     "errFile"   : "/opt/web-proxy/log/error.log"
