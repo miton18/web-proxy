@@ -5,7 +5,6 @@ winston     = require 'winston'
 Routes      = require "./routes.json"
 
 domain      = 'rcdinfo.fr'
-routes      = {}
 proxy       = httpProxy.createProxyServer({})
 
 winston.add winston.transports.File,
@@ -20,8 +19,7 @@ http.createServer (req, res)->
         do (route)->
             if "#{route.sdom}.#{domain}" == hostname
 
-                route = "http://localhost:#{route.port}"
-                winston.log 'info', "-> http://localhost:#{route.port}"
+                link = "http://localhost:#{route.port}"
                 ###try
                     proxy.web req, res,
                         target: "http://localhost:#{route.port}"
@@ -30,14 +28,14 @@ http.createServer (req, res)->
                     winston.log 'error', "routage #{error}"
                 ###
 
-    unless route
-        route =  "http://localhost:9000"
+    unless link?
+        link =  "http://localhost:9000"
         winston.log 'error', "no route for: #{hostname}"
 
     try
         proxy.web req, res,
-            target: route
-        winston.info "-> #{route}"
+            target: link
+        winston.info "-> #{link}"
     catch err
         winston.log 'error', err
 
