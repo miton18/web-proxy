@@ -32,12 +32,12 @@ http.createServer (req, res)->
         Routes.link =  "http://localhost:9000"
         winston.log 'error', "no route for: #{hostname}"
 
-    try
-        proxy.web req, res,
-            target: Routes.link
-        winston.info "-> #{Routes.link}"
-        Routes.link = null;
-    catch err
+    proxy.web req, res,
+        target: Routes.link
+    winston.info "-> #{Routes.link}"
+    Routes.link = null;
+
+    proxy.on 'error', (err, req, res)->
         winston.log 'error', err
 
 .listen 80, ->

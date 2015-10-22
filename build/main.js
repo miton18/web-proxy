@@ -18,7 +18,7 @@
   });
 
   http.createServer(function(req, res) {
-    var err, error, fn, hostname, i, len, route;
+    var fn, hostname, i, len, route;
     hostname = req.headers.host.split(":")[0];
     winston.log('info', "Request on " + hostname);
     fn = (function(_this) {
@@ -45,16 +45,14 @@
       Routes.link = "http://localhost:9000";
       winston.log('error', "no route for: " + hostname);
     }
-    try {
-      proxy.web(req, res, {
-        target: Routes.link
-      });
-      winston.info("-> " + Routes.link);
-      return Routes.link = null;
-    } catch (error) {
-      err = error;
+    proxy.web(req, res, {
+      target: Routes.link
+    });
+    winston.info("-> " + Routes.link);
+    Routes.link = null;
+    return proxy.on('error', function(err, req, res) {
       return winston.log('error', err);
-    }
+    });
   }).listen(80, function() {
     return winston.log('info', "Server started... ###################");
   });
