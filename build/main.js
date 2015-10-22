@@ -42,7 +42,7 @@
       proxy.web(req, res, {
         target: "http://localhost:9999"
       });
-      return winston.log('error', "not route for: " + hostname);
+      return winston.log('error', "no route for: " + hostname);
     }
   }).listen(80, function() {
     return winston.log('info', "Server started... ###################");

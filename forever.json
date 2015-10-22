@@ -3,7 +3,7 @@
     "append"    : true,
     "watch"     : true,
     "script"    : "build/main.js",
-    "sourceDir" : "/opt/web-proxy/",
+    //"sourceDir" : "/opt/web-proxy/",
     "logFile"   : "/opt/web-proxy/log/access.log",
     "errFile"   : "/opt/web-proxy/log/error.log"
 }

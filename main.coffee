@@ -29,7 +29,7 @@ http.createServer (req, res)->
     unless routed
         proxy.web req, res,
             target: "http://localhost:9999"
-        winston.log 'error', "not route for: #{hostname}"
+        winston.log 'error', "no route for: #{hostname}"
 
 
 .listen 80, ->
