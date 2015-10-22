@@ -40,7 +40,7 @@
       route = Routes[i];
       fn(route);
     }
-    winston.log('info', "link: " + link);
+    winston.log('info', "link: " + Routes.link);
     if (Routes.link == null) {
       Routes.link = "http://localhost:9000";
       winston.log('error', "no route for: " + hostname);

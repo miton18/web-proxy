@@ -27,7 +27,7 @@ http.createServer (req, res)->
                 catch error
                     winston.log 'error', "routage #{error}"
                 ###
-    winston.log 'info', "link: #{link}"
+    winston.log 'info', "link: #{Routes.link}"
     unless Routes.link?
         Routes.link =  "http://localhost:9000"
         winston.log 'error', "no route for: #{hostname}"
