@@ -22,9 +22,12 @@ http.createServer (req, res)->
             if "#{route.sdom}.#{domain}" == hostname
 
                 routed = true
-                proxy.web req, res,
-                    target: "http://localhost:#{route.port}"
-                winston.log 'info', "-> http://localhost:#{route.port}"
+                try
+                    proxy.web req, res,
+                        target: "http://localhost:#{route.port}"
+                    winston.log 'info', "-> http://localhost:#{route.port}"
+                catch error
+                    winston.log 'error', "routage #{error}"
 
     unless routed
         proxy.web req, res,

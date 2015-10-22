@@ -26,12 +26,18 @@
     hostname = req.headers.host.split(":")[0];
     console.log("Request on " + hostname);
     fn = function(route) {
+      var error, error1;
       if ((route.sdom + "." + domain) === hostname) {
         routed = true;
-        proxy.web(req, res, {
-          target: "http://localhost:" + route.port
-        });
-        return winston.log('info', "-> http://localhost:" + route.port);
+        try {
+          proxy.web(req, res, {
+            target: "http://localhost:" + route.port
+          });
+          return winston.log('info', "-> http://localhost:" + route.port);
+        } catch (error1) {
+          error = error1;
+          return winston.log('error', "routage " + error);
+        }
       }
     };
     for (i = 0, len = Routes.length; i < len; i++) {
