@@ -11,7 +11,14 @@ winston.add winston.transports.File,
     filename: 'access.log' # fichier de log
 
 http.createServer (req, res)->
-    hostname = req.headers.host.split(":")[0]
+
+    if req.headers?.host?
+
+        hostname = req.headers.host.split(":")[0]
+    else
+        hostname = ''
+
+
 
     winston.log 'info', "Request on #{hostname}"
 

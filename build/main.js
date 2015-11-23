@@ -18,8 +18,12 @@
   });
 
   http.createServer(function(req, res) {
-    var fn, hostname, i, len, route;
-    hostname = req.headers.host.split(":")[0];
+    var fn, hostname, i, len, ref, route;
+    if (((ref = req.headers) != null ? ref.host : void 0) != null) {
+      hostname = req.headers.host.split(":")[0];
+    } else {
+      hostname = '';
+    }
     winston.log('info', "Request on " + hostname);
     fn = (function(_this) {
       return function(route) {

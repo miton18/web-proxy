@@ -13,5 +13,11 @@
         "sdom"  : "remi",
         "port"  : "8082",
         "ssl"   : false
+    },
+    {
+        "sdom"  : "jira",
+        "port"  : "8085",
+        "ssl"   : false
     }
+
 ]
