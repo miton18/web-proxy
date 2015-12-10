@@ -2,7 +2,11 @@
   "name": "web-proxy",
   "version": "0.0.0",
   "description": "a web server to reach docker web container",
-  "main": "main.js",
+  "main": "node build/main.js",
+  "scripts": {
+      "start": "node build/main.js",
+      "test": "coffee main.coffee"
+  },
   "dependencies": {
     "forever-monitor": "^1.7.0",
     "gulp": "~3.9.0",
@@ -19,9 +23,6 @@
     "gulp-jsonlint": "^1.1.1",
     "gulp-load-plugins": "^1.0.0",
     "gulp-plumber": "^1.0.1"
-  },
-  "scripts": {
-    "test": "coffee main.coffee"
   },
   "keywords": [
     "gulp",

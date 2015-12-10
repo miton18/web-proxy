@@ -1,11 +1,17 @@
 (function() {
-  var Routes, domain, http, httpProxy, proxy, winston;
+  var Routes, app, certs, domain, fs, http, httpProxy, https, proxy, winston;
 
   http = require('http');
+
+  https = require('https');
 
   httpProxy = require('http-proxy');
 
   winston = require('winston');
+
+  https = require('https');
+
+  fs = require('fs');
 
   Routes = require("./routes.json");
 
@@ -13,11 +19,16 @@
 
   proxy = httpProxy.createProxyServer({});
 
+  certs = {
+    key: fs.readFileSync('/etc/letsencrypt/live/rcdinfo.fr/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/rcdinfo.fr/cert.pem')
+  };
+
   winston.add(winston.transports.File, {
     filename: 'access.log'
   });
 
-  http.createServer(function(req, res) {
+  app = function(req, res) {
     var fn, hostname, i, len, ref, route;
     if (((ref = req.headers) != null ? ref.host : void 0) != null) {
       hostname = req.headers.host.split(":")[0];
@@ -47,9 +58,13 @@
     return proxy.on('error', function(err, req, res) {
       return winston.log('error', err);
     });
-  }).listen(80, function() {
+  };
+
+  http.createServer(app).listen(80, function() {
     return winston.log('info', "Server started... ###################");
   });
+
+  https.createServer(certs, app).listen(443);
 
   http.createServer(function(req, res) {
     res.writeHead(418, {

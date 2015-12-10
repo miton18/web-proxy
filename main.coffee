@@ -1,16 +1,24 @@
 http        = require 'http'
+https = require('https')
 httpProxy   = require 'http-proxy'
 winston     = require 'winston'
+https       = require 'https'
+fs          = require 'fs'
 
 Routes      = require "./routes.json"
 
 domain      = 'rcdinfo.fr' # Domaine a surveiller
 proxy       = httpProxy.createProxyServer({})
 
+certs =
+     key: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/privkey.pem'
+     cert: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/cert.pem'
+     #ca: fs.readFileSync('/path/to/chain.pem')
+
 winston.add winston.transports.File,
     filename: 'access.log' # fichier de log
 
-http.createServer (req, res)->
+app = (req, res)->
 
     if req.headers?.host?
 
@@ -39,9 +47,14 @@ http.createServer (req, res)->
     proxy.on 'error', (err, req, res)->
         winston.log 'error', err
 
+http.createServer app
 .listen 80, ->
     winston.log 'info', "Server started... ###################"
 
+https.createServer certs, app
+.listen 443
+
+# troll quand pas de routes connues
 http.createServer (req, res)->
 
     res.writeHead 418,
