@@ -25,7 +25,7 @@
   };
 
   winston.add(winston.transports.File, {
-    filename: 'access.log'
+    filename: 'log/access.log'
   });
 
   app = function(req, res) {
@@ -70,7 +70,7 @@
     res.writeHead(418, {
       'Content-Type': 'text/html'
     });
-    res.write("Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez la</a>.");
+    res.write("Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"https://remi.rcdinfo.fr\">cliquez la</a>.");
     return res.end();
   }).listen(9000);
 

@@ -1,8 +1,8 @@
 [
     {
-        "sdom"  : "test",
-        "port"  : "8001",
-        "ssl"   : false
+        "sdom"  : "test", // sub domain
+        "port"  : "8001", // port to redirect
+        "ssl"   : false   // enable ssl port
     },
     {
         "sdom"  : "test2",

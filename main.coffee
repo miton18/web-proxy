@@ -1,5 +1,5 @@
 http        = require 'http'
-https = require('https')
+https       = require 'https'
 httpProxy   = require 'http-proxy'
 winston     = require 'winston'
 https       = require 'https'
@@ -13,10 +13,15 @@ proxy       = httpProxy.createProxyServer({})
 certs =
      key: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/privkey.pem'
      cert: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/cert.pem'
-     #ca: fs.readFileSync('/path/to/chain.pem')
 
 winston.add winston.transports.File,
-    filename: 'access.log' # fichier de log
+    filename: 'log/access.log' # fichier de log
+
+
+
+
+
+
 
 app = (req, res)->
 
@@ -42,10 +47,17 @@ app = (req, res)->
 
     proxy.web req, res,
         target: Routes.link
-    Routes.link = null;
+
+    Routes.link = null
 
     proxy.on 'error', (err, req, res)->
         winston.log 'error', err
+
+
+
+
+
+
 
 http.createServer app
 .listen 80, ->
@@ -54,12 +66,16 @@ http.createServer app
 https.createServer certs, app
 .listen 443
 
+
+
+
+
 # troll quand pas de routes connues
 http.createServer (req, res)->
 
     res.writeHead 418,
             'Content-Type': 'text/html'
-        res.write "Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"http://rcdinfo.fr\">cliquez la</a>."
+        res.write "Quelque chose me dit que vous ne savez pas ce que vous faites ici, aller je suis gentil <a href=\"https://remi.rcdinfo.fr\">cliquez la</a>."
         res.end()
 
 .listen(9000)

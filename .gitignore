@@ -5,9 +5,6 @@
 /bower_components/
 /node_modules/
 
-
-/log/error.log
 /log/access.log
-/test.log
-/access.log
-/npm-debug.log
+/log/forever-access.log
+/log/forever-error.log
