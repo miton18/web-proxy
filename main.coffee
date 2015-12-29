@@ -2,7 +2,6 @@ http        = require 'http'
 https       = require 'https'
 httpProxy   = require 'http-proxy'
 winston     = require 'winston'
-https       = require 'https'
 fs          = require 'fs'
 
 Routes      = require "./routes.json"
@@ -14,15 +13,13 @@ certs =
      key: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/privkey.pem'
      cert: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/cert.pem'
 
+#------------------------------------------------------------------------
+# Logger
 winston.add winston.transports.File,
     filename: 'log/access.log' # fichier de log
 
-
-
-
-
-
-
+#------------------------------------------------------------------------
+# main App
 app = (req, res)->
 
     if req.headers?.host?
@@ -30,8 +27,6 @@ app = (req, res)->
         hostname = req.headers.host.split(":")[0]
     else
         hostname = ''
-
-
 
     winston.log 'info', "Request on #{hostname}"
 
@@ -53,23 +48,25 @@ app = (req, res)->
     proxy.on 'error', (err, req, res)->
         winston.log 'error', err
 
-
-
-
-
-
-
+#------------------------------------------------------------------------
+# http support
 http.createServer app
 .listen 80, ->
     winston.log 'info', "Server started... ###################"
 
+#------------------------------------------------------------------------
+# https support
 https.createServer certs, app
 .listen 443
 
 
+fs.watchFile './routes.json',
+    interval: 10000
+, (curr, prev)->
+  Routes = require "./routes.json"
+  winston.log 'routes reloaded'
 
-
-
+#------------------------------------------------------------------------
 # troll quand pas de routes connues
 http.createServer (req, res)->
 

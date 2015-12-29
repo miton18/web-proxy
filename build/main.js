@@ -9,8 +9,6 @@
 
   winston = require('winston');
 
-  https = require('https');
-
   fs = require('fs');
 
   Routes = require("./routes.json");
@@ -65,6 +63,13 @@
   });
 
   https.createServer(certs, app).listen(443);
+
+  fs.watchFile('./routes.json', {
+    interval: 10000
+  }, function(curr, prev) {
+    Routes = require("./routes.json");
+    return winston.log('routes reloaded');
+  });
 
   http.createServer(function(req, res) {
     res.writeHead(418, {
