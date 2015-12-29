@@ -23,5 +23,10 @@
         "sdom"  : "gitlab",
         "port"  : "8086",
         "ssl"   : false
+    },
+    {
+        "sdom"  : "owncloud",
+        "port"  : "8088",
+        "ssl"   : false
     }
 ]
