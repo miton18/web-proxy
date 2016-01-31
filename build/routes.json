@@ -28,5 +28,10 @@
         "sdom"  : "owncloud",
         "port"  : "8088",
         "ssl"   : false
+    },
+    {
+        "sdom"  : "git",
+        "port"  : "8090",
+        "ssl"   : "false"
     }
 ]
