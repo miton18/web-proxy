@@ -1,0 +1,37 @@
+[
+    {
+        "sdom"  : "stat",
+        "port"  : "8080",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "docker",
+        "port"  : "8081",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "remi",
+        "port"  : "8082",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "jira",
+        "port"  : "8085",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "gitlab",
+        "port"  : "8086",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "owncloud",
+        "port"  : "8088",
+        "ssl"   : false
+    },
+    {
+        "sdom"  : "git",
+        "port"  : "8090",
+        "ssl"   : "false"
+    }
+]
