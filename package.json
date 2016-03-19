@@ -4,8 +4,8 @@
   "description": "a web server to reach docker web container",
   "main": "node build/main.js",
   "scripts": {
-      "start": "node build/main.js",
-      "test": "coffee main.coffee"
+    "start": "node build/main.js",
+    "test": "coffee main.coffee"
   },
   "dependencies": {
     "forever-monitor": "^1.7.0",
@@ -13,6 +13,7 @@
     "gulp-coffee": "~2.3.1",
     "gulp-plumber": "~1.0.1",
     "http-proxy": "^1.11.2",
+    "letsencrypt": "^1.4.3",
     "winston": "^1.1.1"
   },
   "devDependencies": {

@@ -4,7 +4,7 @@
 
 /bower_components/
 /node_modules/
-
+/.idea/
 /log/access.log
 /log/forever-access.log
 /log/forever-error.log

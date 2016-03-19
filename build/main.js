@@ -59,16 +59,20 @@
   };
 
   http.createServer(app).listen(80, function() {
-    return winston.log('info', "Server started... ###################");
+    return winston.log('info', "Server started http ... ");
   });
 
-  https.createServer(certs, app).listen(443);
+  https.createServer(certs, app).listen(443, function() {
+    return winston.log('info', "Server started https ... ");
+  });
 
   fs.watchFile('./routes.json', {
     interval: 10000
   }, function(curr, prev) {
-    Routes = require("./routes.json");
-    return winston.log('routes reloaded');
+    if (curr !== prev) {
+      Routes = require("./routes.json");
+      return winston.log('routes reloaded');
+    }
   });
 
   http.createServer(function(req, res) {

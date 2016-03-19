@@ -9,6 +9,8 @@ Routes      = require "./routes.json"
 domain      = 'rcdinfo.fr' # Domaine a surveiller
 proxy       = httpProxy.createProxyServer({})
 
+#------------------------------------------------------------------------
+# SSL
 certs =
      key: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/privkey.pem'
      cert: fs.readFileSync '/etc/letsencrypt/live/rcdinfo.fr/cert.pem'
@@ -52,19 +54,22 @@ app = (req, res)->
 # http support
 http.createServer app
 .listen 80, ->
-    winston.log 'info', "Server started... ###################"
+    winston.log 'info', "Server started http ... "
 
 #------------------------------------------------------------------------
 # https support
 https.createServer certs, app
-.listen 443
+.listen 443, ->
+    winston.log 'info', "Server started https ... "
 
-
+#------------------------------------------------------------------------
+# file Watcher
 fs.watchFile './routes.json',
     interval: 10000
 , (curr, prev)->
-  Routes = require "./routes.json"
-  winston.log 'routes reloaded'
+    if curr != prev
+        Routes = require "./routes.json"
+        winston.log 'routes reloaded'
 
 #------------------------------------------------------------------------
 # troll quand pas de routes connues
