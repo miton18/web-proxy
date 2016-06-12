@@ -2,7 +2,10 @@ http        = require 'http'
 https       = require 'https'
 fs          = require 'fs'
 express     = require 'express'
+eSession    = require 'express-session'
 bodyParser  = require 'body-parser'
+sha512      = require 'sha512'
+crypto      = require 'crypto'
 Router      = require './router.js'
 Route       = require './route.js'
 Logger      = require './logger'
@@ -22,7 +25,7 @@ router.loadRoutes()
 # http support
 http.createServer router.getApp
 .listen 80, ->
-    Logger.log 'info', "Server started http ... "
+    Logger.log 'info', "Server started http"
 
 #------------------------------------------------------------------------
 # https support
@@ -39,10 +42,58 @@ api = express.Router()
 # WebServer
 gui = express()
 gui.use bodyParser()
+gui.use eSession
+    resave: false
+    saveUninitialized: true
+    secret: process.env['PROXY-SALT']
+    cookie:
+        expires: new Date Date.now() + 3600000
+        maxAge: 3600000
 gui.use '/', express.static 'public'
 gui.use '/api', api
 
+needAuth = (req, res, next)->
+    if req.session?.connected?
+        next()
+    else
+        res.json
+            err: 'need to be connected'
+
+gui.post '/login', (req, res) ->
+    unless req.body?.password?
+        res.json
+            err: 'need a password to auth'
+    else
+        if sha512(req.body.password + process.env['PROXY-SALT']).toString('hex') == process.env['PROXY-PW']
+            req.session.connected = true
+            res.json
+                err: null
+        else
+            setTimeout ->
+                res.json
+                    err: 'Bad password'
+            , 2000
+
+gui.get '/logout', (req, res) ->
+    req.session.destroy (err)->
+        res.json
+            err: if err? then err else null
+
+gui.post '/getnewpass', (req, res)->
+    unless req.body?.password?
+        res.json
+            err: 'no password'
+    else
+        crypto.randomBytes 20, (ex, buf) ->
+            salt = buf.toString('base64').replace(/\//g,'_').replace(/\+/g,'-')
+            res.json
+                err: null
+                proxySalt:  salt
+                proxyPw:    sha512(req.body.password + salt ).toString('hex')
+
 api.route '/routes'
+# You need to be logged to use API
+.all needAuth
 .get (req, res) ->
     router.getAllRoutes (err, routes) ->
         if err?
@@ -63,6 +114,7 @@ api.route '/routes'
             route: tmpRoute
 
 api.route '/routes/:_id'
+.all needAuth
 .put (req, res) ->
     req.body['_id'] = req.params._id
     tmpRoute = new Route req.body

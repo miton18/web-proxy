@@ -4,10 +4,10 @@ mongo   = require 'mongodb'
 
 module.exports = class Route
 
-    constructor: ({_id=null, @subDomain='', @destPort=-1, @destHost='localhost', @active=true, @forwardSSL=false}) ->
+    constructor: ({@_id=null, @subDomain='', @destPort=-1, @destHost='localhost', @active=true, @forwardSSL=false}) ->
         console.log "new #{@toString()}"
-        if _id?
-            @_id = new mongo.ObjectID _id
+        if @_id?
+            @_id = new mongo.ObjectID @_id
 
     save: (cb)=>
         console.log "save Route #{@_id}"

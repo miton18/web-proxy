@@ -1,6 +1,6 @@
 {
   "name": "web-proxy",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "description": "a web server to reach docker web container",
   "main": "node build/main.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "express": "^4.13.4",
     "forever-monitor": "^1.7.0",
     "http-proxy": "^1.13.3",
-    "install": "^0.8.1",
+    "sha512": "0.0.1",
     "winston": "^2.2.0",
     "winston-mongodb": "^1.5.0"
   },

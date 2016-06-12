@@ -12,6 +12,7 @@ module.exports = class Router
         @proxy = httpProxy.createProxyServer({})
 
     loadRoutes: =>
+        tmp = []
         db (err, db)=>
             if err?
                 return console.log err
@@ -23,14 +24,15 @@ module.exports = class Router
                     return Logger.log 'error', 'no connexion with Mongo client',
                         error: err
                 for r in routes
-                    @routes.push (new Route r)
+                    tmp.push (new Route r)
                 # Default route for manager
-                @routes.push new Route
-                    subDomain: 'manager'
+                tmp.push new Route
+                    subDomain: 'webproxy'
                     destPort:   9999
                     destHost:   '127.0.0.1'
                     active:     true
                     forwardSSL: false
+                @routes = tmp
 
     getRoutes: =>
         return @routes
