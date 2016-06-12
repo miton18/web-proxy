@@ -8,3 +8,4 @@
 /log/access.log
 /log/forever-access.log
 /log/forever-error.log
+/build/
