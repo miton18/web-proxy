@@ -35,7 +35,7 @@ $ sudo systemctl daemon-reload && sudo systemctl start web-proxy
 ```
 done? so it have to work....
 
-
+#TODO set env PROXY-DB
 
 
 
