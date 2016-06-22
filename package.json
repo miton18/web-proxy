@@ -8,9 +8,11 @@
     "test": "coffee main.coffee"
   },
   "dependencies": {
+    "@risingstack/trace": "^2.15.3",
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
     "forever-monitor": "^1.7.0",
+    "gulp-jade": "^1.1.0",
     "http-proxy": "^1.13.3",
     "sha512": "0.0.1",
     "winston": "^2.2.0",
@@ -22,7 +24,7 @@
     "gulp-coffee": "^2.3.2",
     "gulp-debug": "^2.1.2",
     "gulp-load-plugins": "^1.2.4",
-    "gulp-plumber": "^1.1.0"
+    "gulp-plumber-notifier": "0.0.3"
   },
   "keywords": [
     "gulp",

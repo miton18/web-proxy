@@ -10,6 +10,11 @@ Router      = require './router.js'
 Route       = require './route.js'
 Logger      = require './logger'
 
+#process.env['TRACE_SERVICE_NAME'] = 'web-proxi'
+#process.env['TRACE_API_KEY'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3NjI0NmNkZjk2YWU2YjAwMDNmZTM0ZCIsImlhdCI6MTQ2NjA1ODQ0NX0.wGnBWNnk5hp6nymJ6_oPaOsyqIhNmvkarDhs3KWvyTQ'
+
+#require     '@risingstack/trace'
+
 #------------------------------------------------------------------------
 # SSL
 ###certs =
@@ -37,11 +42,11 @@ http.createServer router.getApp
 #------------------------------------------------------------------------
 # GUI Server
 
-# API for webserver
-api = express.Router()
 # WebServer
 gui = express()
-gui.use bodyParser()
+gui.use bodyParser.json()
+gui.use bodyParser.urlencoded({ extended: true })
+gui.use '/public', express.static __dirname + '/public'
 gui.use eSession
     resave: false
     saveUninitialized: true
@@ -49,8 +54,6 @@ gui.use eSession
     cookie:
         expires: new Date Date.now() + 3600000
         maxAge: 3600000
-gui.use '/', express.static 'public'
-gui.use '/api', api
 
 needAuth = (req, res, next)->
     if req.session?.connected?
@@ -90,6 +93,10 @@ gui.post '/getnewpass', (req, res)->
                 err: null
                 proxySalt:  salt
                 proxyPw:    sha512(req.body.password + salt ).toString('hex')
+
+# API for webserver
+api = express.Router()
+gui.use '/api', api
 
 api.route '/routes'
 # You need to be logged to use API

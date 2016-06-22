@@ -1,0 +1,103 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="view-login">
+
+    <template>
+
+        <style>
+            :host {
+                display:            flex;
+                flex-direction:     column;
+                align-items:        center;
+                justify-content:    center;
+            }
+            .card {
+                display: flex;
+                flex-direction: column;
+                width: 20rem;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+                padding: 16px;
+                border-radius: 5px;
+                background-color: #fff;
+                color: #757575;
+            }
+            paper-button {
+                margin: auto;
+                background-color: #4285f4;
+                color: aliceblue;
+            }
+            h1 {
+                display: block;
+                margin-bottom: 0;
+                font-size: 22px;
+                text-align: center;
+                color: #171717;
+            }
+            #toastLoose {
+                --paper-toast-background-color: #d01c27;
+            }
+            #toastWin {
+                --paper-toast-background-color: #3abd33;
+            }
+        </style>
+
+        <div class="card">
+            <h1>Identification</h1>
+            <paper-input
+                    name="password"
+                    type="password"
+                    label="Password"
+                    value={{password}} ></paper-input>
+            <paper-button raised on-tap="tryLogin">Connexion</paper-button>
+        </div>
+        <iron-ajax id="logRequest"
+                url="http://webproxy.local.dev/login"
+                method="post"
+                contentType="application/x-www-form-urlencoded"
+                body="password=[[password]]"
+                handleAs="json"
+                on-response="loginResponse" ></iron-ajax>
+
+        <paper-toast id="toastLoose"
+                text="{{failToLogin}}"
+                horizontal-align="right"
+                always-on-top="true"></paper-toast>
+        <paper-toast id="toastWin"
+                     text="Connection succeed, redirection..."
+                     horizontal-align="right"
+                     always-on-top="true"></paper-toast>
+
+    </template>
+
+    <script>
+
+        Polymer({
+
+            is: 'view-login',
+            properties: {
+                failToLogin: {
+                    type:   String,
+                    value:  null,
+                    notify: true
+                }
+            },
+            tryLogin: function() {
+                this.$.logRequest.generateRequest();
+            },
+            loginResponse: function(res) {
+                err = res.detail.response.err;
+                if (err != null) {
+                    this.failToLogin = err;
+                    this.$.toastLoose.open();
+                    this.password = '';
+                }
+                else {
+                    this.$.toastWin.open();
+                    localStorage.setItem('isAuth', true);
+                    window.location = '/dashboard';
+                }
+            }
+
+        });
+    </script>
+</dom-module>

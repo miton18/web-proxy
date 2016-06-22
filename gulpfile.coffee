@@ -10,7 +10,7 @@ g.task 'default', ['build'], ->
 g.task 'build', ->
 
     g.src 'src/*.coffee'
-    .pipe P.plumber()
+    .pipe P.plumberNotifier()
     .pipe P.coffee()
     .pipe P.debug
         title: '[DEBUG]'
