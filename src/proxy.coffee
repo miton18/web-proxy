@@ -8,6 +8,7 @@ sha512      = require 'sha512'
 crypto      = require 'crypto'
 Router      = require './router.js'
 Route       = require './route.js'
+ModelLogs   = require './logs.js'
 Logger      = require './logger'
 
 #process.env['TRACE_SERVICE_NAME'] = 'web-proxi'
@@ -46,7 +47,11 @@ http.createServer router.getApp
 gui = express()
 gui.use bodyParser.json()
 gui.use bodyParser.urlencoded({ extended: true })
-gui.use '/public', express.static __dirname + '/public'
+gui.use '/public/', express.static __dirname + '/public/'
+gui.use (req, res, next)->
+    res.header "Access-Control-Allow-Origin", "*"
+    res.header "Access-Control-Allow-Headers", "X-Requested-With"
+    next()
 gui.use eSession
     resave: false
     saveUninitialized: true
@@ -57,24 +62,34 @@ gui.use eSession
 
 needAuth = (req, res, next)->
     if req.session?.connected?
-        next()
+        if req.session.token != req.get('token')
+            return res.json
+                err:        'token outdated, login again to get a new token'
+                redirect:   '/login'
+        return next()
     else
-        res.json
+        return res.json
             err: 'need to be connected'
+            redirect: '/login'
 
 gui.post '/login', (req, res) ->
     unless req.body?.password?
         res.json
             err: 'need a password to auth'
+            token: null
     else
         if sha512(req.body.password + process.env['PROXY-SALT']).toString('hex') == process.env['PROXY-PW']
-            req.session.connected = true
+            token = crypto.randomBytes(30).toString('hex')
+            req.session.token       = token
+            req.session.connected   = true
             res.json
                 err: null
+                token: token
         else
             setTimeout ->
                 res.json
                     err: 'Bad password'
+                    token: null
             , 2000
 
 gui.get '/logout', (req, res) ->
@@ -139,6 +154,20 @@ api.route '/routes/:_id'
             err: err
             # number row deleted
             result: JSON.parse(result).n == 1
+
+api.route '/logs'
+.all needAuth
+.get (req, res) ->
+    console.log(ModelLogs)
+    ModelLogs.lastN 10, (err, logs)->
+        res.json logs
+
+api.route '/logs/from/:timestamp'
+.get (req, res)->
+    from = req.params._id
+    ModelLogs.getFrom from, (err, logs)->
+        res.json logs
+
 
 gui.listen 9999, ->
     console.log 'GUI started'
