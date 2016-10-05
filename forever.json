@@ -1,9 +1,0 @@
-{
-    // Comments are supported
-    "append"    : true,
-    "watch"     : false,
-    "script"    : "build/main.js",
-    //"sourceDir" : "/opt/web-proxy/",
-    "logFile"   : "/opt/web-proxy/log/forever-access.log",
-    "errFile"   : "/opt/web-proxy/log/forever-error.log"
-}
