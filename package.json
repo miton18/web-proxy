@@ -1,0 +1,25 @@
+{
+  "name": "web-proxy",
+  "version": "3.0.0",
+  "description": "A proxy that you will fall in love <3",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miton18/web-proxy.git"
+  },
+  "keywords": [
+    "proxy",
+    "docker",
+    "\"let's",
+    "encrypt\""
+  ],
+  "author": "miton18, FlorentinDUBOIS",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/miton18/web-proxy/issues"
+  },
+  "homepage": "https://github.com/miton18/web-proxy#readme"
+}
