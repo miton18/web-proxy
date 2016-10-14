@@ -9,7 +9,6 @@ let log = require('./logger');
  * @class Db
  */
 class Db {
-
   // Can be build with another Db config
   constructor(uri = null) {
     this.uri = (uri === null) ? process.env.PROXY_DB : uri;
@@ -29,7 +28,7 @@ class Db {
     mongoose.connection.once('open', () => {
       log.info("connected to database");
     });
-    /*mongoose.connection.on('error', err => {
+    /* mongoose.connection.on('error', err => {
       if (err) {
         console.log(err);
       }

@@ -1,18 +1,6 @@
-let winston = require('winston');
-let db = require('./db');
-let winstonMongo = require('winston-mongodb').MongoDB;
-
-// Trace require
-// TRACE_SERVICE_NAME
-// TRACE_API_KEY
-/* trace.report('metricName', {
-    field: Value
-  })
-  trace.recordMetric('order/orderAmount', 412)
-  process.env.TRACE_SERVICE_NAME = conf.traceName;
-  process.env.TRACE_API_KEY = conf.traceKey;
-  this.trace = require('@risingstack/trace');
-  */
+let Winston = require('winston');
+let Db = require('./db');
+let WinstonMongo = require('winston-mongodb').MongoDB;
 
 /**
  * This class need a valid DB connexion
@@ -22,21 +10,28 @@ let winstonMongo = require('winston-mongodb').MongoDB;
 class Logger {
 
   constructor(uri = null) {
-    this.winston = new (winston.Logger)();
+    this.winston = new Winston.Logger({
 
-    // Console Transport
-    this.winston.add(winston.transports.Console);
-    this.winston.transports.console.level = 'debug';
-
-    // Mongo Transport
-    this.winston.add(winstonMongo, {
-      level: 'info',
-      db: (uri === null) ? process.env.PROXY_DB : uri,
-      collection: 'log',
-      // Store hostname, for multiple instances
-      storeHost: false,
-      tryReconnect: true,
-      decolorize: true
+      transports: [
+        // Console Transport 
+        new Winston.transports.Console({
+          name: "console",
+          level: "debug",
+          colorize: true,
+          prettyPrint: true
+        }),
+        // Mongo Transport
+        new WinstonMongo({
+          name: 'mongo',
+          level: 'info',
+          db: (uri === null) ? process.env.PROXY_DB : uri,
+          collection: 'log',
+          // Store hostname, for multiple instances
+          storeHost: false,
+          tryReconnect: true,
+          decolorize: true
+        })
+      ]
     });
   }
   static getInstance() {
