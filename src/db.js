@@ -17,9 +17,8 @@ class Db {
     mongoose.connect(this.uri, {
       server: {
         auto_reconnect: true,
-        reconnectInterval: 3, // wait 30s
         socketOptions: {
-          connectTimeoutMS: 1000,
+          connectTimeoutMS: 2000,
           socketTimeoutMS: 5000
         }
       }

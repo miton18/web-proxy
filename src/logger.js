@@ -1,6 +1,6 @@
 let Winston = require('winston');
-let Db = require('./db');
 let WinstonMongo = require('winston-mongodb').MongoDB;
+require('winston-ovh');
 
 /**
  * This class need a valid DB connexion
@@ -9,11 +9,11 @@ let WinstonMongo = require('winston-mongodb').MongoDB;
  */
 class Logger {
 
-  constructor(uri = null) {
+  constructor() {
     this.winston = new Winston.Logger({
 
       transports: [
-        // Console Transport 
+        // Console Transport
         new Winston.transports.Console({
           name: "console",
           level: "debug",
@@ -24,7 +24,7 @@ class Logger {
         new WinstonMongo({
           name: 'mongo',
           level: 'info',
-          db: (uri === null) ? process.env.PROXY_DB : uri,
+          db: process.env.PROXY_DB,
           collection: 'log',
           // Store hostname, for multiple instances
           storeHost: false,
@@ -33,6 +33,12 @@ class Logger {
         })
       ]
     });
+
+    if (process.env.PROXY_OVH_KEY !== undefined) {
+      this.winston.add(Winston.transports.ovh, {
+        token: process.env.PROXY_OVH_KEY
+      });
+    }
   }
   static getInstance() {
     if (!Logger.instance) {

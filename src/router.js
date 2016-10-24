@@ -1,10 +1,11 @@
 let Db = require('./db');
 let Log = require('./logger');
 let Route = require('./models/route');
+
 /**
  * @Class Router
  */
-module.exports = class Router {
+class Router {
 
   constructor() {
     /* let route = new (db.models.Route)();
@@ -16,10 +17,24 @@ module.exports = class Router {
 
     // An array of Route model
     this.routes = [];
-    this.updateRoutes();
+    // Route.findOneAndRemove({}, err => {});
+    // Initialise Routes
+    this.loadRoutes();
+    setInterval(()=> {
+      Route.find({}, routes => {console.log('test');});
+    }, 1000);
   }
 
-  updateRoutes() {
+  // Singleton
+  static getInstance() {
+    if (!Router.instance) {
+      Router.instance = new Router();
+    }
+    return Router.instance;
+  }
+
+  // Load Routes from Mongo database
+  loadRoutes() {
     Db.models.Route.find(null, (err, routes) => {
       if (err) {
         Log.error(err);
@@ -32,12 +47,39 @@ module.exports = class Router {
     });
   }
 
+  // Create a new Route
   addRoute(obj) {
     let tmp = new Route(obj);
-    this.routes.push(tmp);
-    Log.debug(tmp.toObject());
+    tmp.save(err => {
+      if (err) {
+        Log.error('Failed to save new Route : ' + tmp.subDomain, obj);
+      } else {
+        this.routes.push(tmp);
+        Log.debug("OK add new Route", tmp.toObject());
+      }
+    });
   }
-  removeRoute(){
 
+  removeRoute(obj) {
+    if (obj._id === undefined) {
+      Log.warn("Can't delete, no _id field", obj);
+    } else {
+      Route.findOneAndRemove(obj, err => {
+        if (err) {
+          Log.error("Failed to remove this Route", obj);
+        } else {
+          Log.debug("Route deleted", obj);
+        }
+      });
+    }
   }
-};
+
+  // HTTP Request handle to proxy response
+  getProxyApp() {
+    return (req, res) => {
+      console.log(req);
+    };
+  }
+}
+
+module.exports = Router.getInstance();
