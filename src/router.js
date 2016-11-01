@@ -1,6 +1,5 @@
 let Db = require('./db');
 let Log = require('./logger');
-let Route = require('./models/route');
 
 /**
  * @Class Router
@@ -8,21 +7,23 @@ let Route = require('./models/route');
 class Router {
 
   constructor() {
-    /* let route = new (db.models.Route)();
+    /*let route = new (Db.models.Route)();
     route.active = true;
-    route.subDomain= "sub2";
-    route.destPort= 8081;
-    route.destHost= "127.0.0.1";
+    route.subDomain = "sub2";
+    route.destPort = 8081;
+    route.destHost = "127.0.0.1";
     route.save();*/
+    /*let proxyRoute = new (Db.models.Route)();
+    proxyRoute.active = true;
+    proxyRoute.subDomain = "proxy";
+    proxyRoute.destPort = 8080;
+    proxyRoute.destHost = "127.0.0.1";
+    proxyRoute.save();*/
 
     // An array of Route model
     this.routes = [];
-    // Route.findOneAndRemove({}, err => {});
     // Initialise Routes
     this.loadRoutes();
-    setInterval(()=> {
-      Route.find({}, routes => {console.log('test');});
-    }, 1000);
   }
 
   // Singleton
@@ -39,39 +40,56 @@ class Router {
       if (err) {
         Log.error(err);
       } else {
-        for (let route of routes) {
-          Log.info("Load route : " + route.subDomain, route.toJSON());
-          this.routes.push(route);
-        }
+        this.routes = routes;
       }
     });
   }
 
-  // Create a new Route
+  // Create a new Route Return a Promise
   addRoute(obj) {
-    let tmp = new Route(obj);
-    tmp.save(err => {
-      if (err) {
-        Log.error('Failed to save new Route : ' + tmp.subDomain, obj);
-      } else {
-        this.routes.push(tmp);
-        Log.debug("OK add new Route", tmp.toObject());
-      }
-    });
-  }
-
-  removeRoute(obj) {
-    if (obj._id === undefined) {
-      Log.warn("Can't delete, no _id field", obj);
-    } else {
-      Route.findOneAndRemove(obj, err => {
+    return new Promise((resolve, reject) => {
+      let tmp = new (Db.models.Route)(obj);
+      tmp.save(err => {
         if (err) {
-          Log.error("Failed to remove this Route", obj);
-        } else {
-          Log.debug("Route deleted", obj);
+          Log.error('Failed to save new Route : ' + tmp.subDomain, obj);
+          reject(err);
+        } 
+        else {
+          this.routes.push(tmp);
+          Log.debug("OK add new Route", tmp.toObject());
+          resolve(tmp);
+          this.loadRoutes();
         }
       });
-    }
+    });
+  }
+
+  removeRoute(route) {
+    return new Promise((resolve, reject) => {
+      Db.models.Route.findOneAndRemove(route, err => {
+          if (err) {
+            Log.error("Failed to remove this Route", route);
+            reject(err);
+          } else {
+            Log.debug("Route deleted", route);
+            resolve(route);
+            this.loadRoutes();
+          }
+        });
+      });
+  }
+
+  editRoute(route) {
+    return new Promise((resolve, reject) => { 
+      route.save((err) => {
+        if (err) {
+          Log.error('Fail to update route', route);
+          reject(err);
+        } else {
+          resolve(route);
+        }
+      });
+    });
   }
 
   // HTTP Request handle to proxy response
@@ -79,6 +97,13 @@ class Router {
     return (req, res) => {
       console.log(req);
     };
+  }
+
+  findRouteById(id) {
+    for (let route of this.routes) {
+      if (route._id.toHexString() === id) return route;
+    }
+    return null;
   }
 }
 

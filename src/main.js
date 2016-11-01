@@ -1,8 +1,8 @@
 
-let express = require('express');
 let http = require('http');
 let bodyParser = require('body-parser');
 let Log = require('./logger');
+let Api = require('./api');
 let Router = require('./router');
 let Reporter = require('./reporter');
 
@@ -20,12 +20,20 @@ http.createServer(Router.getProxyApp(), 80, () => {
   Log.info('Proxy started on port 80');
 });
 
-process.on('uncaughtException', function(err) {
-  Log.error(err.message, {from: 'uncaughtException'});
+Api.listen(8080, () => {
+  Log.info('api started');
+});
+
+process.on('uncaughtException', err => {
+  Log.error(err.message, err
+  );
   Reporter.incrementMetric('error.uncaught');
 });
-process.on('unhandledRejection', function(reason, promise) {
-  Log.error(reason, {from: 'uncaughtException'});
+process.on('unhandledRejection', (reason, promise) => {
+  Log.error(reason, {
+    from: 'uncaughtException',
+    promise: promise
+  });
   Reporter.incrementMetric('error.rejection');
   Log.debug(promise);
 });

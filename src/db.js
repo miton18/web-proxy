@@ -18,8 +18,8 @@ class Db {
       server: {
         auto_reconnect: true,
         socketOptions: {
-          connectTimeoutMS: 2000,
-          socketTimeoutMS: 5000
+          /*connectTimeoutMS: 2000,
+          socketTimeoutMS: 5000*/
         }
       }
     });
