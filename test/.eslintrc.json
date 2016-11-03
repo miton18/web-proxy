@@ -1,0 +1,115 @@
+{
+	"variables": [],
+	"info": {
+		"name": "proxy-web",
+		"_postman_id": "0d15cc0a-3c3a-68fd-c4f2-fcfb2f7efecb",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all routes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "var data = JSON.parse(responseBody);\ntests[\"return an array\"] = Array.isArray(data);"
+					}
+				}
+			],
+			"request": {
+				"url": "{{host}}/api/route",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Create a route",
+			"request": {
+				"url": "{{host}}/api/route",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8081,\n\t\"subDomain\": \"maroute\",\n\t\"active\": true\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get one route",
+			"request": {
+				"url": "{{host}}/api/route/5818b867d2576728206d9a14",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "_id",
+							"value": "575c96e27512737c104d3458",
+							"type": "text",
+							"enabled": false
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a route",
+			"request": {
+				"url": "{{host}}/api/route",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Edit route",
+			"request": {
+				"url": "{{host}}/api/route/5818b867d2576728206d9a14",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"_id\": \"5818b867d2576728206d9a14\",\n\"destHost\": \"127.0.0.1\",\n\"destPort\": 8090,\n\"subDomain\": \"proxy\",\n\"active\": true,\n\"__v\": 0}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

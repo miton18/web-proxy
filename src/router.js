@@ -66,12 +66,12 @@ class Router {
 
   removeRoute(route) {
     return new Promise((resolve, reject) => {
-      Db.models.Route.findOneAndRemove(route, err => {
+      route.remove(err => {
           if (err) {
-            Log.error("Failed to remove this Route", route);
+            Log.error("Fail to remove this Route", route.toObject());
             reject(err);
           } else {
-            Log.debug("Route deleted", route);
+            Log.debug("Route deleted", route.toObject());
             resolve(route);
             this.loadRoutes();
           }
@@ -83,7 +83,7 @@ class Router {
     return new Promise((resolve, reject) => { 
       route.save((err) => {
         if (err) {
-          Log.error('Fail to update route', route);
+          Log.error('Fail to update route', route.toObject());
           reject(err);
         } else {
           resolve(route);

@@ -125,4 +125,9 @@ api.route('/route/:routeID')
   );
 });
 
+api.route('/log')
+.get((req, res) => {
+  require(mongoose).coll
+});
+
 module.exports = app;
