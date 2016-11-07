@@ -42,7 +42,7 @@ let UserSchema = new Schema({
 UserSchema.methods.checkPassword = function(password) {
   
   return new Promise((resolve, reject) => {
-    let salt = process.env.salt;
+    let salt = process.env.PROXY_SALT;
     if (salt === undefined) {
       reject("You must set a env.salt variable");
     }
@@ -65,7 +65,7 @@ function setPassword (password) {
     if (salt === undefined) {
       Log.error("You must set a env.salt variable");
     }
-    return bCrypt.hashSync(password, process.env.salt, console.log)    
+    return bCrypt.hashSync(password, process.env.PROXY_SALT, console.log)    
   }
 
 /**
@@ -74,7 +74,7 @@ function setPassword (password) {
  */
 UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
 
-  if (process.env.key === undefined) {
+  if (process.env.PROXY_KEY === undefined) {
     Log.error("You must provide a key to generate JWTs");
     return null;
   }
@@ -91,7 +91,7 @@ UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
     expiration: expirationDate,
     creation: Date.now()
 
-  }, process.env.key);
+  }, process.env.PROXY_KEY);
 }
 
 module.exports = mongoose.model("User", UserSchema);

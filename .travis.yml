@@ -6,7 +6,11 @@ node_js:
   - "5"
   - "4"
 
+services:
+  - mongodb
+
 before_script:
+  - sleep 15 # for MongoDB start
   - npm install -g gulp newman
   - npm install 
 

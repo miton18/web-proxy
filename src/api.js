@@ -25,7 +25,7 @@ api.use(passport.session());
  * Auth middleware
 ***************************/
 passport.use(new passportJWT.Strategy({
-  secretOrKey: "aaa",
+  secretOrKey: process.env.PROXY_KEY,
   jwtFromRequest: passportJWT.ExtractJwt.fromHeader("X-Token")
 }, 
 (jwtPayload, cb) => {
