@@ -10,6 +10,7 @@ class Reporter {
   constructor() {
     if (process.env.PROXY_TRACE_KEY === undefined) {
       log.warn('No Trace reporter is defined, set PROXY_TRACE_KEY env var to enable it');
+      this.active = false;
     }
     else {
       let name = 'proxy-' + (os.hostname());
@@ -23,7 +24,11 @@ class Reporter {
       this.trace.recordMetric('order/orderAmountaaa', 412); */
 
       log.info('Trace reporter enabled, his name is : ' + name);
+      this.active = true;
     }
+  }
+  incrementMetric(m) {
+    if (this.active) this.trace.incrementMetric(m);
   }
 
   static getInstance() {
@@ -34,4 +39,4 @@ class Reporter {
   }
 
 }
-module.exports = Reporter.getInstance().trace;
+module.exports = Reporter.getInstance();
