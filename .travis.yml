@@ -11,6 +11,8 @@ services:
 
 before_script:
   - sleep 15 # for MongoDB start
+  - ifconfig
+  - netstat -lapute
   - npm install -g gulp newman
   - npm install 
 
