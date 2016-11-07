@@ -11,11 +11,10 @@ services:
 
 before_script:
   - sleep 15 # for MongoDB start
-  - ifconfig
-  - netstat -lapute
   - npm install -g gulp newman
   - npm install 
 
 script: 
   - gulp test 
+  - npm start &
   - newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
