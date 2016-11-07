@@ -32,7 +32,7 @@
 					"mode": "raw",
 					"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8081,\n\t\"subDomain\": \"testRoute\",\n\t\"active\": true\n}"
 				},
-				"description": ""
+				"description": "Create a new route in proxy"
 			},
 			"response": []
 		},
@@ -55,7 +55,7 @@
 					"mode": "formdata",
 					"formdata": []
 				},
-				"description": ""
+				"description": "List all routes of the proxy"
 			},
 			"response": []
 		},
@@ -85,7 +85,7 @@
 						}
 					]
 				},
-				"description": ""
+				"description": "Get just one route of proxy with a specified ID"
 			},
 			"response": []
 		},
@@ -114,7 +114,7 @@
 					"mode": "raw",
 					"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8090,\n\t\"subDomain\": \"testRouteModified\",\n\t\"active\": false\n}"
 				},
-				"description": ""
+				"description": "Change route parameters, based on route ID"
 			},
 			"response": []
 		},
@@ -142,6 +142,26 @@
 				"body": {
 					"mode": "raw",
 					"raw": ""
+				},
+				"description": "Remove a route from DB and proxy"
+			},
+			"response": []
+		},
+		{
+			"name": "Log in",
+			"request": {
+				"url": "{{host}}/api/login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"miton\",\n\t\"password\": \"password\"\n}"
 				},
 				"description": ""
 			},

@@ -7,8 +7,9 @@ node_js:
   - "4"
 
 before_script:
-  - npm install -g gulp
+  - npm install -g gulp newman
   - npm install 
 
 script: 
   - gulp test 
+  - newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
