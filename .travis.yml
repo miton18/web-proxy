@@ -9,9 +9,15 @@ node_js:
 services:
   - mongodb
 
-before_script:
+before_install:
   - sleep 15 # for MongoDB start
-  - npm install -g newman && npm install && npm start & 
+
+install: 
+  - npm install -g newman 
+  - npm install 
+
+before_script:
+  - npm start & 
 
 script: 
   - newman -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
