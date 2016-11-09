@@ -1,33 +1,31 @@
 sudo: required
 language: node_js
-
 node_js:
-  - "node" # Latest
-  - "6"
-
+- node
+- '6'
 services:
-  - mongodb
-  - docker
-
+- mongodb
+- docker
 branches:
   only:
   - master
   - dev
   - v3
-
 before_install:
-  - npm install -g newman 
-  - npm install 
-
-install:  
-  - npm start &
-
+- npm install -g newman
+- npm install
+install:
+- npm start &
 before_script:
-  - sleep 15 # for MongoDB & app start 
-
-script: 
-  - newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
-
+- sleep 15
+script:
+- newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
 after_success:
-  - docker build -t miton18/web-proxy .
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- docker build -t miton18/web-proxy .
+- docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+
+notifications:
+  hipchat:
+    rooms:
+      secure: wLG9HdqI6kz1HKKsrc1uVdOqPhIo/CylpFtJZ0j+qdoTOqJqNT2AhEqsjyXiCerv59UtEaqtGH6B5XPo1Ww5mcie5vBOss4ikQp3k9a3Xtl8E+PIW0V/ePDpKuRROcr0g/l/XldQLpB8PXHsu0MT0G9qYRwBWSq9mYhPVZzs2BiOFvIHjcS14kQrM3geHg5bWfsOAyuTlGeJOnt2gwTyIdG5BNhfr7OwmQzCV+gYowCNIcDEVGvb4INMVOE0LQ9Bq6BWFVIIz0EmutMcDpxzHSg2YYaCmo/IZRZZLAQMdIrZ0iEsx98jfmjjkS1PIMYrut8X/RmsALImkxVNn+Tnd7hAuLC1OHj6TKNtgh0o0A6TXTwIFp3bEu+n6fvkKtx5LAc8nO5yLf7KAWvuE3LFVzDsKGDdzkDDkDj0999PWSfcFKPtwsLU2Y2Whfp8D0Yr0O5Fans/GCAaLcRQCk5EVgsQYoK2SAXVHLOlnxfBePTBKG/miHmoddYypuWNv+d6UH9+mkph9IyIDE/XojasKUZ2NHgJ2twTJjESxuNWGwaC0296uCweJpzCHlm85UGaIJCWETLbvJenrKnZe4qQ3n3j4CA8oCcVKdQUF9wzmZ5T+mLiVl/dgaAzgffaXsDmAelUx4W10BZDwOf0+8GfCyWfpnFZgXzLwsmmQ/RHDdc=
