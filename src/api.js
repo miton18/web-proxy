@@ -24,6 +24,7 @@ api.use(bodyParser.json());
 let tokenHeader = 'x-token'
 
 let protected = (req, res, next) => {
+
   let token = req.header(tokenHeader);
   if (token !== undefined) {
     let payload = jwt.decode(token, Buffer.from(process.env['PROXY_KEY']));
@@ -32,7 +33,7 @@ let protected = (req, res, next) => {
         err: `bad token`
       });
     }
-    if(payload.expiration < Date.now()) {
+    if(payload.expiration < Date.now() && !process.env.NODE_ENV === 'development' ) {
       return res.status(401).json({
         err: `This token is expired since ${new Date(payload.expiration)}`
       });
