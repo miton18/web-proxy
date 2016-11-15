@@ -22,5 +22,9 @@ module.exports = mongoose.model("Route", new Schema({
   destHost: {
     type: String,
     default: "127.0.0.1"
+  },
+  forwardSSL: {
+    type: Boolean,
+    default: false
   }
 }));

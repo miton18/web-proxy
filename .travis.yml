@@ -28,6 +28,7 @@ after_success:
 notifications:
   hipchat:
     notify: true
+    on_pull_requests: true
     template:
       #- '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
     rooms:

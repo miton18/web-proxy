@@ -58,6 +58,9 @@ UserSchema.methods.checkPassword = function(password) {
 /**
  * Hash and store password
  * return true or false
+ * 
+ * @param String password
+ * @returns
  */
 function setPassword (password) {
 
@@ -82,8 +85,8 @@ UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
   if( isNaN(expirationDate) ) {
     expirationDate = expirationDate.getTime();
   }
-  return jwt.encode({
-    
+
+  return jwt.encode({  
     _id: this._id,
     username: this.username,
     mail: this.mail,

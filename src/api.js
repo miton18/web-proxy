@@ -1,8 +1,7 @@
 let express = require('express');
 let compression = require('compression');
 let bodyParser = require('body-parser');
-let passport = require('passport');
-let passportJWT = require('passport-jwt');
+let jwt = require('jwt-simple');
 let Router = require('./router');
 let Log = require('./logger');
 let Db = require('./db');
@@ -18,34 +17,38 @@ app.use(compression());
 app.use(bodyParser.json());
 api.use(compression());
 api.use(bodyParser.json());
-api.use(passport.initialize());
-api.use(passport.session());
 
 /*************************** 
  * Auth middleware
 ***************************/
-passport.use(new passportJWT.Strategy({
-  secretOrKey: process.env.PROXY_KEY,
-  jwtFromRequest: passportJWT.ExtractJwt.fromHeader("X-Token")
-}, 
-(jwtPayload, cb) => {
-  console.log("use");
-  console.log(payload);
-  return cb(null, {ID: username, password: password});
-}));
+let tokenHeader = 'x-token'
 
-passport.serializeUser(function(user, cb) {
-  console.log("serialize");
-  cb(null, user._id);
-});
-
-passport.deserializeUser(function(id, cb) {
-  console.log("deserialize");
-
-  cb(null, new (Db.models.user)());
-});
-
-
+let protected = (req, res, next) => {
+  let token = req.header(tokenHeader);
+  if (token !== undefined) {
+    let payload = jwt.decode(token, Buffer.from(process.env['PROXY_KEY']));
+    if (payload === undefined || payload === null) {
+      return res.status(401).json({
+        err: `bad token`
+      });
+    }
+    if(payload.expiration < Date.now()) {
+      return res.status(401).json({
+        err: `This token is expired since ${new Date(payload.expiration)}`
+      });
+    }
+    // Check permissions  
+    /*for(let l of req.route.stack) {
+      console.log(l);
+    }*/
+    next();
+  } 
+  else {
+    res.status(401).json({
+      err: 'You need to provide a token' 
+    });
+  }
+};
 /*************************** 
  * Params
 ***************************/
@@ -59,44 +62,42 @@ api.param('routeID', (req, res, next, routeID) => {
 ***************************/ 
 
 api.post('/login', (req, res) => {
-  //Db.models.User.remove({}, (err) => {});
-  /*let tmp = new (Db.models.User)({
-    username: "miton",
-    mail: "miton@rcdinfo.fr",
-    password: "miton"
-  }).save((err) => {console.log(err)});*/
-  if (req.body.username === undefined || req.body.password === undefined) {
-    return res.json({
-      err: "Please send a 'username' and a 'password'",
-      token: null
+  let body = {
+    err: null,
+    token: null
+  };
+  if (req.body.username === undefined || req.body.password === undefined) { 
+      body.err = "Please send a 'username' and a 'password'";
+      res.json(401, body);
+  }
+  else {
+    Db.models.User.findOne({
+      username: req.body.username
+    }, (err, user) => {
+      if (err || !user) {
+        Log.error(err || "user doesn't exist", req.body);
+        body.err = "This username doesn't exist";
+        res.json(401, body);
+      } 
+      else {
+        user.checkPassword(req.body.password).then(
+          (isGoodPassword) => {
+            if (!isGoodPassword) {
+              body.err = 'Bad password';
+              res.json(401, body);
+            } 
+            else {
+              body.token = user.generateJwt([], new Date().setHours( new Date().getHours() + 1 ) )
+              res.json(body);
+            }
+          },
+          (err) => {
+            body.err = err;
+            res.json(body);
+          });
+      }
     });
   }
-  Db.models.User.findOne({
-    username: req.body.username
-  }, (err, user) => {
-    if (err || !user) {
-      Log.error(err, req.body);
-      return res.json({err: "This username doesn't exist", token: null});
-    }
-    user.checkPassword(req.body.password).then(
-      (isGoodPassword) => {
-        if (!isGoodPassword) {
-          res.json({
-            err: "Bad password", 
-            token: null
-          });
-        } else {
-          res.json({
-            err: null,
-            token: user.generateJwt([], new Date().setHours( new Date().getHours() + 1 ) )
-          });
-        }
-      },
-      (err) => {
-        res.json({err: err, token: null});
-      }
-    );
-  });
 });
 
 app.get('/200', (req, res) => {
@@ -108,7 +109,7 @@ api.get('/check', (req, res) => {
 });
 
 api.route('/route')
-//.all(protected)
+.all(protected)
 .get((rq, res) => {
   res.json(Router.routes);
 })
@@ -129,8 +130,9 @@ api.route('/route')
       });
   ;})
 })
+
 api.route('/route/:routeID')
-//.all(protected)
+.all(protected)
 .get((req, res) => {
   // Can use res.route Object
   if (req.paramRoute === null) {
@@ -190,12 +192,13 @@ api.route('/route/:routeID')
 });
 
 api.route('/log')
-//.all(protected)
+.all(protected)
 .get((req, res) => {
   require(mongoose).coll
 });
 
 api.route('/user')
+.all(protected)
 .get((req, res) => {
   Db.models.User.find({}, (err, users) => {
     if (err) res.json({err: err});
