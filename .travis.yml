@@ -15,7 +15,7 @@ before_install:
 - npm install -g newman
 - npm install
 install:
-- npm start &
+- sudo npm start &
 before_script:
 - sleep 15
 script:
