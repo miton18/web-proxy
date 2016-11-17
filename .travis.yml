@@ -19,6 +19,7 @@ install:
   - docker build -t test .
 before_script:
   #- sleep 45
+  - sudo docker run -d -p 80:80 -p 443:443 -p 8080:8080 test
 script:
   - npm test
 after_success:
