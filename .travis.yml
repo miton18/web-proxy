@@ -12,11 +12,12 @@ branches:
   - dev
   - v3
 before_install:
-  - export NPM_PATH=$(which npm) 
+  - sudo alias npm=$(which npm)
+  - sudo alias node=$(which node) 
   - npm install -g newman
   - npm install
 install:
-  - sudo $NPM_PATH start &
+  - npm start &
 before_script:
   - sleep 45
 script:
