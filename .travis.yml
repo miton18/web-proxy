@@ -27,9 +27,12 @@ before_script:
 script:
   - sleep 15
   - npm test
+  
 after_success:
-  - docker build -t miton18/web-proxy .
-  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - if [ "$TRAVIS_BRANCH" == "v3" ]; then
+    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push USER/REPO;
+    fi
 
 
 notifications:
