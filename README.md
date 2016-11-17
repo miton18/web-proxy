@@ -28,8 +28,16 @@
 ``` sh 
   $ npm start
 ```
+You can go to http://YourDmain.tld:8080
+
+Your default user : **4dm1n**
+
+Your default password : **pr0xy-p455w0rd** 
+_You must change it !_
 
 ## Develop with us 
+
+Test your app
 
 ```
   $ npm install -g newman

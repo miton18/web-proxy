@@ -142,21 +142,23 @@ class Router {
       Log.debug(`Proxy request for ${subDomain}`);
 
       let route = this.findRouteByHost(subDomain);
+      Log.debug(route);
       if (route === null) {
         res.writeHead(404, {'Content-Type': 'application/json'})
         return res.write(JSON.stringify({
           err: "Proxy don't know your route"
         }));
       }
-      Log.debug(`http${route.forwardSSL? 's': ''}://${route.destHost}:${route.destPort}`);
 
+      let target = `http${route.forwardSSL? 's': ''}://${route.destHost}:${route.destPort}`;
+      Log.debug(target);
       this.proxy.web(req, res, { 
-        target: `http${route.forwardSSL? 's': ''}://${route.destHost}:${route.destPort}`  
+        target: target  
       }, (err) => {
         if (err) {
           Log.error(err);
           res.writeHead(500, {'Content-Type': 'application/json'})
-          res.write(JSON.stringify({
+          res.end(JSON.stringify({
             err: 'An error occured'
           }));
         } 

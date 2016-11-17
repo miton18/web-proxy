@@ -10,64 +10,50 @@
 		{
 			"name": "domain tests",
 			"description": "",
-			"item": [
+			"item": []
+		},
+		{
+			"name": "Log in",
+			"event": [
 				{
-					"name": "Test domain 'stat'",
-					"request": {
-						"url": "stat.local.dev",
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": "test a domain"
-					},
-					"response": []
-				},
-				{
-					"name": "Test domain 'test'",
-					"request": {
-						"url": "test.local.dev",
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": "test a domain"
-					},
-					"response": []
-				},
-				{
-					"name": "Test domain 'webproxy'",
-					"request": {
-						"url": "webproxy.local.dev",
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": "test a domain"
-					},
-					"response": []
-				},
-				{
-					"name": "Test domain 'webproxy'",
-					"request": {
-						"url": "remi.local.dev",
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
-						"description": "test a domain"
-					},
-					"response": []
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"",
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"tests[\"No errors\"]          = data.err === null;",
+							"tests[\"Contain a token\"]    = data.token !== null;",
+							"",
+							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+							"",
+							"",
+							"postman.setEnvironmentVariable('token', data.token);",
+							"",
+							"postman.setNextRequest(\"Create a route\");",
+							""
+						]
+					}
 				}
-			]
+			],
+			"request": {
+				"url": "{{host}}/api/login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"username\": \"4dm1n\",\n\t\"password\": \"pr0xy-p455w0rd\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
 		},
 		{
 			"name": "Create a route",
@@ -305,6 +291,11 @@
 						"key": "Content-Type",
 						"value": "application/json",
 						"description": ""
+					},
+					{
+						"key": "x-token",
+						"value": "{{token}}",
+						"description": ""
 					}
 				],
 				"body": {
@@ -380,47 +371,6 @@
 					"raw": ""
 				},
 				"description": "Remove a route from DB and proxy"
-			},
-			"response": []
-		},
-		{
-			"name": "Log in",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"No errors\"]          = data.err === null;",
-							"tests[\"Contain a token\"]    = data.token !== null;",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							"",
-							"",
-							"postman.setEnvironmentVariable('token', data.token);",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/login",
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"username\": \"miton\",\n\t\"password\": \"miton\"\n}"
-				},
-				"description": ""
 			},
 			"response": []
 		}

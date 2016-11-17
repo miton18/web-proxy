@@ -78,7 +78,7 @@ api.post('/login', (req, res) => {
       if (err || !user) {
         Log.error(err || "user doesn't exist", req.body);
         body.err = "This username doesn't exist";
-        res.json(401, body);
+        res.status(401).json(body);
       } 
       else {
         user.checkPassword(req.body.password).then(

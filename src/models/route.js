@@ -1,6 +1,5 @@
 let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
-
 /**
  * Route model
  * Used by Proxy

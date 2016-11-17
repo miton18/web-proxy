@@ -1,11 +1,12 @@
 
-let http = require('http');
+let http        = require('http');
 //let http2 = require('spdy');
-let bodyParser = require('body-parser');
-let Log = require('./logger');
-let Api = require('./api');
-let Router = require('./router');
-let Reporter = require('./reporter');
+let bodyParser  = require('body-parser');
+let Log         = require('./logger');
+let Api         = require('./api');
+let Router      = require('./router');
+let Reporter    = require('./reporter');
+let init        = require('./init');
 
 Log.info('Proxy is starting...');
 Reporter.incrementMetric('action.start');
@@ -18,6 +19,7 @@ if (    e['PROXY_DB']   == undefined
       process.exit();
 }
 
+init();
 
 /*http.createServer({}
 , Router.getProxyApp())

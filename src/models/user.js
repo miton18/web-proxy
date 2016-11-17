@@ -44,9 +44,9 @@ UserSchema.methods.checkPassword = function(password) {
   return new Promise((resolve, reject) => {
     let salt = process.env.PROXY_SALT;
     if (salt === undefined) {
-      reject("You must set a env.salt variable");
+      reject("You must set a PROXY_SALT variable");
     }
-    bCrypt.compare(password, this.password, (err, res) => {
+    bCrypt.compare(password + salt, this.password, (err, res) => {
       if (err) {
         reject(err);
       }
@@ -64,11 +64,14 @@ UserSchema.methods.checkPassword = function(password) {
  */
 function setPassword (password) {
 
-    let salt = process.env.salt;
+    let salt = process.env.PROXY_SALT;
     if (salt === undefined) {
-      Log.error("You must set a env.salt variable");
+      Log.error("You must set a env.PROXY_SALT variable");
+      salt = '';
     }
-    return bCrypt.hashSync(password, process.env.PROXY_SALT, console.log)    
+
+    let hash = bCrypt.hashSync(password + salt, '');
+    return hash; 
   }
 
 /**
