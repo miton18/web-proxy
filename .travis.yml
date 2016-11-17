@@ -31,8 +31,8 @@ script:
 after_success:
   - export PROJECT_VERSION=$(npm version patch)
   - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-  - sudo docker tag test miton18/web-proxy:$PROJECT_VERSION
-  - sudo docker push miton18/web-proxy:$PROJECT_VERSION
+  - sudo docker tag test miton18/web-proxy:$TRAVIS_TAG
+  - sudo docker push miton18/web-proxy:$TRAVIS_TAG
   - sudo docker tag test miton18/web-proxy:latest
   - sudo docker push miton18/web-proxy:latest
 
