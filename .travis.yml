@@ -12,18 +12,18 @@ branches:
   - dev
   - v3
 before_install:
-#- npm install -g newman
-#- npm install
+  - export NPM_PATH=$(which npm) 
+  - npm install -g newman
+  - npm install
 install:
-#- sudo npm start &
- - which npm 
+  - sudo $NPM_PATH start &
 before_script:
-#- sleep 45
+  - sleep 45
 script:
-#- newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
+  - newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
 after_success:
-#- docker build -t miton18/web-proxy .
-#- docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker build -t miton18/web-proxy .
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 
 
 notifications:
