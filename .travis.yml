@@ -23,7 +23,7 @@ install:
   - docker build -t test .
 before_script:
   #- sleep 45
-  - sudo docker run -it -p 80:80 -p 443:443 -p 8080:8080 test
+  - sudo docker run -it -p 80:80 -p 443:443 -p 8080:8080 -e PROXY_DB=$PROXY_DB -e PROXY_KEY=$PROXY_KEY -e PROXY_SALT=$PROXY_SALT PROXY_ENV=$PROXY_ENV test 
 script:
   - sleep 15
   - npm test
