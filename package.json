@@ -8,7 +8,7 @@
     "type": "git"
   },
   "scripts": {
-    "test": "newman run ./test/proxy-web.postman_collection.json -e ./test/proxy-web-dev.postman_environment.json -n 3 --timeout-request 1000",
+    "test": "newman run ./test/proxy-web.postman_collection.json -e ./test/proxy-web-dev.postman_environment.json -n 3 --timeout-request 30000",
     "start": "node src/main.js",
     "build": "docker build -t miton18/web-proxy .",
     "test:docker": "docker run -it --rm --name web-proxy miton18/web-proxy"
