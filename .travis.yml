@@ -29,11 +29,12 @@ script:
   - npm test
   
 after_success:
-  - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   - export PROJECT_VERSION=$(npm version patch)
-  - sudo docker tag test miton18/$REPO:$PROJECT_VERSION
-  - sudo docker tag test miton18/$REPO:latest
-  - sudo docker push miton18/$REPO;
+  - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - sudo docker tag test miton18/web-proxy:$PROJECT_VERSION
+  - sudo docker push miton18/web-proxy:$PROJECT_VERSION
+  - sudo docker tag test miton18/web-proxy:latest
+  - sudo docker push miton18/web-proxy:latest
 
 
 notifications:
