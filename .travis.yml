@@ -17,7 +17,7 @@ before_install:
 install:
 - sudo npm start &
 before_script:
-- sleep 15
+- sleep 45
 script:
 - newman -s -c test/proxy-web.postman_collection.json -n 10 -e test/proxy-web-default.postman_environment.json
 after_success:
