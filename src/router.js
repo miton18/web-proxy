@@ -94,16 +94,16 @@ class Router {
   removeRoute(route) {
     return new Promise((resolve, reject) => {
       route.remove(err => {
-          if (err) {
-            Log.error("Fail to remove this Route", route.toObject());
-            reject(err);
-          } else {
-            Log.debug("Route deleted", route.toObject());
-            resolve(route);
-            this.loadRoutes();
-          }
-        });
+        if (err) {
+          Log.error("Fail to remove this Route", route.toObject());
+          reject(err);
+        } else {
+          Log.debug("Route deleted", route.toObject());
+          resolve(route);
+          this.loadRoutes();
+        }
       });
+    });
   }
 
   /**

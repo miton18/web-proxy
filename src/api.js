@@ -5,6 +5,7 @@ let jwt = require('jwt-simple');
 let Router = require('./router');
 let Log = require('./logger');
 let Db = require('./db');
+let protected = require('./controller/auth'); // Just an handler
 
 let app = express();
 let api = express.Router();
@@ -19,44 +20,8 @@ api.use(compression());
 api.use(bodyParser.json());
 
 /*************************** 
- * Auth middleware
-***************************/
-let tokenHeader = 'x-token'
-
-let protected = (req, res, next) => {
-
-  let token = req.header(tokenHeader);
-  if (token !== undefined) {
-    let payload = jwt.decode(token, Buffer.from(process.env['PROXY_KEY']));
-    if (payload === undefined || payload === null) {
-      return res.status(401).json({
-        err: `bad token`
-      });
-    }
-    if(payload.expiration < Date.now() && !process.env.NODE_ENV === 'development' ) {
-      return res.status(401).json({
-        err: `This token is expired since ${new Date(payload.expiration)}`
-      });
-    }
-    // Check permissions  
-    /*for(let l of req.route.stack) {
-      console.log(l);
-    }*/
-    next();
-  } 
-  else {
-    res.status(401).json({
-      err: 'You need to provide a token' 
-    });
-  }
-};
-/*************************** 
  * Params
 ***************************/
-api.param('routeID', (req, res, next, routeID) => {
-  req.paramRoute = Router.findRouteById(routeID);
-  next();
-});
 
 /*************************** 
  * Routes
@@ -109,88 +74,7 @@ api.get('/check', (req, res) => {
   res.json({});
 });
 
-api.route('/route')
-.all(protected)
-.get((rq, res) => {
-  res.json(Router.routes);
-})
-.post((req, res) => {
-  Router.addRoute(req.body).then(
-    (route) => {
-      res.json({
-        err: null,
-        route: route
-      });
-      Router.loadRoutes();
-    },
-    (err) => {
-      Log.error('Fail to create a route', err, tmpRoute);
-      res.json({
-        err: 'Fail to create a route',
-        route: null
-      });
-  ;})
-})
-
-api.route('/route/:routeID')
-.all(protected)
-.get((req, res) => {
-  // Can use res.route Object
-  if (req.paramRoute === null) {
-    res.json({
-      err: "Route doesn't exist",
-      route: null
-    });
-    return;
-  } 
-  res.json({
-    err: null,
-    route: req.paramRoute
-  });
-})
-.put((req, res) => {
-  if (req.paramRoute === null) {
-    res.json({
-      err: "Route doesn't exist",
-      route: null
-    });
-    return;
-  } 
-  req.paramRoute.subDomain = req.body.subDomain;
-  req.paramRoute.active = req.body.active;
-  req.paramRoute.destPort = req.body.destPort;
-  req.paramRoute.destHost = req.body.destHost;
-  Router.editRoute(req.paramRoute).then(
-    (route) => {
-      res.json({
-        err: null,
-        route: route
-      });
-    },
-    (err) => {
-      res.json({
-        err: "Can't save new properties",
-        route: null,
-      });
-    }
-  );
-})
-.delete((req, res) => {
-  Router.removeRoute(req.paramRoute).then(
-    () => {
-      res.json({
-        err: null,
-        route: req.paramRoute
-      });
-    },
-    (err) => {
-      res.json({
-        err: "Fail to remove route",
-        route: null
-      });
-    }
-  );
-});
+api.use('/route', require('./controller/route'));
 
 api.route('/log')
 .all(protected)
