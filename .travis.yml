@@ -20,7 +20,7 @@ before_install:
   - npm install
 install:
   #- sudo $(which npm) start &
-  - docker build -t test .
+  - sudo docker build -t test .
 before_script:
   #- sleep 45
   - sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_KEY=$PROXY_KEY -e PROXY_SALT=$PROXY_SALT -e PROXY_ENV=$PROXY_ENV test 
@@ -29,10 +29,11 @@ script:
   - npm test
   
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "v3" ]; then
-    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push USER/REPO;
-    fi
+  - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - export PROJECT_VERSION=$(npm version patch)
+  - sudo docker tag test miton18/$REPO:$PROJECT_VERSION
+  - sudo docker tag test miton18/$REPO:latest
+  - sudo docker push miton18/$REPO;
 
 
 notifications:
