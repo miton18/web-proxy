@@ -12,12 +12,13 @@ branches:
   - dev
   - v3
 before_install:
-  - npm install -g newman
-  - npm install
+  #- npm install -g newman
+  #- npm install
 install:
-  - sudo $(which npm) start &
+  #- sudo $(which npm) start &
+  - docker build -t test .
 before_script:
-  - sleep 45
+  #- sleep 45
 script:
   - npm test
 after_success:
