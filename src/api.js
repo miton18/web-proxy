@@ -62,7 +62,7 @@ api.param('routeID', (req, res, next, routeID) => {
  * Routes
 ***************************/ 
 
-api.post('/login', (req, res) => {
+api.post('/token', (req, res) => {
   let body = {
     err: null,
     token: null

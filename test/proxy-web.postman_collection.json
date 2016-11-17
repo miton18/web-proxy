@@ -13,7 +13,7 @@
 			"item": []
 		},
 		{
-			"name": "Log in",
+			"name": "Get new Token",
 			"event": [
 				{
 					"listen": "test",
@@ -38,7 +38,7 @@
 				}
 			],
 			"request": {
-				"url": "{{host}}/api/login",
+				"url": "{{host}}/api/token",
 				"method": "POST",
 				"header": [
 					{
