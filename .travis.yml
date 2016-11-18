@@ -1,5 +1,7 @@
 sudo: required
+
 language: node_js
+
 node_js:
 - node
 
@@ -55,4 +57,4 @@ deploy:
     secure: Kn9btER/9HJLCoptbzCbJm4HR0m48M/XsXE8Kxh8yeTMQwV2HR4j6EiKZIx2KV1HZZhNKokDRoZay9NV61Q5JTrmWyDt2cw3GXHOtlblgV6qXWH4GdRhW6pL4zmkEsmfoZl4+g/0j6t1R2eCD1rSg43C9VEiwBAcd0u98CTOnmlbijopMIJuGSbFVZI1UX7fqqQ0GHVHymmHVEYcB4vFbQX3hUy1PSRvB9h1ZDoLP5ZajcDDyfezwWuufsdCxLsob1dojJuQkhxDmcnwLXLwn7wHepwW3AYVu3k26yiITT9DeTEU6mSxTaCFhbHhKz4G1jHYsAKle0OUwXVb49GOf75fcNILnGxbVteZ2Pczqm7bk4vA28FFmm40H40oTz8LFFbjg3bZX3ZLKTHutNGYEehWs1U5w6Dj7Ws/pc9DZUfVnCtuT6KBILKXg0flL0ZjZEC7Ydvi1h3FChrYyCO9IHGUdllfHroW39IBPjPT7C/FW3MMRSfCAzlQbxseq4AOTdQJ/jTe/vRzWEMjnIZM1AwPGp/4pJ6Z3GYPIWDDLQq+yTyt4CJxwgV8c6ZpyREGK+Dg7I4XiZHd1b0AiU3U+wtYLOj9cQHzWFNoF/vvoKh6jYzJK65pDdzvFeuedE/sQz9eHCJb8QWAR231oQXlJDXrhhOWygROC5Kt/z0HzYk=
   on:
     tags: true
-    branch: v3
+    all_branch: true
