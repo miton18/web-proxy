@@ -47,3 +47,4 @@ deploy:
   on:
     repo: miton18/web-proxy
     branch: v3
+    tags: true
