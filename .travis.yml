@@ -1,47 +1,49 @@
 sudo: required
 language: node_js
 node_js:
-  - node
+- node
 services:
-  - mongodb
-  - docker
+- mongodb
+- docker
 branches:
   only:
-    - master
-    - dev
-    - v3
+  - master
+  - dev
+  - v3
 cache:
-   directories:
-    - node_modules
-
+  directories:
+  - node_modules
 before_install:
-  - npm install -g newman
-  - npm install
+- npm install -g newman
+- npm install
 install:
-  #- sudo $(which npm) start &
-  - sudo docker build -t test .
+- sudo docker build -t test .
 before_script:
-  #- sleep 45
-  - sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_KEY=$PROXY_KEY -e PROXY_SALT=$PROXY_SALT -e PROXY_ENV=$PROXY_ENV test 
+- sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_KEY=$PROXY_KEY -e PROXY_SALT=$PROXY_SALT
+  -e PROXY_ENV=$PROXY_ENV test
 script:
-  - sleep 15
-  - npm test
-  
+- sleep 15
+- npm test
 after_success:
-  - export PROJECT_VERSION=$(npm version patch)
-  - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-  - sudo docker tag test miton18/web-proxy:$(echo $TRAVIS_TAG)
-  - sudo docker push miton18/web-proxy:$(echo $TRAVIS_TAG)
-  - sudo docker tag test miton18/web-proxy:latest
-  - sudo docker push miton18/web-proxy:latest
-
-
+- export PROJECT_VERSION=$(npm version patch)
+- sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+- sudo docker tag test miton18/web-proxy:$(echo $TRAVIS_TAG)
+- sudo docker push miton18/web-proxy:$(echo $TRAVIS_TAG)
+- sudo docker tag test miton18/web-proxy:latest
+- sudo docker push miton18/web-proxy:latest
 notifications:
   hipchat:
     notify: true
     on_pull_requests: true
     template:
-      #- '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
-      - '#%{build_number} (%{branch} : %{author}): %{message}'
+    - "#%{build_number} (%{branch} : %{author}): %{message}"
     rooms:
       secure: wLG9HdqI6kz1HKKsrc1uVdOqPhIo/CylpFtJZ0j+qdoTOqJqNT2AhEqsjyXiCerv59UtEaqtGH6B5XPo1Ww5mcie5vBOss4ikQp3k9a3Xtl8E+PIW0V/ePDpKuRROcr0g/l/XldQLpB8PXHsu0MT0G9qYRwBWSq9mYhPVZzs2BiOFvIHjcS14kQrM3geHg5bWfsOAyuTlGeJOnt2gwTyIdG5BNhfr7OwmQzCV+gYowCNIcDEVGvb4INMVOE0LQ9Bq6BWFVIIz0EmutMcDpxzHSg2YYaCmo/IZRZZLAQMdIrZ0iEsx98jfmjjkS1PIMYrut8X/RmsALImkxVNn+Tnd7hAuLC1OHj6TKNtgh0o0A6TXTwIFp3bEu+n6fvkKtx5LAc8nO5yLf7KAWvuE3LFVzDsKGDdzkDDkDj0999PWSfcFKPtwsLU2Y2Whfp8D0Yr0O5Fans/GCAaLcRQCk5EVgsQYoK2SAXVHLOlnxfBePTBKG/miHmoddYypuWNv+d6UH9+mkph9IyIDE/XojasKUZ2NHgJ2twTJjESxuNWGwaC0296uCweJpzCHlm85UGaIJCWETLbvJenrKnZe4qQ3n3j4CA8oCcVKdQUF9wzmZ5T+mLiVl/dgaAzgffaXsDmAelUx4W10BZDwOf0+8GfCyWfpnFZgXzLwsmmQ/RHDdc=
+deploy:
+  provider: releases
+  api_key:
+    secure: Kn9btER/9HJLCoptbzCbJm4HR0m48M/XsXE8Kxh8yeTMQwV2HR4j6EiKZIx2KV1HZZhNKokDRoZay9NV61Q5JTrmWyDt2cw3GXHOtlblgV6qXWH4GdRhW6pL4zmkEsmfoZl4+g/0j6t1R2eCD1rSg43C9VEiwBAcd0u98CTOnmlbijopMIJuGSbFVZI1UX7fqqQ0GHVHymmHVEYcB4vFbQX3hUy1PSRvB9h1ZDoLP5ZajcDDyfezwWuufsdCxLsob1dojJuQkhxDmcnwLXLwn7wHepwW3AYVu3k26yiITT9DeTEU6mSxTaCFhbHhKz4G1jHYsAKle0OUwXVb49GOf75fcNILnGxbVteZ2Pczqm7bk4vA28FFmm40H40oTz8LFFbjg3bZX3ZLKTHutNGYEehWs1U5w6Dj7Ws/pc9DZUfVnCtuT6KBILKXg0flL0ZjZEC7Ydvi1h3FChrYyCO9IHGUdllfHroW39IBPjPT7C/FW3MMRSfCAzlQbxseq4AOTdQJ/jTe/vRzWEMjnIZM1AwPGp/4pJ6Z3GYPIWDDLQq+yTyt4CJxwgV8c6ZpyREGK+Dg7I4XiZHd1b0AiU3U+wtYLOj9cQHzWFNoF/vvoKh6jYzJK65pDdzvFeuedE/sQz9eHCJb8QWAR231oQXlJDXrhhOWygROC5Kt/z0HzYk=
+  file: "./*"
+  on:
+    repo: miton18/web-proxy
+    branch: v3
