@@ -9,12 +9,6 @@ services:
 - mongodb
 - docker
 
-branches:
-  only:
-  - master
-  - dev
-  - v3
-
 cache:
   directories:
   - node_modules
