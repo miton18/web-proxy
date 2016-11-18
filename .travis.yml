@@ -42,6 +42,7 @@ after_success:
 - if [ -n "$TRAVIS_TAG" ]; sudo docker push "miton18/web-proxy:$TRAVIS_TAG"; fi
 
 notifications:
+
   hipchat:
     notify: true
     on_pull_requests: true
