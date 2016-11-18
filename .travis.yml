@@ -25,12 +25,11 @@ script:
 - sleep 15
 - npm test
 after_success:
-- export PROJECT_VERSION=$(npm version patch)
 - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
 - sudo docker tag test miton18/web-proxy:latest
 - sudo docker push miton18/web-proxy:latest
-- if [[ "$TRAVIS_BRANCH" != "master" ]]; then sudo docker tag test miton18/web-proxy:$(echo $TRAVIS_TAG); exit 0; fi
-- if [[ "$TRAVIS_BRANCH" != "master" ]]; then sudo docker push miton18/web-proxy:$(echo $TRAVIS_TAG); exit 0; fi
+- if [[ "$TRAVIS_TAG"]]; then sudo docker tag test miton18/web-proxy:$TRAVIS_TAG; exit 0; fi
+- if [[ "$TRAVIS_TAG"]]; then sudo docker push miton18/web-proxy:$TRAVIS_TAG; exit 0; fi
 
 notifications:
   hipchat:
