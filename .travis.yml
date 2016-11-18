@@ -25,11 +25,11 @@ script:
 - sleep 15
 - npm test
 after_success:
-- sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+- sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - sudo docker tag test miton18/web-proxy:latest
 - sudo docker push miton18/web-proxy:latest
-- if [ -n "$TRAVIS_TAG" ]; sudo docker tag test miton18/web-proxy:$TRAVIS_TAG; fi
-- if [ -n "$TRAVIS_TAG" ]; sudo docker push miton18/web-proxy:$TRAVIS_TAG; fi
+- if [ -n "$TRAVIS_TAG" ]; sudo docker tag test "miton18/web-proxy:$TRAVIS_TAG"; fi
+- if [ -n "$TRAVIS_TAG" ]; sudo docker push "miton18/web-proxy:$TRAVIS_TAG"; fi
 
 notifications:
   hipchat:
