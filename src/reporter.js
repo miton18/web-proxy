@@ -1,5 +1,6 @@
 let os = require('os');
 let log = require('./logger');
+let cluster = require('cluster');
 
 /**
  * Reporter is a Trace singleton
@@ -13,7 +14,12 @@ class Reporter {
       this.active = false;
     }
     else {
-      let name = 'proxy-' + (os.hostname());
+      let nodeName = '';
+      if (cluster.isMaster) nodeName = 'master'
+      else if (cluster.isWorker) nodeName = cluster.worker.id
+      else nodeName = 'unknow'
+
+      let name = `proxy-${os.hostname()}-${nodeName}`;
       process.env.TRACE_SERVICE_NAME = name;
       process.env.TRACE_API_KEY = process.env.PROXY_TRACE_KEY;
 

@@ -1,0 +1,29 @@
+version: '2.1'
+services: 
+  web-proxy:
+    hostname: "DESKTOP-D3SGNJI"
+    build: .
+    # will EXPOSE 80 443 8080
+    ports: 
+      - 80:80
+      - 443:443
+      - 8080:8080
+    #network_mode: "host"
+    environment:
+      NODE_ENV: "production" 
+      PROXY_DB: "mongodb://mongo:27017/proxy"
+      PROXY_KEY: "a"
+      PROXY_SALT: "a"
+      #PROXY_OVH_KEY: ""
+      PROXY_TRACE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3ZTU4NmIxZjE0ODhhMDBiMzkwYjcyMyIsImlhdCI6MTQ3NDY2MDAxN30.urxsBxRhNuA86keISxM-MNDMy3KikZH3UhpYv3rXsvg"
+    depends_on:
+      - "mongo"
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+#    volumes:
+#      - mongo-data:/data/db
+#volumes:
+#  mongo-data:

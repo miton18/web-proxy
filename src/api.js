@@ -75,12 +75,7 @@ api.get('/check', (req, res) => {
 });
 
 api.use('/route', require('./controller/route'));
-
-api.route('/log')
-.all(protected)
-.get((req, res) => {
-  require(mongoose).coll
-});
+api.use('/log', require('./controller/log'));
 
 api.route('/user')
 .all(protected)

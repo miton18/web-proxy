@@ -2,20 +2,20 @@
 
 [![Build Status](https://travis-ci.org/miton18/web-proxy.svg?branch=v3)][travis]
 
-[hub.docker.com][dockerhub]
+[DockerHub:Web-proxy][dockerhub]
 
 ## Configuration
 
 ### Environement variables to provide
 
-|Variable|Explanation|
-|---|---|
-|NODE_ENV         | *production* or *development*
-|PROXY_DB         | *mongodb://USER:PASSWORD@HOST:PORT/DATABASE* Database access
-|PROXY_OVH_KEY    | [Laas][laas] key from OVH provider
-|PROXY_TRACE_KEY  | [Trace][trace] API key for monitoring
-|PROXY_KEY        | used by bcrypt to cipher passwords
-|PROXY_SALT       | also used to enforce passwords strength
+|Variable|required|Explanation|
+|---|---|---|
+|NODE_ENV         |[ ]| *production* or *development*
+|PROXY_DB         |[x]| *mongodb://USER:PASSWORD@HOST:PORT/DATABASE*
+|PROXY_KEY        |[x]| Used by bcrypt to cipher passwords
+|PROXY_SALT       |[x]| Also used to enforce passwords strength
+|PROXY_OVH_KEY    |[ ]| [Laas][laas] key from OVH provider
+|PROXY_TRACE_KEY  |[ ]| [Trace][trace] API key for monitoring
 
 ### Dependancies
  * Nodejs >= 6.0.0
@@ -34,6 +34,23 @@ Your default user : **4dm1n**
 
 Your default password : **pr0xy-p455w0rd** 
 _You must change it !_
+
+## Use a container
+  ```
+  $ docker run -d \
+    -e PROXY_DB=xxx \
+    -e PROXY_KEY=xxx \
+    -e PROXY_SALT=xxx \
+    --name web-proxy \
+    --net=host \
+    miton18/web-proxy
+  ```
+## Use containers
+
+/!\ Please edit the docker-compose.yml with ours vars before start it
+```
+  $ docker-compose up -d
+```
 
 ## Develop with us 
 

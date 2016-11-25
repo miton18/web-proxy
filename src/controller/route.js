@@ -1,12 +1,11 @@
 
 let express = require('express');
+let http = require('http');
 let protected = require('./auth');
 let Router = require('../router');
-
 let R = express.Router();
 
 // Apply on '/api/route/...'
-
 R.param('routeID', (req, res, next, routeID) => {
   req.paramRoute = Router.findRouteById(routeID);
   next();

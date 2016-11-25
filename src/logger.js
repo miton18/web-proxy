@@ -1,4 +1,5 @@
 let Winston = require('winston');
+let cluster = require('cluster');
 let WinstonMongo = require('winston-mongodb').MongoDB;
 require('winston-ovh');
 
@@ -10,8 +11,15 @@ require('winston-ovh');
 class Logger {
 
   constructor() {
-    this.winston = new Winston.Logger({
 
+    this.nodeName = '';
+    if (cluster.isMaster) this.nodeName = 'master'
+    else if (cluster.isWorker) this.nodeName = `node-${cluster.worker.id}`
+    else this.nodeName = 'unknow'
+    this.pid = process.pid;
+
+    this.winston = new Winston.Logger({
+      
       transports: [
         // Console Transport
         new Winston.transports.Console({
@@ -31,7 +39,15 @@ class Logger {
           tryReconnect: true,
           decolorize: true
         })
-      ]
+      ],
+    });
+
+    this.winston.filters.push((level, msg, meta) => {
+          return `[${this.nodeName}] ${msg}`;
+    });
+    this.winston.rewriters.push((level, msg, meta) => {
+          meta.pid = this.pid;
+          return meta;
     });
 
     if (process.env.PROXY_OVH_KEY !== undefined) {

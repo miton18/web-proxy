@@ -1,0 +1,28 @@
+version: '2.1'
+services: 
+  web-proxy:
+    image: miton18/web-proxy
+    # will EXPOSE 80 443 8080
+    ports: 
+      - 80:80
+      - 443:443
+      - 8080:8080
+    #network_mode: "host"
+    environment:
+      NODE_ENV: "production" 
+      PROXY_DB: "mongodb://web-proxy-mongo/proxy"
+      PROXY_KEY: "a"
+      PROXY_SALT: "a"
+      #PROXY_OVH_KEY: ""
+      #PROXY_TRACE_KEY: ""
+    depends_on:
+      - "web-proxy-mongo"
+
+  web-proxy-mongo:
+    image: mongo
+    ports: 
+      - 27017:27017
+#    volumes: 
+#      - mongo-data:/data/db
+#volumes: 
+#  mongo-data:
