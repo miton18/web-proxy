@@ -1,9 +1,9 @@
 
-let express = require('express');
-let protected = require('./auth');
-let Db = require('../db');
+const express = require('express');
+const protected = require('./auth');
+const Db = require('../db');
 
-let R = express.Router();
+const R = express.Router();
 
 // equivalent to : /api/log/
 R.route('/')

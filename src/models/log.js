@@ -1,5 +1,5 @@
-let mongoose = require('mongoose');
-let Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 /**
  * Log model
  * This is the model used by Winston only change it with Winston update

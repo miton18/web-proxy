@@ -1,6 +1,6 @@
-let Winston = require('winston');
-let cluster = require('cluster');
-let WinstonMongo = require('winston-mongodb').MongoDB;
+const Winston = require('winston');
+const cluster = require('cluster');
+const WinstonMongo = require('winston-mongodb').MongoDB;
 require('winston-ovh');
 
 /**

@@ -1,7 +1,7 @@
-let mongoose = require('mongoose');
-let fs = require('fs');
-let path = require('path');
-let log = require('./logger');
+const mongoose = require('mongoose');
+const fs = require('fs');
+const path = require('path');
+const log = require('./logger');
 
 /**
  * This class cannot use logger service

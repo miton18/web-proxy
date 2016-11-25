@@ -1,22 +1,22 @@
 
-let jwt = require('jwt-simple');
-let Log = require('../logger');
+const jwt = require('jwt-simple');
+const Log = require('../logger');
 
 /*************************** 
  * Auth middleware
 ***************************/
-let tokenHeader = 'x-token'
+const tokenHeader = 'x-token'
 
 module.exports = (req, res, next) => {
 
   let token = req.header(tokenHeader);
   if (token === undefined) {
     return res.status(401).json({
-      err: 'You need to provide a token' 
+      err: 'You need to provide a token',
     });
   }
-
-  let payload = jwt.decode(token, Buffer.from(process.env['PROXY_KEY']));
+  console.log(token);
+  let payload = jwt.decode(token, Buffer.from(process.env['PROXY_JWT_SECRET']));
   
   if (payload === undefined || payload === null) {
     return res.status(401).json({

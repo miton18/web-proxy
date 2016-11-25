@@ -18,7 +18,7 @@ if (cluster.isMaster) {
   Reporter.incrementMetric('action.start');
 
   if (    env['PROXY_DB']   == undefined 
-      ||  env['PROXY_KEY']  == undefined 
+      ||  env['PROXY_JWT_SECRET']  == undefined 
       ||  env['PROXY_SALT'] == undefined ) {
         console.error('[bootstrap] Missing at least one env var : PROXY_DB PROXY_KEY PROXY_SALT');
         process.exit();

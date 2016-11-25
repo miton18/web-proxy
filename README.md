@@ -8,14 +8,17 @@
 
 ### Environement variables to provide
 
-|Variable|required|Explanation|
-|---|---|---|
-|NODE_ENV         |[ ]| *production* or *development*
-|PROXY_DB         |[x]| *mongodb://USER:PASSWORD@HOST:PORT/DATABASE*
-|PROXY_KEY        |[x]| Used by bcrypt to cipher passwords
-|PROXY_SALT       |[x]| Also used to enforce passwords strength
-|PROXY_OVH_KEY    |[ ]| [Laas][laas] key from OVH provider
-|PROXY_TRACE_KEY  |[ ]| [Trace][trace] API key for monitoring
+|Variable name | required | Value | Explanation |
+|---|---|---|---|
+|NODE_ENV           |[ ]| 'production' | *production* or *development* |
+|PROXY_DB           |[x]| *mongodb://USER:PASSWORD@HOST:PORT/DATABASE* | MongoDB URI |
+|PROXY_OVH_KEY      |[ ]| null | Set the environment variable to export your data with [winston-ovh][laas] |
+|PROXY_TRACE_KEY    |[ ]| null | Set the environment variable to use [@risingstack/trace][trace] |
+|PROXY_API_PORT     |[ ]| 8080 | Proxy api port| 
+|PROXY_JWT_SECRET   |[x]| null | Jwt secret| 
+|PROXY_SALT         |[x]| null | Also used to enforce passwords strength |
+|PROXY_JWT_ISSUER   |[ ]| null | Jwt issuer|
+|PROXY_JWT_AUDIENCE |[ ]| null | Jwt audience| 
 
 ### Dependancies
  * Nodejs >= 6.0.0

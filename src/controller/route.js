@@ -1,9 +1,9 @@
 
-let express = require('express');
-let http = require('http');
-let protected = require('./auth');
-let Router = require('../router');
-let R = express.Router();
+const express = require('express');
+const http = require('http');
+const protected = require('./auth');
+const Router = require('../router');
+const R = express.Router();
 
 // Apply on '/api/route/...'
 R.param('routeID', (req, res, next, routeID) => {

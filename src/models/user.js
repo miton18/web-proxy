@@ -80,7 +80,7 @@ function setPassword (password) {
  */
 UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
 
-  if (process.env.PROXY_KEY === undefined) {
+  if (process.env.PROXY_JWT_SECRET === undefined) {
     Log.error("You must provide a key to generate JWTs");
     return null;
   }
@@ -97,7 +97,7 @@ UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
     expiration: expirationDate,
     creation: Date.now()
 
-  }, process.env.PROXY_KEY);
+  }, process.env.PROXY_JWT_SECRET);
 }
 
 module.exports = mongoose.model("User", UserSchema);

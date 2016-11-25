@@ -1,6 +1,6 @@
 
-let Db  = require('./db');
-let Log = require('./logger');
+const Db  = require('./db');
+const Log = require('./logger');
 
 module.exports = () => {
 

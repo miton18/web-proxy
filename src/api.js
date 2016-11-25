@@ -1,14 +1,14 @@
-let express = require('express');
-let compression = require('compression');
-let bodyParser = require('body-parser');
-let jwt = require('jwt-simple');
-let Router = require('./router');
-let Log = require('./logger');
-let Db = require('./db');
-let protected = require('./controller/auth'); // Just an handler
+const express = require('express');
+const compression = require('compression');
+const bodyParser = require('body-parser');
+const jwt = require('jwt-simple');
+const Router = require('./router');
+const Log = require('./logger');
+const Db = require('./db');
+const protected = require('./controller/auth'); // Just an handler
 
-let app = express();
-let api = express.Router();
+const app = express();
+const api = express.Router();
 
 /*************************** 
  * USES

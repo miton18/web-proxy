@@ -1,7 +1,7 @@
-let supertest = require("supertest");
-let expect = require("expect");
+const supertest = require("supertest");
+const expect = require("expect");
 
-let api = supertest.agent("http://local.dev:8080/api");
+const api = supertest.agent("http://local.dev:8080/api");
 
 describe("API test /route", () => {
 

@@ -1,6 +1,6 @@
-let httpProxy = require('http-proxy');
-let Db = require('./db');
-let Log = require('./logger');
+const httpProxy = require('http-proxy');
+const Db = require('./db');
+const Log = require('./logger');
 
 /**
  * @Class Router
