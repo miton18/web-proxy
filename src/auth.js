@@ -1,6 +1,5 @@
-
 const jwt = require('jwt-simple');
-const Log = require('../logger');
+const Log = require('./logger');
 
 /*************************** 
  * Auth middleware

@@ -21,11 +21,11 @@ install:
 - sudo docker build -t test .
 
 before_script:
-- sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_KEY=$PROXY_KEY -e PROXY_SALT=$PROXY_SALT
+- sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_JWT_SECRET=$PROXY_JWT_SECRET -e PROXY_SALT=$PROXY_SALT
   -e PROXY_ENV=$PROXY_ENV test
 
 script:
-- sleep 15
+- sleep 45
 - npm test
 
 after_success:

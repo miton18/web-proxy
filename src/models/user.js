@@ -1,9 +1,9 @@
-let mongoose = require('mongoose');
-let bCrypt = require('bcrypt-nodejs');
-let jwt = require('jwt-simple');
-let Log = require('../logger');
-let Schema = mongoose.Schema;
-let authorisations = require('../schemas/authorisations');
+const mongoose = require('mongoose');
+const bCrypt = require('bcrypt-nodejs');
+const jwt = require('jwt-simple');
+const Log = require('../logger');
+const Schema = mongoose.Schema;
+const authorisations = require('../schemas/authorisations');
 
 /**
  * User model
@@ -38,6 +38,9 @@ let UserSchema = new Schema({
 /**
  * Compare each Hash
  * return a promise
+ * 
+ * param {String} password to check
+ * return {Boolean}
  */
 UserSchema.methods.checkPassword = function(password) {
   
@@ -59,8 +62,8 @@ UserSchema.methods.checkPassword = function(password) {
  * Hash and store password
  * return true or false
  * 
- * @param String password
- * @returns
+ * @param {String} password
+ * @returns {String} Hashed password
  */
 function setPassword (password) {
 
@@ -77,6 +80,8 @@ function setPassword (password) {
 /**
  * Generate a JWT for a user
  * Take an array of authorisation(Schema) and a Date of expiration
+ * @params {Array} Paths
+ * @param {Date} Expiration date
  */
 UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
 

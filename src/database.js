@@ -9,7 +9,15 @@ const log = require('./logger');
  * @class Db
  */
 class Db {
-  // Can be build with another Db config
+  
+  /**
+   * Creates an instance of Db.
+   * 
+   * @param {any} [uri=null]
+   * 
+   * @constructor
+   * @memberOf Db
+   */
   constructor(uri = null) {
     this.uri = (uri === null) ? process.env.PROXY_DB : uri;
     mongoose.Promise = Promise;
@@ -37,6 +45,11 @@ class Db {
     this.loadModels();
   }
 
+  /**
+   * 
+   * 
+   * @memberOf Db
+   */
   loadModels() {
     let models = fs.readdirSync(path.join(__dirname, "/models"));
     let name = "";
@@ -48,8 +61,16 @@ class Db {
     }
   }
 
+  /**
+   * 
+   * 
+   * @static
+   * @returns
+   * 
+   * @memberOf Db
+   */
   static getInstance() {
-    if (!Db.instance) {
+    if (!(Db.instance instanceof Db)) {
       Db.instance = new Db();
     }
     return Db.instance;

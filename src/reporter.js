@@ -8,6 +8,13 @@ const cluster = require('cluster');
  * @class Reporter
  */
 class Reporter {
+
+  /**
+   * Creates an instance of Reporter.
+   * 
+   * @constructor
+   * @memberOf Reporter
+   */
   constructor() {
     if (process.env.PROXY_TRACE_KEY === undefined) {
       log.warn('No Trace reporter is defined, set PROXY_TRACE_KEY env var to enable it');
@@ -33,12 +40,28 @@ class Reporter {
       this.active = true;
     }
   }
+
+  /**
+   * 
+   * 
+   * @param {String} Metric name
+   * 
+   * @memberOf Reporter
+   */
   incrementMetric(m) {
     if (this.active) this.trace.incrementMetric(m);
   }
 
+  /**
+   * 
+   * 
+   * @static
+   * @return {Reporter}
+   * 
+   * @memberOf Reporter
+   */
   static getInstance() {
-    if (!Reporter.instance) {
+    if (!(Reporter.instance instanceof Reporter)) {
       Reporter.instance = new Reporter();
     }
     return Reporter.instance;

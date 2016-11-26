@@ -373,31 +373,6 @@
 				"description": "Remove a route from DB and proxy"
 			},
 			"response": []
-		},
-		{
-			"name": "Logs 10",
-			"request": {
-				"url": "{{host}}/api/log",
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					},
-					{
-						"key": "x-token",
-						"value": "{{token}}",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"description": "Get last 10 minutes logs"
-			},
-			"response": []
 		}
 	]
 }

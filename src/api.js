@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const jwt = require('jwt-simple');
 const Router = require('./router');
 const Log = require('./logger');
-const Db = require('./db');
-const protected = require('./controller/auth'); // Just an handler
+const Db = require('./database');
+const protected = require('./auth'); // Just an handler
 
 const app = express();
 const api = express.Router();

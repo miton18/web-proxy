@@ -1,16 +1,18 @@
 const httpProxy = require('http-proxy');
-const Db = require('./db');
+const Db = require('./database');
 const Log = require('./logger');
 
 /**
- * @Class Router
+ * 
+ * 
+ * @class Router
  */
 class Router {
 
   /**
    * Creates an instance of Router.
    * 
-   * @memberOf Router
+   * @constructor
    */
   constructor() {
     // An array of Route model
@@ -31,12 +33,12 @@ class Router {
    * Singleton
    * 
    * @static
-   * @returns
+   * @return {Router}
    * 
    * @memberOf Router
    */ 
   static getInstance() {
-    if (!Router.instance) {
+    if (!(Router.instance instanceof Router)) {
       Router.instance = new Router();
     }
     return Router.instance;
@@ -60,8 +62,8 @@ class Router {
   /**
    * Create a new Route Return a Promise
    * 
-   * @param Object obj
-   * @returns
+   * @param {Object} Object with Route attributes
+   * @returns {Promise}
    * 
    * @memberOf Router
    */
@@ -86,8 +88,8 @@ class Router {
   /**
    * Remove an existing route
    * 
-   * @param {any} route
-   * @returns
+   * @param {Route} route
+   * @returns {Promise}
    * 
    * @memberOf Router
    */
@@ -109,8 +111,8 @@ class Router {
   /**
    * Modify an existing route
    * 
-   * @param {any} route
-   * @returns
+   * @param {Route} route
+   * @returns {Promise}
    * 
    * @memberOf Router
    */
@@ -130,7 +132,7 @@ class Router {
   /**
    * HTTP Request handle to proxy response
    * Return an handler
-   * @returns
+   * @return {Function}
    * 
    * @memberOf Router
    */
@@ -169,8 +171,8 @@ class Router {
   /**
    * Find a route with a unique ID
    * 
-   * @param Number id
-   * @returns
+   * @param {Number} id
+   * @return {Route}
    * 
    * @memberOf Router
    */
@@ -184,8 +186,8 @@ class Router {
   /**
    * Find a route with a Host name
    * 
-   * @param String host
-   * @returns
+   * @param {String} host
+   * @returns {Route}
    * 
    * @memberOf Router
    */

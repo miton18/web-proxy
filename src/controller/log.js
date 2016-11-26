@@ -1,7 +1,7 @@
 
 const express = require('express');
-const protected = require('./auth');
-const Db = require('../db');
+const protected = require('../auth');
+const Db = require('../database');
 
 const R = express.Router();
 

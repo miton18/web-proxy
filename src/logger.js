@@ -10,6 +10,12 @@ require('winston-ovh');
  */
 class Logger {
 
+  /**
+   * Creates an instance of Logger.
+   * 
+   * @constructor
+   * @memberOf Logger
+   */
   constructor() {
 
     this.nodeName = '';
@@ -56,11 +62,21 @@ class Logger {
       });
     }
   }
+
+  /**
+   * 
+   * 
+   * @static
+   * @return {Logger}
+   * 
+   * @memberOf Logger
+   */
   static getInstance() {
-    if (!Logger.instance) {
+    if (!(Logger.instance instanceof Logger)) {
       Logger.instance = new Logger();
     }
     return Logger.instance;
   }
 }
+
 module.exports = Logger.getInstance().winston;
