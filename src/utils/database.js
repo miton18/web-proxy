@@ -51,13 +51,13 @@ class Db {
    * @memberOf Db
    */
   loadModels() {
-    let models = fs.readdirSync(path.join(__dirname, "/models"));
+    let models = fs.readdirSync(path.join(__dirname, "../models"));
     let name = "";
     for (let model of models) {
       // just keep filename
       name = model.slice(0, -1 * path.extname(model).length);
       name = name.charAt(0).toUpperCase() + name.slice(1);
-      this.models[name] = require('./models/' + model);
+      this.models[name] = require('../models/' + model);
     }
   }
 
@@ -70,9 +70,8 @@ class Db {
    * @memberOf Db
    */
   static getInstance() {
-    if (!(Db.instance instanceof Db)) {
+    if (!(Db.instance instanceof Db)) 
       Db.instance = new Db();
-    }
     return Db.instance;
   }
 }

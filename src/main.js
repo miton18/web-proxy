@@ -2,8 +2,8 @@ if (process.execArgv[0] != undefined)
   process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
 const cluster     = require('cluster'); 
-const Log         = require('./logger');
-const Reporter    = require('./reporter');
+const Log         = require('./utils/logger');
+const Reporter    = require('./utils/reporter');
 
 if (cluster.isMaster) {
 
@@ -12,7 +12,7 @@ if (cluster.isMaster) {
   let env     = process.env;
   let numCPUs = os.cpus().length;
   // Force round-robin
-  cluster.schedulingPolicy = cluster.SCHED_NONE;
+  cluster.schedulingPolicy = cluster.SCHED_RR;
 
   Log.info('[bootstrap] Proxy master is starting');
   Reporter.incrementMetric('action.start');
@@ -48,20 +48,8 @@ if (cluster.isMaster) {
  */
 if (cluster.worker) {
 
-  let http        = require('http');
-  //let http2 = require('spdy');
-  let bodyParser  = require('body-parser');
-  let Api         = require('./api');
-  let Router      = require('./router');
-
-  http.createServer(Router.getProxyApp())
-  .listen(80, () => {
-    //Log.info('Proxy HTTP started');
-  });
-
-  Api.listen(8080, () => {
-    //Log.info('api started');
-  });
+  const worker = require('./worker');
+  worker.start();
 }
 
 /**

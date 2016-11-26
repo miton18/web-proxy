@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bCrypt = require('bcrypt-nodejs');
 const jwt = require('jwt-simple');
-const Log = require('../logger');
+const Log = require('../utils/logger');
 const Schema = mongoose.Schema;
 const authorisations = require('../schemas/authorisations');
 

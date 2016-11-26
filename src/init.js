@@ -1,5 +1,5 @@
-const Db  = require('./database');
-const Log = require('./logger');
+const Db  = require('./utils/database');
+const Log = require('./utils/logger');
 
 module.exports = () => {
 

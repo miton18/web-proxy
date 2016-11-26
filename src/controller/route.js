@@ -1,7 +1,7 @@
 
 const express = require('express');
 const http = require('http');
-const protected = require('../auth');
+const protected = require('../utils/auth');
 const Router = require('../router');
 const R = express.Router();
 

@@ -1,6 +1,6 @@
 const httpProxy = require('http-proxy');
-const Db = require('./database');
-const Log = require('./logger');
+const Db = require('./utils/database');
+const Log = require('./utils/logger');
 
 /**
  * 
@@ -38,9 +38,8 @@ class Router {
    * @memberOf Router
    */ 
   static getInstance() {
-    if (!(Router.instance instanceof Router)) {
+    if (!(Router.instance instanceof Router)) 
       Router.instance = new Router();
-    }
     return Router.instance;
   }
 

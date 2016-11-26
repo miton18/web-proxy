@@ -42,7 +42,7 @@ class Reporter {
   }
 
   /**
-   * 
+   * Take a Trace metric, add 1 and store it
    * 
    * @param {String} Metric name
    * 
@@ -53,7 +53,7 @@ class Reporter {
   }
 
   /**
-   * 
+   * return an instance of Singleton
    * 
    * @static
    * @return {Reporter}
@@ -61,9 +61,8 @@ class Reporter {
    * @memberOf Reporter
    */
   static getInstance() {
-    if (!(Reporter.instance instanceof Reporter)) {
+    if (!(Reporter.instance instanceof Reporter)) 
       Reporter.instance = new Reporter();
-    }
     return Reporter.instance;
   }
 

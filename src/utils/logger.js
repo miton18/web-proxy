@@ -72,9 +72,8 @@ class Logger {
    * @memberOf Logger
    */
   static getInstance() {
-    if (!(Logger.instance instanceof Logger)) {
+    if (!(Logger.instance instanceof Logger))
       Logger.instance = new Logger();
-    }
     return Logger.instance;
   }
 }
