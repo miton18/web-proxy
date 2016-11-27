@@ -8,371 +8,418 @@
 	},
 	"item": [
 		{
+			"name": "1 Token create",
+			"description": "",
+			"item": [
+				{
+					"name": "Get new Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"Contain a token\"]    = data.token !== null;",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"",
+									"",
+									"postman.setEnvironmentVariable('token', data.token);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/token",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"4dm1n\",\n\t\"password\": \"pr0xy-p455w0rd\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2 Routes",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"destHost\": {",
+									"    \"type\": \"string\" ",
+									" },",
+									" \"destPort\":{",
+									"    \"type\": \"numeric\"",
+									" },",
+									" \"subDomain\": {",
+									"    \"type\": 'string'",
+									" },",
+									" \"active\": {",
+									"    \"type\": 'boolean'",
+									" }};",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"Contain a route\"]    = data.route !== undefined;",
+									"",
+									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"postman.setEnvironmentVariable('routeID', data.route._id);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/route",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "x-token",
+								"value": "{{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8080,\n\t\"subDomain\": \"stat\",\n\t\"active\": true\n}"
+						},
+						"description": "Create a new route in proxy"
+					},
+					"response": []
+				},
+				{
+					"name": "Get one route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"destHost\": {",
+									"    \"type\": \"string\" ",
+									" },",
+									" \"destPort\":{",
+									"    \"type\": \"numeric\"",
+									" },",
+									" \"subDomain\": {",
+									"    \"type\": 'string'",
+									" },",
+									" \"active\": {",
+									"    \"type\": 'boolean'",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"Contain a route\"]    = data.route !== null;",
+									"",
+									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/route/{{routeID}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-token",
+								"value": "{{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "_id",
+									"value": "575c96e27512737c104d3458",
+									"type": "text",
+									"enabled": false
+								}
+							]
+						},
+						"description": "Get just one route of proxy with a specified ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all routes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Return an array\"]    = Array.isArray(data);",
+									"tests[\"At least one route\"] = data.length > 0;",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/route",
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "{{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "List all routes of the proxy"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"destHost\": {",
+									"    \"type\": \"string\" ",
+									" },",
+									" \"destPort\":{",
+									"    \"type\": \"numeric\"",
+									" },",
+									" \"subDomain\": {",
+									"    \"type\": 'string'",
+									" },",
+									" \"active\": {",
+									"    \"type\": 'boolean'",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"Contain a route\"]    = data.route !== null;",
+									"",
+									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/route/{{routeID}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "x-token",
+								"value": "{{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8090,\n\t\"subDomain\": \"testRouteModified\",\n\t\"active\": false\n}"
+						},
+						"description": "Change route parameters, based on route ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"destHost\": {",
+									"    \"type\": \"string\" ",
+									" },",
+									" \"destPort\":{",
+									"    \"type\": \"numeric\"",
+									" },",
+									" \"subDomain\": {",
+									"    \"type\": 'string'",
+									" },",
+									" \"active\": {",
+									"    \"type\": 'boolean'",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"Contain a route\"]    = data.route !== null;",
+									"",
+									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/route/{{routeID}}",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "x-token",
+								"value": "{{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": "Remove a route from DB and proxy"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"description": "",
+			"item": [
+				{
+					"name": "List users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"Return an array\"]    = Array.isArray(data.users);",
+									"tests[\"At least one route\"] = data.users.length > 0;",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/user",
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Token",
+								"value": "{{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "List all users of the proxy"
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "domain tests",
 			"description": "",
 			"item": []
-		},
-		{
-			"name": "Get new Token",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"No errors\"]          = data.err === null;",
-							"tests[\"Contain a token\"]    = data.token !== null;",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							"",
-							"",
-							"postman.setEnvironmentVariable('token', data.token);",
-							"",
-							"postman.setNextRequest(\"Create a route\");",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/token",
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"username\": \"4dm1n\",\n\t\"password\": \"pr0xy-p455w0rd\"\n}"
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Create a route",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"var schemaRoute = {",
-							" \"_id\": {",
-							"    \"type\": \"string\"",
-							" },",
-							" \"destHost\": {",
-							"    \"type\": \"string\" ",
-							" },",
-							" \"destPort\":{",
-							"    \"type\": \"numeric\"",
-							" },",
-							" \"subDomain\": {",
-							"    \"type\": 'string'",
-							" },",
-							" \"active\": {",
-							"    \"type\": 'boolean'",
-							" }};",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"No errors\"]          = data.err === null;",
-							"tests[\"Contain a route\"]    = data.route !== undefined;",
-							"",
-							"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-							"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-							"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-							"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
-							"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							"",
-							"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
-							"console.log(\"Validation failed: \", tv4.error);",
-							"",
-							"postman.setEnvironmentVariable('routeID', data.route._id);",
-							"postman.setNextRequest(\"Get all routes\");",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/route",
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					},
-					{
-						"key": "x-token",
-						"value": "{{token}}",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8080,\n\t\"subDomain\": \"stat\",\n\t\"active\": true\n}"
-				},
-				"description": "Create a new route in proxy"
-			},
-			"response": []
-		},
-		{
-			"name": "Get all routes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"Return an array\"]    = Array.isArray(data);",
-							"tests[\"At least one route\"] = data.length > 0;",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							"",
-							"postman.setNextRequest(\"Get one route\");",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/route",
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-Token",
-						"value": "{{token}}",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "formdata",
-					"formdata": []
-				},
-				"description": "List all routes of the proxy"
-			},
-			"response": []
-		},
-		{
-			"name": "Get one route",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"var schemaRoute = {",
-							" \"_id\": {",
-							"    \"type\": \"string\"",
-							" },",
-							" \"destHost\": {",
-							"    \"type\": \"string\" ",
-							" },",
-							" \"destPort\":{",
-							"    \"type\": \"numeric\"",
-							" },",
-							" \"subDomain\": {",
-							"    \"type\": 'string'",
-							" },",
-							" \"active\": {",
-							"    \"type\": 'boolean'",
-							" }};",
-							"",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"No errors\"]          = data.err === null;",
-							"tests[\"Contain a route\"]    = data.route !== null;",
-							"",
-							"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-							"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-							"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-							"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
-							"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-							"",
-							"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
-							"console.log(\"Validation failed: \", tv4.error);",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							"",
-							"postman.setNextRequest(\"Edit route\");",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/route/{{routeID}}",
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-token",
-						"value": "{{token}}",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "_id",
-							"value": "575c96e27512737c104d3458",
-							"type": "text",
-							"enabled": false
-						}
-					]
-				},
-				"description": "Get just one route of proxy with a specified ID"
-			},
-			"response": []
-		},
-		{
-			"name": "Edit route",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"var schemaRoute = {",
-							" \"_id\": {",
-							"    \"type\": \"string\"",
-							" },",
-							" \"destHost\": {",
-							"    \"type\": \"string\" ",
-							" },",
-							" \"destPort\":{",
-							"    \"type\": \"numeric\"",
-							" },",
-							" \"subDomain\": {",
-							"    \"type\": 'string'",
-							" },",
-							" \"active\": {",
-							"    \"type\": 'boolean'",
-							" }};",
-							"",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"No errors\"]          = data.err === null;",
-							"tests[\"Contain a route\"]    = data.route !== null;",
-							"",
-							"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-							"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-							"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-							"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
-							"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-							"",
-							"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
-							"console.log(\"Validation failed: \", tv4.error);",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							"",
-							"postman.setNextRequest(\"Delete a route\");"
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/route/{{routeID}}",
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					},
-					{
-						"key": "x-token",
-						"value": "{{token}}",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8090,\n\t\"subDomain\": \"testRouteModified\",\n\t\"active\": false\n}"
-				},
-				"description": "Change route parameters, based on route ID"
-			},
-			"response": []
-		},
-		{
-			"name": "Delete a route",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							"var data = JSON.parse(responseBody);",
-							"var schemaRoute = {",
-							" \"_id\": {",
-							"    \"type\": \"string\"",
-							" },",
-							" \"destHost\": {",
-							"    \"type\": \"string\" ",
-							" },",
-							" \"destPort\":{",
-							"    \"type\": \"numeric\"",
-							" },",
-							" \"subDomain\": {",
-							"    \"type\": 'string'",
-							" },",
-							" \"active\": {",
-							"    \"type\": 'boolean'",
-							" }};",
-							"",
-							"tests[\"Status code is 200\"] = responseCode.code === 200;",
-							"tests[\"No errors\"]          = data.err === null;",
-							"tests[\"Contain a route\"]    = data.route !== null;",
-							"",
-							"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-							"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-							"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-							"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
-							"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-							"",
-							"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
-							"console.log(\"Validation failed: \", tv4.error);",
-							"",
-							"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"url": "{{host}}/api/route/{{routeID}}",
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
-					},
-					{
-						"key": "x-token",
-						"value": "{{token}}",
-						"description": ""
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"description": "Remove a route from DB and proxy"
-			},
-			"response": []
 		}
 	]
 }

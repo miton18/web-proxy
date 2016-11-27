@@ -20,12 +20,12 @@ R.route('/')
     
     if (err) res.json({
       err: err,
-      user: null
+      users: null
     });
     
     else res.json({
       err: null,
-      user: users
+      users: users
     });
   });
 });
