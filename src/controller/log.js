@@ -2,10 +2,10 @@
 const express = require('express');
 const protected = require('../utils/auth');
 const Db = require('../utils/database');
-const expressWs = require('express-ws');
+//const expressWs = require('express-ws');
 
 const R = express.Router();
-expressWs(R);
+//  expressWs(R);
 
 // equivalent to : /api/log/
 R.route('/')
@@ -24,8 +24,8 @@ R.route('/')
 
 });
 
-R.ws('/live', () => {
+/*R.ws('/live', () => {
 
-});
+});*/
 
 module.exports = R;
