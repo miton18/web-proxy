@@ -1,43 +1,58 @@
-const express     = require('express');
+// ----------------------------------------------------------------------------
+// requirements
+const cors = require('cors');
+const helmet = require('helmet');
 const compression = require('compression');
-const bodyParser  = require('body-parser');
-const jwt         = require('jwt-simple');
-const Router      = require('./router');
-const Log         = require('./utils/logger');
-const Db          = require('./utils/database');
-const protected   = require('./utils/auth');
+const body = require('body-parser');
+const express = require('express');
+const path = require('path');
+const morgan = require('morgan');
+const logger = require('./logger');
+const routes = require('./settings/routes');
 
-const app = express();
-const api = express.Router();
+// ----------------------------------------------------------------------------
+/**
+ * class API
+ */
+class Api {
 
-/*************************** 
- * USES
-***************************/
-app.use('/api', api);
-app.use(compression());
-api.use(compression());
-app.use(bodyParser.json());
-api.use(bodyParser.json());
+  /**
+   * initialize the api
+   * @return {Promise<Object>} when the api is lauched
+   */
+  initialize() {
+    return new Promise((resolve, reject) => {
+      logger.info('Create API');
+      let application = express();
 
-/*************************** 
- * Params
-***************************/
+      application
+        .use(cors())
+        .use(helmet())
+        .use(compression())
+        .use(morgan('dev'))
+        .use(body.json())
+        .use(body.urlencoded({extended: true}));
 
-/*************************** 
- * Routes
-***************************/ 
-app.get('/200', (req, res) => {
-  res.status(200).json({err: null, message: "It's fine !"});
-});
+      logger.info(`Load controllers files on directory controllers`);
 
-api.get('/check', (req, res) => {
-  res.json({});
-});
+      for (const route of routes) {
+        logger.info(`Load controller: ${route.name}`);
+        application.use(route.mountpoint, require(
+            path.join(__dirname, 'api', route.name)
+          )
+        );
+      }
 
-api.use('/route', require('./controller/route'));
-api.use('/log',   require('./controller/log'));
-api.use('/token', require('./controller/token'));
-api.use('/user',  require('./controller/user'));
+      application.listen(process.env.PROXY_API_PORT || 8080, () => {
+        logger.info(`Api listen on port ${process.env.PROXY_API_PORT || 8080}`);
 
+        resolve();
+      });
+    });
+  }
 
-module.exports = app;
+}
+
+// ----------------------------------------------------------------------------
+// exports
+module.exports = Api;

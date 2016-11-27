@@ -1,20 +1,23 @@
 // ----------------------------------------------------------------------------
 // requirements
-const mongoose = require('mongoose');
+const router = require('express').Router;
 
 // ----------------------------------------------------------------------------
-// create schema
-let ConfigSchema = new mongoose.Schema({
-  host: String,
-  traceKey: String,
-  traceName: String,
-  traceActive: String
-});
+// variables
+const _router = router();
 
 // ----------------------------------------------------------------------------
-// create model from schema
-let ConfigModel = mongoose.model('Config', ConfigSchema);
+// create route to handle /token
+_router
+  .route('/works')
+  .all((request, response) => {
+    console.log(request.headers);
+
+    response.json({
+      message: 'It works'
+    });
+  });
 
 // ----------------------------------------------------------------------------
-// exports model
-module.exports = ConfigModel;
+// exports
+module.exports = _router;

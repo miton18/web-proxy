@@ -8,8 +8,9 @@
     "type": "git"
   },
   "scripts": {
-    "test": "newman run ./test/proxy-web.postman_collection.json -e ./test/proxy-web-dev.postman_environment.json -n 3 --timeout-request 30000",
+    "test": "gulp tests && newman run ./tests/proxy-web.postman_collection.json -e ./tests/proxy-web-dev.postman_environment.json -n 3 --timeout-request 30000",
     "start": "node src/main.js",
+    "dev": "nodemon src/main.js",
     "build": "docker build -t miton18/web-proxy .",
     "test:docker": "docker run -it --rm --name web-proxy miton18/web-proxy"
   },
@@ -25,24 +26,43 @@
   },
   "homepage": "https://github.com/miton18/web-proxy#readme",
   "devDependencies": {
+    "eslint": "^3.10.2",
     "eslint-config-google": "^0.7.0",
-    "expect": "^1.20.2",
     "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
     "gulp-load-plugins": "^1.3.0",
+    "gulp-mocha": "^3.0.1",
     "gulp-plumber": "^1.1.0",
-    "newman": "^3.3.0"
+    "mocha": "^3.1.2",
+    "newman": "^3.2.0",
+    "nodemon": "^1.11.0"
   },
   "dependencies": {
-    "@risingstack/trace": "^2.36.0",
-    "bcrypt-nodejs": "0.0.3",
+    "@risingstack/trace": "^2.34.0",
+    "async": "^2.1.2",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
+    "cors": "^2.8.1",
+    "dockerode": "^2.3.1",
     "express": "^4.14.0",
+    "helmet": "^3.1.0",
     "http-proxy": "^1.15.2",
-    "jwt-simple": "^0.5.0",
+    "jsonwebtoken": "^7.1.9",
+    "method-override": "^2.3.7",
     "mongoose": "^4.6.8",
+    "morgan": "^1.7.0",
+    "node-fetch": "^1.6.3",
+    "passport-local": "^1.0.0",
+    "sha512": "^0.0.1",
+    "uuid": "^3.0.0",
+    "walk": "^2.3.9",
     "winston": "^2.2.0",
     "winston-mongodb": "^1.6.1",
     "winston-ovh": "^1.2.2"
+  },
+  "engineStrict": true,
+  "engines": {
+    "vscode": "^6.9.1",
+    "node": "^6.9.1"
   }
 }

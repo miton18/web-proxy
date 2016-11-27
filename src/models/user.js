@@ -1,108 +1,124 @@
+// ----------------------------------------------------------------------------
+// requirements
 const mongoose = require('mongoose');
-const bCrypt = require('bcrypt-nodejs');
-const jwt = require('jwt-simple');
-const Log = require('../utils/logger');
-const Schema = mongoose.Schema;
-const authorisations = require('../schemas/authorisations');
+const jwt = require('jsonwebtoken');
+const uuid = require('uuid');
+const sha512 = require('sha512');
+
+// ----------------------------------------------------------------------------
+// create schema
 
 /**
- * User model
- * Used by Proxy
+ * no need to add username, password, salt and hash fields
+ * because those will be added by the passport plugin
+ * whose name is passport-local-mongoose
  */
-let UserSchema = new Schema({
-
-  username:{
+let UserSchema = new mongoose.Schema({
+  username: {
     type: String,
-    index: true,
+    required: true,
     unique: true,
-    required: "You must provide a user name"
+    index: true
   },
-  password: {
+
+  salt: {
     type: String,
-    set: setPassword,
-    required: "You must provide a password"
+    required: true,
+    default: uuid
   },
-  firstConnection: {
-    type: Date,
-    default: null
+
+  hash: {
+    type: String
   },
-  lastConnection: {
-    type: Date,
-    default: new Date()
-  },
+
   mail: {
     type: String
   },
+
+  firstConnection: Date,
+  lastConnection: {
+    type: Date,
+    default: Date.now
+  }
 });
 
+// ----------------------------------------------------------------------------
+// methods
+
 /**
- * Compare each Hash
- * return a promise
- * 
- * param {String} password to check
- * return {Boolean}
+ * set the password of the user, if no salt exists it will be created. The hash
+ * field is sha512 fieldprint
+ * @param {String} password the user password
+ * @return {Promise<UserModel>} return a promise with the user model in parameter
  */
-UserSchema.methods.checkPassword = function(password) {
-  
+UserSchema.methods.setPassword = function(password) {
   return new Promise((resolve, reject) => {
-    let salt = process.env.PROXY_SALT;
-    if (salt === undefined) {
-      reject("You must set a PROXY_SALT variable");
+    if (!this.salt) {
+      // generate a random salt here
+      this.salt = uuid();
     }
-    bCrypt.compare(password + salt, this.password, (err, res) => {
-      if (err) {
-        reject(err);
+
+    // generate a fieldprint with sha512
+    this.hash = sha512(`${this.salt}:${password}`).toString('hex');
+    this.save((error) => {
+      if (error) {
+        return reject(error);
       }
-      resolve(res);
+
+      resolve(this);
     });
   });
-}
+};
 
 /**
- * Hash and store password
- * return true or false
- * 
- * @param {String} password
- * @returns {String} Hashed password
+ * check if the password is correct
+ * @param {String} password the user password
+ * @return {Promise<boolean>} a boolean if is the correct password
  */
-function setPassword (password) {
+UserSchema.methods.isPassword = function(password) {
+  return new Promise((resolve, reject) => {
+    let hash = sha512(`${this.salt}:${password}`)
+        .toString('hex');
 
-    let salt = process.env.PROXY_SALT;
-    if (salt === undefined) {
-      Log.error("You must set a env.PROXY_SALT variable");
-      salt = '';
-    }
-
-    let hash = bCrypt.hashSync(password + salt, '');
-    return hash; 
-  }
+    resolve(hash === this.hash);
+  });
+};
 
 /**
- * Generate a JWT for a user
- * Take an array of authorisation(Schema) and a Date of expiration
- * @params {Array} Paths
- * @param {Date} Expiration date
+ * generate a personnal json web token
+ * @param {Array<{method: String, path: String}>} authorizations routes that the user is able to use
+ * @param {Date} expiration the date of expiration of the json web token
+ * @return {Promise<String>} a promise that return the token
  */
-UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
+UserSchema.methods.generateJwt = function(authorizations, expiration) {
+  return new Promise((resolve, reject) => {
+    const {_id, username, mail} = this;
 
-  if (process.env.PROXY_JWT_SECRET === undefined) {
-    Log.error("You must provide a key to generate JWTs");
-    return null;
-  }
+    let payload = {
+      sub: _id,
+      username,
+      mail,
+      authorizations,
+      issuer: process.env.PROXY_JWT_ISSUER,
+      audience: process.env.PROXY_JWT_AUDIENCE,
+      expirationAt: expiration,
+      creationAt: Date.now()
+    };
 
-  if( isNaN(expirationDate) ) {
-    expirationDate = expirationDate.getTime();
-  }
+    jwt.sign(payload, process.env.PROXY_JWT_SECRET, {}, (error, token) => {
+      if (error) {
+        return reject(error);
+      }
 
-  return jwt.encode({  
-    _id: this._id,
-    username: this.username,
-    mail: this.mail,
-    authorisations: authorisations,
-    expiration: expirationDate,
-    creation: Date.now()
+      resolve(token);
+    });
+  });
+};
 
-  }, process.env.PROXY_JWT_SECRET);
-}
+// ----------------------------------------------------------------------------
+// create model from schema
+let UserModel = mongoose.model('User', UserSchema);
 
-module.exports = mongoose.model("User", UserSchema);
+// ----------------------------------------------------------------------------
+// exports
+module.exports = UserModel;
