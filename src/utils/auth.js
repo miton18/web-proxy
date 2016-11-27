@@ -14,7 +14,6 @@ module.exports = (req, res, next) => {
       err: 'You need to provide a token',
     });
   }
-  console.log(token);
   let payload = jwt.decode(token, Buffer.from(process.env['PROXY_JWT_SECRET']));
   
   if (payload === undefined || payload === null) {
