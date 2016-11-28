@@ -2,7 +2,7 @@
 // requirements
 const router = require('express').Router;
 const db = require('../database');
-const {authenticationJwt} = require('./authentication');
+const {authenticationJwt} = require('../middlewares/authentication');
 
 // ----------------------------------------------------------------------------
 // variables
@@ -11,7 +11,7 @@ const _router = router();
 // ----------------------------------------------------------------------------
 // create route to handle /token
 _router
-  .route('/user')
+  .route('/')
   .all(authenticationJwt)
   .get((request, response) => {
     db.User.find({}, (error, users) => {

@@ -8,7 +8,7 @@ let ConfigSchema = new mongoose.Schema({
   host: String,
   traceKey: String,
   traceName: String,
-  traceActive: String
+  traceActive: Boolean
 });
 
 // ----------------------------------------------------------------------------

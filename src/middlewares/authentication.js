@@ -19,23 +19,21 @@ function authenticationJwt(request, response, next) {
   if (!/^JWT [\w\d\.\-_]+$/.test(authorization)) {
     return response
       .status(401)
-      .end();
+      .json({error: new Error('Wrong authorization')});
   }
 
   authorization = authorization.substr(4);
   jwt.verify(authorization, process.env.PROXY_JWT_SECRET, (error, payload) => {
     if (error) {
-      console.log(error.message);
-
       return response
         .status(500)
-        .end();
+        .json({error});
     }
 
     if (Date.now() >= payload.expirationAt) {
       return response
         .status(401)
-        .end();
+        .json({error: new Error('Expiration date')});
     }
 
     next();
@@ -55,17 +53,17 @@ function authenticationLocal(request, response, next) {
   if (!username || !password) {
     return response
       .status(401)
-      .end();
+      .json({error: new Error('Wrong identifier'}));
   }
 
   db.User.findOne({username}, (error, user) => {
     user
-      .isPassword(password)
+      .checkPassword(password)
       .then((isCorrect) => {
         if (!isCorrect) {
           return response
             .status(401)
-            .end();
+            .json({error: new Error('Password is invalid')});
         }
 
         next();
@@ -74,7 +72,7 @@ function authenticationLocal(request, response, next) {
       .catch((error) => {
         response
           .status(500)
-          .end();
+          .json({error});
       });
   });
 }

@@ -1,6 +1,6 @@
+// Consultez https://go.microsoft.com/fwlink/?LinkId=759670
+// pour accéder à la documentation relative au format jsconfig.json
 {
-	// Consultez https://go.microsoft.com/fwlink/?LinkId=759670
-	// pour accéder à la documentation relative au format jsconfig.json
 	"compilerOptions": {
 		"target": "es6",
 		"module": "commonjs",

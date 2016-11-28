@@ -5,9 +5,11 @@ const helmet = require('helmet');
 const compression = require('compression');
 const body = require('body-parser');
 const express = require('express');
+const router = express.Router;
 const path = require('path');
 const morgan = require('morgan');
 const logger = require('./logger');
+const methodOverride = require('method-override');
 const routes = require('./settings/routes');
 
 // ----------------------------------------------------------------------------
@@ -24,25 +26,30 @@ class Api {
     return new Promise((resolve, reject) => {
       logger.info('Create API');
       let application = express();
+      let api = router();
 
       application
         .use(cors())
+        .use(methodOverride())
         .use(helmet())
         .use(compression())
-        .use(morgan('dev'))
         .use(body.json())
         .use(body.urlencoded({extended: true}));
 
-      logger.info(`Load controllers files on directory controllers`);
+      if (process.env.NODE_ENV !== 'production') {
+        application.use(morgan('dev'));
+      }
 
+      logger.info(`Load controllers files on directory controllers`);
       for (const route of routes) {
         logger.info(`Load controller: ${route.name}`);
-        application.use(route.mountpoint, require(
+        api.use(route.mountpoint, require(
             path.join(__dirname, 'api', route.name)
           )
         );
       }
 
+      application.use('/api', api);
       application.listen(process.env.PROXY_API_PORT || 8080, () => {
         logger.info(`Api listen on port ${process.env.PROXY_API_PORT || 8080}`);
 

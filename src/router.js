@@ -95,6 +95,21 @@ class Router {
   }
 
   /**
+   * find routes by request domain
+   * @param {String} domain the host
+   * @return {RouteModel} routes
+   */
+  findRouteByDomain(domain) {
+    for (const route of this.routes) {
+      if (route.domain === domain) {
+        return route;
+      }
+    }
+
+    return null;
+  }
+
+  /**
    * add a route
    * @param {RouteSchema} schema the schema
    * @return {Promise<RouteModel>} the result
@@ -174,7 +189,7 @@ class Router {
    */
   handleRoute(request, response) {
     const host = request.headers.host;
-    const route = this.findRouteByHost(host);
+    const route = this.findRouteByDomain(host);
 
     if (!route) {
       return response

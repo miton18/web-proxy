@@ -28,19 +28,19 @@ class Logger extends winston.Logger {
         prettyPrint: true
       });
 
-      Logger.instance.add(Mongo, {
-        name: 'mongo',
-        level: 'info',
-        db: db.uri,
-        collection: 'Log',
-        storeHost: false,
-        tryReconnect: true,
-        decolorize: true
-      });
+      // Logger.instance.add(Mongo, {
+      //   name: 'mongo',
+      //   level: 'info',
+      //   db: db.uri,
+      //   collection: 'Log',
+      //   storeHost: false,
+      //   tryReconnect: true,
+      //   decolorize: true
+      // });
 
-      if (process.env.WINSTON_OVH_CREDENTIAL) {
+      if (process.env.PROXY_WINSTON_OVH_CREDENTIAL) {
         Logger.instance.add(Winston.transports.ovh, {
-          token: process.env.WINSTON_OVH_CREDENTIAL
+          token: process.env.PROXY_WINSTON_OVH_CREDENTIAL
         });
       }
     }

@@ -3,7 +3,7 @@
 const router = require('express').Router;
 const Router = require('../router');
 const db = require('../database');
-const {authenticationJwt} = require('./authentication');
+const {authenticationJwt} = require('../middlewares/authentication');
 
 // ----------------------------------------------------------------------------
 // variables
@@ -12,7 +12,7 @@ const _router = router();
 // ----------------------------------------------------------------------------
 // create route to handle /route
 _router
-  .route('/route')
+  .route('/')
   .all(authenticationJwt)
   .get((request, response) => {
     response.json(
@@ -41,30 +41,37 @@ _router
 // ----------------------------------------------------------------------------
 // create route to handle /route/:_id
 _router
-  .route('/route/:_id')
+  .route('/:_id')
   .all(authenticationJwt)
-  .get((request, response) => {
-    const {_id} = request.body;
-    const route = Router
-        .findRouteById(_id);
+  .param('_id', (request, response, next, _id) => {
+    request.route = Router
+      .findRouteById(_id);
 
-    if (!route) {
+    next();
+  })
+
+  .get((request, response) => {
+    if (!request.route) {
       return response
         .status(404)
         .end();
     }
 
-    response.json({route});
+    response.json({route: request.route});
   })
 
   .put((request, response) => {
-    const {_id, active, host, port, ssl} = request.body;
-    const route = new db.Route({_id, active, host, port, ssl});
+    const {active, host, port, ssl} = request.body;
+
+    request.route.active = active;
+    request.route.host = host;
+    request.route.port = port;
+    request.route.ssl = ssl;
 
     Router
-      .updateRoute(route)
+      .updateRoute(request.route)
       .then((route) => {
-        response.json({route});
+        response.json({route: request.route});
       })
 
       .catch((error) => {
@@ -75,18 +82,14 @@ _router
   })
 
   .delete((request, response) => {
-    const {_id} = request.body;
-    const route = Router
-      .findRouteById(_id);
-
-    if (!route) {
+    if (!request.route) {
       return response
         .status(404)
         .end();
     }
 
     Router
-      .removeRoute(route)
+      .removeRoute(request.route)
       .then(() => {
         response
           .status(200)

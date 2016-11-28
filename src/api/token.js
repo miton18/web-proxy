@@ -2,7 +2,7 @@
 // requirements
 const router = require('express').Router;
 const db = require('../database');
-const {authenticationLocal} = require('./authentication');
+const {authenticationLocal} = require('../middlewares/authentication');
 
 // ----------------------------------------------------------------------------
 // variables
@@ -11,7 +11,7 @@ const _router = router();
 // ----------------------------------------------------------------------------
 // create route to handle /token
 _router
-  .route('/token')
+  .route('/')
   .all(authenticationLocal)
   .post((request, response) => {
     const {username, password} = request.body;
@@ -30,7 +30,7 @@ _router
       }
 
       response.json({
-        body: user.generateJwt({}, Date.now() + 7 * 3600 * 24)
+        body: user.generateJwt({}, Date.now() + 3600 * 12)
       });
     });
   });

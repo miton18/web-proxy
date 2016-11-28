@@ -3,7 +3,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid');
-const sha512 = require('sha512');
+const bcrypt = require('bcrypt-nodejs');
 
 // ----------------------------------------------------------------------------
 // create schema
@@ -16,19 +16,30 @@ const sha512 = require('sha512');
 let UserSchema = new mongoose.Schema({
   username: {
     type: String,
-    required: true,
+    required: 'You must provide a user name',
     unique: true,
     index: true
   },
 
   salt: {
     type: String,
-    required: true,
+    required: 'You must provide a password',
     default: uuid
   },
 
-  hash: {
-    type: String
+  password: {
+    type: String,
+    set(password) {
+      let pepper = process.env.PROXY_PEPPER;
+
+      if (!this.salt) {
+        // generate a random salt here
+        this.salt = uuid();
+      }
+
+      // generate a fieldprint with sha512
+      return bcrypt.hashSync(`${this.salt}:${password}`, pepper);
+    }
   },
 
   mail: {
@@ -53,19 +64,27 @@ let UserSchema = new mongoose.Schema({
  */
 UserSchema.methods.setPassword = function(password) {
   return new Promise((resolve, reject) => {
+    let pepper = process.env.PROXY_PEPPER;
+
     if (!this.salt) {
       // generate a random salt here
       this.salt = uuid();
     }
 
     // generate a fieldprint with sha512
-    this.hash = sha512(`${this.salt}:${password}`).toString('hex');
-    this.save((error) => {
+    bcrypt.hash(`${this.salt}:${password}`, pepper, () => {}, (error, password) => {
       if (error) {
         return reject(error);
       }
 
-      resolve(this);
+      this.password = password;
+      this.save((error) => {
+        if (error) {
+          return reject(error);
+        }
+
+        resolve(this);
+      });
     });
   });
 };
@@ -75,12 +94,18 @@ UserSchema.methods.setPassword = function(password) {
  * @param {String} password the user password
  * @return {Promise<boolean>} a boolean if is the correct password
  */
-UserSchema.methods.isPassword = function(password) {
+UserSchema.methods.checkPassword = function(password) {
   return new Promise((resolve, reject) => {
-    let hash = sha512(`${this.salt}:${password}`)
-        .toString('hex');
+    let pepper = process.env.PROXY_PEPPER;
 
-    resolve(hash === this.hash);
+    // generate a fieldprint with sha512
+    bcrypt.hash(`${this.salt}:${password}`, pepper, () => {}, (error, hash) => {
+      if (error) {
+        return reject(error);
+      }
+
+      resolve(this.password === hash);
+    });
   });
 };
 

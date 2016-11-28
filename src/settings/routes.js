@@ -1,6 +1,6 @@
 module.exports = [
-  {mountpoint: '/api/', name: 'route'},
-  {mountpoint: '/api/', name: 'token'},
-  {mountpoint: '/api/', name: 'user'},
-  {mountpoint: '/api/', name: 'works'}
+  {mountpoint: '/route', name: 'route'},
+  {mountpoint: '/token', name: 'token'},
+  {mountpoint: '/user', name: 'user'},
+  {mountpoint: '/works', name: 'works'}
 ];

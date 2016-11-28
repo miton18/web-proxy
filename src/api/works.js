@@ -9,10 +9,8 @@ const _router = router();
 // ----------------------------------------------------------------------------
 // create route to handle /token
 _router
-  .route('/works')
+  .route('/')
   .all((request, response) => {
-    console.log(request.headers);
-
     response.json({
       message: 'It works'
     });
