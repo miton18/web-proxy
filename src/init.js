@@ -6,8 +6,6 @@ module.exports = () => {
 
   // check for admin account
   Db.initialize().then(() => {
-    Log.debug('[init] DB ready...');
-
     Db.models.User.count({})
     .then( (userCount) => {
       Log.info('[init] [user] User creation :');

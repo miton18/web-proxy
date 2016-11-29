@@ -15,7 +15,7 @@ class Worker {
   /**
    * start the worker
    */
-  start() {
+  constructor() {
     // ----------------------------------------------------------------------------
     // variables
     const application = new Application();
