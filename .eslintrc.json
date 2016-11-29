@@ -9,8 +9,9 @@
 
     "rules": {
         "indent": ["error", 2, { "SwitchCase": 1 }],
-        "max-len": ["error", 100],
-        "comma-dangle": ["error", "never"]
+        "max-len": ["error", 90],
+        "comma-dangle": ["error", "never"],
+        "no-multi-spaces": 0
     },
     "parserOptions": { 
         "ecmaVersion": 6, 

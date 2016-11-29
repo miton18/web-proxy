@@ -1,11 +1,11 @@
 // ----------------------------------------------------------------------------
 // requirements
-const Application = require('./application');
-const EventsHandler = require('./events');
-const db = require('./database');
-const logger = require('./logger');
-const Router = require('./router');
-const Api = require('./api');
+const Application     = require('./application');
+const EventsHandler   = require('./events');
+const db              = require('./database');
+const logger          = require('./logger');
+const Router          = require('./router');
+const Api             = require('./api');
 
 /**
  * class Worker
@@ -36,10 +36,10 @@ class Worker {
     // launch the application
     application
       .initialize()
-      .then(function(duration) {
+      .then((duration) => {
         logger.info(`Application start in ${duration}ms`);
       })
-      .catch(function(error) {
+      .catch((error) => {
         logger.error(error.message);
       });
   }
@@ -49,10 +49,8 @@ class Worker {
    * @return {Worker}
    */
   static getInstance() {
-    if(!(Worker.instance instanceof Worker)) {
+    if(!(Worker.instance instanceof Worker))
       Worker.instance = new Worker();
-    }
-
     return Worker.instance;
   }
 }

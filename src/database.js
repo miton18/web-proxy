@@ -18,7 +18,7 @@ class Database {
    * constructor
    */
   constructor() {
-
+    this.models = {};
   }
 
   /**
@@ -33,11 +33,9 @@ class Database {
             if (error) {
               return reject(error);
             }
-
             resolve();
           });
         })
-
         .catch(reject);
     });
   }
@@ -54,7 +52,7 @@ class Database {
         entity = entity.toLowerCase();
         entity = entity.charAt(0).toUpperCase() + entity.substr(1);
 
-        this[entity] = require(path.join(__dirname, 'models', name));
+        this.models[entity] = require(path.join(__dirname, 'models', name));
       }
 
       resolve();

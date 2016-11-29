@@ -14,7 +14,7 @@ const os = require('os');
 // ----------------------------------------------------------------------------
 // environements
 if (!process.env.PROXY_JWT_SECRET) {
-  logger.error('PROXY_JWT_SECRET variable environement is not set');
+  logger.error('[bootstrap] PROXY_JWT_SECRET variable environement is not set');
 
   process.exit(1);
 }
@@ -28,7 +28,7 @@ if (!process.env.PROXY_MONGODB_ADDON_URI &&
       !process.env.PROXY_MONGODB_ADDON_PORT
     )
    ) {
-  logger.error('Please set environements variables to connect mongodb');
+  logger.error('[bootstrap] Please set environements variables to connect mongodb');
 
   process.exit(1);
 }
@@ -36,44 +36,43 @@ if (!process.env.PROXY_MONGODB_ADDON_URI &&
 // ----------------------------------------------------------------------------
 // master
 if (cluster.isMaster) {
-  // ----------------------------------------------------------------------------
+  const init = require('./init');
+  init();
+  // --------------------------------------------------------------------------
   // reporter
   reporter.incrementMetric('action.start');
 
-  // ----------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // variables
   const workers = [];
 
-  // ----------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // create workers
   cluster.schedulingPolicy = cluster.SCHED_RR;
   cluster.addListener('online', (worker) => {
-    logger.info('Worker ' + worker.process.pid + ' is online');
+    logger.info(`Worker ${worker.process.pid} is online`);
   });
 
   cluster.addListener('exit', (worker, code, signal) => {
     logger.warn(`Master ${worker.process.pid} died`);
   });
 
-  let worker;
   for (let i = 0, n = os.cpus().length; i < n; ++i) {
-    worker = cluster.fork();
-    worker.addListener('exit', function(code, signal) {
+    workers.push(cluster.fork()
+    .addListener('exit', (code, signal) => {
       cluster.fork();
-    });
-
-    workers.push(worker);
+    }));
   }
 }
 
 // ----------------------------------------------------------------------------
 // worker
 if (cluster.isWorker) {
-  // ----------------------------------------------------------------------------
+  console.log(cluster.isWorker);
+  // --------------------------------------------------------------------------
   // variables
   const worker = require('./worker');
-
-  // ----------------------------------------------------------------------------
+  // --------------------------------------------------------------------------
   // start the worker
   worker.start();
 }
