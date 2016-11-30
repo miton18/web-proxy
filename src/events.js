@@ -34,7 +34,10 @@ class EventsHandler {
   uncaughtException(error) {
     reporter.incrementMetric('error.uncaught');
 
-    logger.error(error.message);
+    logger.error(error.message, {
+      from: 'uncaughtException',
+      error: error
+    });
   }
 
   /**

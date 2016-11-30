@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------------
 // vscode hack
-process.execArgv[1] = process.execArgv[1].replace('-brk', '');
+if (process.execArgv[1])
+  process.execArgv[1] = process.execArgv[1].replace('-brk', '');
 
 // ----------------------------------------------------------------------------
 // requirements

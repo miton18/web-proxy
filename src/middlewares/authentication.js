@@ -53,7 +53,7 @@ function authenticationLocal(request, response, next) {
   if (!username || !password) {
     return response
       .status(401)
-      .json({error: new Error('Wrong identifier'}));
+      .json({error: new Error('Wrong identifier')});
   }
 
   db.User.findOne({username}, (error, user) => {

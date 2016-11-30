@@ -28,15 +28,15 @@ class Database {
   initialize() {
     return new Promise((resolve, reject) => {
       this.loadModels()
-        .then(() => {
-          mongoose.connect(this.uri, (error) => {
-            if (error) {
-              return reject(error);
-            }
-            resolve();
-          });
-        })
-        .catch(reject);
+      .then(() => {
+        mongoose.connect(this.uri, (error) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve();
+        });
+      })
+      .catch(reject);
     });
   }
 

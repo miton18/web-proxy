@@ -24,34 +24,37 @@ class Api {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      logger.info('Create API');
-      let application = express();
-      let api = router();
+      logger.info('[API] Create API');
+      
+      this.port = process.env.PROXY_API_PORT || 8080;
+      this.application = express();
+      this.api = router();
 
-      application
+      this.application
         .use(cors())
         .use(methodOverride())
         .use(helmet())
         .use(compression())
         .use(body.json())
-        .use(body.urlencoded({extended: true}));
+        .use(body.urlencoded({extended: true}))
+        .use('/api', this.api);
 
       if (process.env.NODE_ENV !== 'production') {
-        application.use(morgan('dev'));
+        this.application.use(morgan('dev'));
       }
 
-      logger.info(`Load controllers files on directory controllers`);
       for (const route of routes) {
-        logger.info(`Load controller: ${route.name}`);
-        api.use(route.mountpoint, require(
-            path.join(__dirname, 'api', route.name)
-          )
-        );
+        logger.info(`[API] Load controller: ${route.name}`);
+        
+        route.module = require('./api/' + route.name);
+
+        logger.info(`[API] required: ${route.name}`);
+        this.api.use(route.mountpoint, route.module);
+        logger.info(`[API] Loaded controller: ${route.name}`);
       }
 
-      application.use('/api', api);
-      application.listen(process.env.PROXY_API_PORT || 8080, () => {
-        logger.info(`Api listen on port ${process.env.PROXY_API_PORT || 8080}`);
+      this.application.listen(this.port, () => {
+        logger.info(`[API] Api listen on port ${this.port}`);
 
         resolve();
       });

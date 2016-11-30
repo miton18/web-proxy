@@ -40,7 +40,7 @@ class Worker {
         logger.info(`Application start in ${duration}ms`);
       })
       .catch((error) => {
-        logger.error(error.message);
+        logger.error(error.message, error);
       });
   }
 

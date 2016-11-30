@@ -10,6 +10,13 @@ const {authenticationJwt} = require('../middlewares/authentication');
 const _router = router();
 
 // ----------------------------------------------------------------------------
+// route params
+_router.param('_id', (request, response, next, _id) => {
+    request.route = Router.findRouteById(_id);
+    next();
+  })
+
+// ----------------------------------------------------------------------------
 // create route to handle /route
 _router
   .route('/')
@@ -20,7 +27,6 @@ _router
         .routes
     );
   })
-
   .post((request, response) => {
     // filter to keep ONLY wanted params
     const {active, host, port, ssl} = request.body;
@@ -43,13 +49,6 @@ _router
 _router
   .route('/:_id')
   .all(authenticationJwt)
-  .param('_id', (request, response, next, _id) => {
-    request.route = Router
-      .findRouteById(_id);
-
-    next();
-  })
-
   .get((request, response) => {
     if (!request.route) {
       return response
