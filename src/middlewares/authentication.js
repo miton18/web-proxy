@@ -56,7 +56,7 @@ function authenticationLocal(request, response, next) {
       .json({error: new Error('Wrong identifier')});
   }
 
-  db.User.findOne({username}, (error, user) => {
+  db.models.User.findOne({username}, (error, user) => {
     user
       .checkPassword(password)
       .then((isCorrect) => {

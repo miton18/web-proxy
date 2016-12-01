@@ -41,17 +41,13 @@ class Router {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      logger.info('Load Routes');
-
-      db.Route.find({}, (error, routes) => {
+      db.models.Route.find({}, (error, routes) => {
         if (error) {
           reject(error);
         }
 
         this.routes = routes;
-        for (const route of this.routes) {
-          logger.info(`Load route ${route.host}:${route.port}`);
-        }
+        logger.info(`Load ${routes.length} routes`);
 
         http
           .createServer(this.handleRoute)
@@ -116,7 +112,7 @@ class Router {
    */
   addRoute(schema) {
     return new Promise((resolve, reject) => {
-      let route = new db.Route(schema);
+      let route = new db.modelsRoute(schema);
 
       route.save((error) => {
         if (error) {
@@ -163,7 +159,7 @@ class Router {
       }
 
       const {_id} = route;
-      db.Route.update({_id}, route, (error, route) => {
+      db.models.Route.update({_id}, route, (error, route) => {
         if (error) {
           return reject(error);
         }

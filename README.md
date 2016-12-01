@@ -12,8 +12,7 @@
 
 |Variable name|Default value|Variable utility|required|
 |-------------|----------------|-------------|--------|
-|PROXY_TRACE_API_KEY|null|Set the environment variable to use [@risingstack/trace](https://npmjs.com/package/@risingstack/trace)||
-|PROXY_TRACE_SERVICE_NAME|null|Set the environment variable to use [@risingstack/trace](https://npmjs.com/package/@risingstack/trace)||
+|PROXY_TRACE_KEY|null|Set the environment variable to use [@risingstack/trace](https://npmjs.com/package/@risingstack/trace)||
 |PROXY_WINSTON_OVH_CREDENTIAL|null|Set the environment variable to export your data with [winston-ovh](https://npmjs.com/package/winston-ovh)||
 |PROXY_MONGODB_ADDON_USER|MONGODB_ADDON_USER|user to authenticate to mongdb||
 |PROXY_MONGODB_ADDON_PASSWORD|MONGODB_ADDON_PASSWORD|password to authenticate to mongdb||

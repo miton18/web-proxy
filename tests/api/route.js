@@ -11,7 +11,7 @@ describe('API /api/route', function() {
       db
         .initialize()
         .then(() => {
-          user = new db.User({
+          user = new db.models.User({
             username: 'test'
           });
 

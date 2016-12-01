@@ -15,14 +15,13 @@ class EventsHandler {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      logger.info('Set uncaught exception event handler');
       process.removeListener('uncaughtException', this.uncaughtException);
       process.addListener('uncaughtException', this.uncaughtException);
 
-      logger.info('Set unhandled rejection event handler');
       process.removeListener('unhandledRejection', this.unhandledRejection);
       process.addListener('unhandledRejection', this.unhandledRejection);
 
+      logger.info('[event] Override defaults exceptions');
       resolve();
     });
   }

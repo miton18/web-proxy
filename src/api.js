@@ -43,15 +43,8 @@ class Api {
         this.application.use(morgan('dev'));
       }
 
-      for (const route of routes) {
-        logger.info(`[API] Load controller: ${route.name}`);
-        
-        route.module = require('./api/' + route.name);
-
-        logger.info(`[API] required: ${route.name}`);
-        this.api.use(route.mountpoint, route.module);
-        logger.info(`[API] Loaded controller: ${route.name}`);
-      }
+      for (const route of routes) 
+        this.api.use(route.mountpoint, require('./api/' + route.name));
 
       this.application.listen(this.port, () => {
         logger.info(`[API] Api listen on port ${this.port}`);

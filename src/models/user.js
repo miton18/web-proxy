@@ -103,7 +103,7 @@ UserSchema.methods.checkPassword = function(password) {
       if (error) {
         return reject(error);
       }
-
+      console.debug(this.password,hash)
       resolve(this.password === hash);
     });
   });

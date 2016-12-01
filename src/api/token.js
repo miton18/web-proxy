@@ -12,26 +12,49 @@ const _router = router();
 // create route to handle /token
 _router
   .route('/')
-  .all(authenticationLocal)
+  //.all(authenticationLocal) => on authentifie pas la route pour se logger
   .post((request, response) => {
     const {username, password} = request.body;
 
-    db.User.findOne({username, password}, (error, user) => {
+    db.models.User.findOne({username}, (error, user) => {
       if (error) {
         return response
           .status(500)
-          .end();
+          .json({
+            error: "can't check your identity"
+          });
       }
-
       if (!user) {
         return response
           .status(401)
-          .end();
+          .json({
+            error: "This user doesn't exist"
+          });
       }
-
-      response.json({
-        body: user.generateJwt({}, Date.now() + 3600 * 12)
-      });
+      user.checkPassword(password)
+      .then(
+        (isCorrect) => {
+          if (isCorrect) user.generateJwt({}, Date.now() + 3600 * 12)
+          .then(
+            (token) => {
+              response.json({token});
+            },
+            (err) => {
+              response.json({error: "Can't generate your token"});
+            }
+          );
+          else {
+            return response.status(401).json({
+              error: "Wrong authentification"
+            });  
+          }
+        },
+        (err) => {
+          return response.status(401).json({
+            error: "Wrong authentification"
+          });
+        }
+      );
     });
   });
 

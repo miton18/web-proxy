@@ -14,7 +14,7 @@ _router
   .route('/')
   .all(authenticationJwt)
   .get((request, response) => {
-    db.User.find({}, (error, users) => {
+    db.models.User.find({}, (error, users) => {
       if (error) {
         return response
           .status(500)
