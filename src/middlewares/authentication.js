@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // requirements
 const jwt = require('jsonwebtoken');
-const db = require('../database');
+const db = require('../utils/database');
 
 // ----------------------------------------------------------------------------
 // middlewares

@@ -6,8 +6,8 @@ if (process.execArgv[1])
 // ----------------------------------------------------------------------------
 // requirements
 const cluster   = require('cluster');
-const reporter  = require('./reporter');
-const logger    = require('./logger');
+const reporter  = require('./utils/reporter');
+const logger    = require('./utils/logger');
 
 // ----------------------------------------------------------------------------
 // master
@@ -55,22 +55,20 @@ if (cluster.isMaster) {
   for (let i = 0, n = os.cpus().length; i < n; ++i) {
     cluster
     .fork()
-    .on('online', () => {
-      // Something
-    })
     .addListener('exit', (code, signal) => {
-      Log.warn(`Worker exited, start new one`, {code, signal});
+      Log.warn(`[main] Worker exited, start new one`, {code, signal});
       reporter.incrementMetric('worker.died', 1);
       cluster.fork();
     });
   }
 
   cluster.addListener('online', (worker) => {
-    logger.info(`Worker ${worker.process.pid} is online`);
+    logger.info(`[main] Worker ${worker.process.pid} is online`);
   });
 
   cluster.addListener('exit', (worker, code, signal) => {
-    logger.warn(`Master ${worker.process.pid} died`);
+    logger.error(`[main] Master ${worker.process.pid} died`);
+    reporter.incrementMetric('master.died', 1);
   });
 
   // -------------------------------------------------------------------------

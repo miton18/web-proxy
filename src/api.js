@@ -8,7 +8,7 @@ const express = require('express');
 const router = express.Router;
 const path = require('path');
 const morgan = require('morgan');
-const logger = require('./logger');
+const logger = require('./utils/logger');
 const methodOverride = require('method-override');
 const routes = require('./settings/routes');
 

@@ -2,8 +2,8 @@
 // requirements
 const Proxy = require('http-proxy');
 const http = require('http');
-const logger = require('./logger');
-const db = require('./database');
+const logger = require('./utils/logger');
+const db = require('./utils/database');
 
 // ----------------------------------------------------------------------------
 /**

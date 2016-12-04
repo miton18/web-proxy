@@ -1,10 +1,10 @@
 // ----------------------------------------------------------------------------
 // requirements
+const EventsHandler   = require('./utils/events');
+const db              = require('./utils/database');
+const logger          = require('./utils/logger');
+const Reporter        = require('./utils/reporter');
 const Application     = require('./application');
-const EventsHandler   = require('./events');
-const db              = require('./database');
-const logger          = require('./logger');
-const Reporter        = require('./reporter');
 const Router          = require('./router');
 const Api             = require('./api');
 

@@ -2,7 +2,7 @@
 // requirements
 const router = require('express').Router;
 const Router = require('../router');
-const db = require('../database');
+const db = require('../utils/database');
 const {authenticationJwt} = require('../middlewares/authentication');
 
 // ----------------------------------------------------------------------------

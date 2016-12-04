@@ -2,7 +2,7 @@
 // requirements
 const path = require('path');
 const mongoose = require('mongoose');
-const models = require('./settings/models');
+const models = require('../settings/models');
 
 // ----------------------------------------------------------------------------
 // overload mongoose promise
@@ -52,7 +52,7 @@ class Database {
         entity = entity.toLowerCase();
         entity = entity.charAt(0).toUpperCase() + entity.substr(1);
 
-        this.models[entity] = require(path.join(__dirname, 'models', name));
+        this.models[entity] = require(path.join( __dirname, '../' , 'models', name));
       }
 
       resolve();

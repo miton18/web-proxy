@@ -1,8 +1,9 @@
 // ----------------------------------------------------------------------------
 // requirements
 const router = require('express').Router;
-const db = require('../database');
+const db = require('../utils/database');
 const {authenticationLocal} = require('../middlewares/authentication');
+const Logger = require('../utils/logger');
 
 // ----------------------------------------------------------------------------
 // variables
@@ -12,7 +13,6 @@ const _router = router();
 // create route to handle /token
 _router
   .route('/')
-  //.all(authenticationLocal) => on authentifie pas la route pour se logger
   .post((request, response) => {
     const {username, password} = request.body;
 
@@ -28,13 +28,14 @@ _router
         return response
           .status(401)
           .json({
-            error: "This user doesn't exist"
+            error: "Wrong authentification"
           });
       }
       user.checkPassword(password)
       .then(
         (isCorrect) => {
-          if (isCorrect) user.generateJwt({}, Date.now() + 3600 * 12)
+          Logger.debug("pas d'user", isCorrect);
+          if (isCorrect) user.generateJwt({}, Date.now() + 3600 )
           .then(
             (token) => {
               response.json({token});

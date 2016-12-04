@@ -66,11 +66,6 @@ UserSchema.methods.setPassword = function(password) {
   return new Promise((resolve, reject) => {
     let pepper = process.env.PROXY_PEPPER;
 
-    if (!this.salt) {
-      // generate a random salt here
-      this.salt = uuid();
-    }
-
     // generate a fieldprint with sha512
     bcrypt.hash(`${this.salt}:${password}`, pepper, () => {}, (error, password) => {
       if (error) {
