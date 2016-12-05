@@ -22,8 +22,16 @@ function authenticationJwt(request, response, next) {
       .json({error: new Error('Wrong authorization')});
   }
 
+  let options = {
+    algorithms: ['HS256', 'HS358', 'HS512'],
+    audience: process.env.PROXY_JWT_AUDIENCE,
+    issuer: process.env.PROXY_JWT_ISSUER,
+    ignoreExpiration: false,
+    clockTolerance: 0
+  };
+
   authorization = authorization.substr(4);
-  jwt.verify(authorization, process.env.PROXY_JWT_SECRET, (error, payload) => {
+  jwt.verify(authorization, process.env.PROXY_JWT_SECRET, options, (error, payload) => {
     if (error) {
       return response
         .status(500)

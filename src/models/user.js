@@ -103,7 +103,6 @@ UserSchema.methods.checkPassword = function(password) {
       if (error) {
         return reject(error);
       }
-      console.debug(this.password,hash)
       resolve(this.password === hash);
     });
   });
@@ -111,26 +110,32 @@ UserSchema.methods.checkPassword = function(password) {
 
 /**
  * generate a personnal json web token
- * @param {Array<{method: String, path: String}>} authorizations routes that the user is able to use
+ * @param {Array<{method: String, path: String}>} authorizations
+ * routes that the user is able to use
  * @param {Date} expiration the date of expiration of the json web token
  * @return {Promise<String>} a promise that return the token
  */
 UserSchema.methods.generateJwt = function(authorizations, expiration) {
   return new Promise((resolve, reject) => {
-    const {_id, username, mail} = this;
+    const {_id} = this;
 
     let payload = {
       sub: _id,
-      username,
-      mail,
       authorizations,
-      issuer: process.env.PROXY_JWT_ISSUER,
-      audience: process.env.PROXY_JWT_AUDIENCE,
       expirationAt: expiration,
       creationAt: Date.now()
     };
 
-    jwt.sign(payload, process.env.PROXY_JWT_SECRET, {}, (error, token) => {
+    let options = {
+      algorithm: 'HS512',
+      expiresIn: expiration - Date.now(),
+      notBefore: 0,
+      issuer: process.env.PROXY_JWT_ISSUER,
+      audience: process.env.PROXY_JWT_AUDIENCE,
+      jwtid: uuid()
+    };
+
+    jwt.sign(payload, process.env.PROXY_JWT_SECRET, options, (error, token) => {
       if (error) {
         return reject(error);
       }
