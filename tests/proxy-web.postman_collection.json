@@ -25,7 +25,7 @@
 									"tests[\"No errors\"]          = data.err === undefined;",
 									"tests[\"Contain a token\"]    = data.token !== null;",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 300; // pas cool",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400; // pas cool",
 									"",
 									"",
 									"postman.setEnvironmentVariable('token', data.token);",
@@ -97,7 +97,7 @@
 									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
 									"tests[\"Has a ssl\"]          = responseBody.has(data.route.ssl);",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									"",
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
@@ -175,7 +175,7 @@
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -221,7 +221,7 @@
 									"tests[\"Return an array\"]    = Array.isArray(data);",
 									"tests[\"At least one route\"] = data.length > 0;",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -288,7 +288,7 @@
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -357,7 +357,7 @@
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -483,7 +483,7 @@
 									"tests[\"Return an array\"]    = Array.isArray(data.users);",
 									"tests[\"At least one route\"] = data.users.length > 0;",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;"
 								]
 							}
 						}

@@ -3,6 +3,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt-nodejs');
+const uuid = require('uuid');
 
 // ----------------------------------------------------------------------------
 // create schema
@@ -144,10 +145,10 @@ UserSchema.methods.generateJwt = function(authorizations, expiration) {
     };
 
     jwt.sign(payload, process.env.PROXY_JWT_SECRET, options, (error, token) => {
+
       if (error) {
         return reject(error);
       }
-
       resolve(token);
     });
   });
