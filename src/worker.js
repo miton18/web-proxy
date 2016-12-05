@@ -46,11 +46,12 @@ class Worker {
 
   /**
    * Return an instance of Singleton
-   * @return {Worker}
+   * @return {Worker} worker instance
    */
   static getInstance() {
     if(!(Worker.instance instanceof Worker))
       Worker.instance = new Worker();
+
     return Worker.instance;
   }
 }
