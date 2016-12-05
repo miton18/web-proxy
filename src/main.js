@@ -42,7 +42,14 @@ if (cluster.isMaster) {
   }
 
   if (!process.env.PROXY_PEPPER) {
-    logger.error(`[bootstrap] PROXY_PEPPER environement varaible is not set`);
+    logger.error(`[bootstrap] PROXY_PEPPER environement variable is not set`);
+    process.exit(1);
+  } else
+    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
+
+  if (!process.env.PROXY_JWT_ISSUER || ! process.env.PROXY_JWT_AUDIENCE) {
+    logger.error(`[bootstrap] PROXY_JWT_ISSUER or PROXY_JWT_AUDIENCE
+      environement variable is not set`);
     process.exit(1);
   } else
     logger.info(`[bootstrap] App pepper loaded, ready for cook`);
