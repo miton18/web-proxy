@@ -3,7 +3,7 @@
 const Proxy = require('http-proxy');
 const http = require('http');
 const logger = require('./utils/logger');
-const db = require('./utils/database');
+const Db = require('./utils/database');
 
 // ----------------------------------------------------------------------------
 /**
@@ -28,10 +28,8 @@ class Router {
    * @return {Router} the router instance
    */
   static getInstance() {
-    if (!(Router.instance instanceof Router)) {
+    if (!(Router.instance instanceof Router))
       Router.instance = new Router();
-    }
-
     return Router.instance;
   }
 
@@ -41,7 +39,7 @@ class Router {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      db.models.Route.find({}, (error, routes) => {
+      Db.models.Route.find({active: true}, (error, routes) => {
         if (error) {
           reject(error);
         }
@@ -67,11 +65,10 @@ class Router {
    */
   findRouteById(_id) {
     for (const route of this.routes) {
-      if (route._id === _id) {
+      if (route._id.equals(_id)) {
         return route;
       }
     }
-
     return null;
   }
 
@@ -112,7 +109,7 @@ class Router {
    */
   addRoute(schema) {
     return new Promise((resolve, reject) => {
-      let route = new db.modelsRoute(schema);
+      let route = new Db.models.Route(schema);
 
       route.save((error) => {
         if (error) {
@@ -159,7 +156,7 @@ class Router {
       }
 
       const {_id} = route;
-      db.models.Route.update({_id}, route, (error, route) => {
+      Db.models.Route.update({_id}, route, (error, route) => {
         if (error) {
           return reject(error);
         }

@@ -41,6 +41,12 @@ if (cluster.isMaster) {
     logger.info('[bootstrap] MongoDB parameters loadeds');
   }
 
+  if (!process.env.PROXY_PEPPER) {
+    logger.error(`[bootstrap] PROXY_PEPPER environement varaible is not set`);
+    process.exit(1);
+  } else
+    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
+
   // --------------------------------------------------------------------------
   // reporter
   reporter.incrementMetric('action.start');
@@ -74,12 +80,11 @@ if (cluster.isMaster) {
   // -------------------------------------------------------------------------
   // Create first user etc...
   init();
-}
 
 // ----------------------------------------------------------------------------
 // worker
-else {
+} else {
   // --------------------------------------------------------------------------
   // variables
-  const worker = require('./worker');
+  require('./worker');
 }

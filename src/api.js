@@ -6,7 +6,6 @@ const compression = require('compression');
 const body = require('body-parser');
 const express = require('express');
 const router = express.Router;
-const path = require('path');
 const morgan = require('morgan');
 const logger = require('./utils/logger');
 const methodOverride = require('method-override');
@@ -25,7 +24,7 @@ class Api {
   initialize() {
     return new Promise((resolve, reject) => {
       logger.info('[API] Create API');
-      
+
       this.port = process.env.PROXY_API_PORT || 8080;
       this.application = express();
       this.api = router();
@@ -43,7 +42,7 @@ class Api {
         this.application.use(morgan('dev'));
       }
 
-      for (const route of routes) 
+      for (const route of routes)
         this.api.use(route.mountpoint, require('./api/' + route.name));
 
       this.application.listen(this.port, () => {

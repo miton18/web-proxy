@@ -3,7 +3,6 @@
 const EventsHandler   = require('./utils/events');
 const db              = require('./utils/database');
 const logger          = require('./utils/logger');
-const Reporter        = require('./utils/reporter');
 const Application     = require('./application');
 const Router          = require('./router');
 const Api             = require('./api');
@@ -38,7 +37,7 @@ class Worker {
     application
       .initialize()
       .then((duration) => {
-        logger.info(`Application start in ${duration}ms`);
+        logger.info(`[app] Application start in ${duration}ms`);
       })
       .catch((error) => {
         logger.error(error.message, error);

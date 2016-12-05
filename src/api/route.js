@@ -1,20 +1,19 @@
 // ----------------------------------------------------------------------------
 // requirements
-const router = require('express').Router;
+const eRouter = require('express').Router;
 const Router = require('../router');
-const db = require('../utils/database');
 const {authenticationJwt} = require('../middlewares/authentication');
 
 // ----------------------------------------------------------------------------
 // variables
-const _router = router();
+const _router = eRouter();
 
 // ----------------------------------------------------------------------------
 // route params
 _router.param('_id', (request, response, next, _id) => {
-    request.route = Router.findRouteById(_id);
-    next();
-  })
+  request.proxyRoute = Router.findRouteById(_id);
+  next();
+});
 
 // ----------------------------------------------------------------------------
 // create route to handle /route
@@ -29,18 +28,16 @@ _router
   })
   .post((request, response) => {
     // filter to keep ONLY wanted params
-    const {active, host, port, ssl} = request.body;
-
+    const {active, domain, host, port, ssl} = request.body;
     Router
-      .addRoute({active, host, port, ssl})
+      .addRoute({active, domain, host, port, ssl})
       .then((route) => {
         response.json({route});
       })
-
       .catch((error) => {
         response
           .status(500)
-          .end();
+          .end(error);
       });
   });
 
@@ -50,27 +47,27 @@ _router
   .route('/:_id')
   .all(authenticationJwt)
   .get((request, response) => {
-    if (!request.route) {
+    if (!request.proxyRoute) {
       return response
         .status(404)
-        .end();
-    }
-
-    response.json({route: request.route});
+        .json({error: 'Route not found'});
+    } else
+      return response.json({route: request.proxyRoute});
   })
 
   .put((request, response) => {
-    const {active, host, port, ssl} = request.body;
+    const {active, domain, host, port, ssl} = request.body;
 
-    request.route.active = active;
-    request.route.host = host;
-    request.route.port = port;
-    request.route.ssl = ssl;
+    request.proxyRoute.active = active;
+    request.proxyRoute.host = host;
+    request.proxyRoute.port = port;
+    request.proxyRoute.ssl = ssl;
+    request.proxyRoute.domain = domain;
 
     Router
-      .updateRoute(request.route)
+      .updateRoute(request.proxyRoute)
       .then((route) => {
-        response.json({route: request.route});
+        response.json({route: request.proxyRoute});
       })
 
       .catch((error) => {
@@ -81,18 +78,18 @@ _router
   })
 
   .delete((request, response) => {
-    if (!request.route) {
+    if (!request.proxyRoute) {
       return response
         .status(404)
         .end();
     }
 
     Router
-      .removeRoute(request.route)
+      .removeRoute(request.proxyRoute)
       .then(() => {
         response
           .status(200)
-          .end();
+          .json({route: request.proxyRoute});
       })
 
       .catch((error) => {

@@ -15,7 +15,6 @@ const db = require('../utils/database');
  */
 function authenticationJwt(request, response, next) {
   let {authorization} = request.headers;
-
   if (!/^JWT [\w\d\.\-_]+$/.test(authorization)) {
     return response
       .status(401)
@@ -35,7 +34,6 @@ function authenticationJwt(request, response, next) {
         .status(401)
         .json({error: new Error('Expiration date')});
     }
-
     next();
   });
 }

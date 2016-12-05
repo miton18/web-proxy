@@ -4,19 +4,19 @@ const Schema = mongoose.Schema;
  * Log model
  * This is the model used by Winston only change it with Winston update
  */
-module.exports = mongoose.model("Log", new Schema({
+module.exports = mongoose.model('Log', new Schema({
 
   timestamp: {
     type: Date,
-    required: "Need a TS"
+    required: 'Need a TS'
   },
   message: {
     type: String,
-    required: "Logging without logging message?"
+    required: 'Logging without logging message?'
   },
   level: {
     type: String,
-    required: "Need a logging level"
+    required: 'Need a logging level'
   },
   meta: {
     type: Object

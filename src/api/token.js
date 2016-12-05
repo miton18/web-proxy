@@ -2,7 +2,6 @@
 // requirements
 const router = require('express').Router;
 const db = require('../utils/database');
-const {authenticationLocal} = require('../middlewares/authentication');
 const Logger = require('../utils/logger');
 
 // ----------------------------------------------------------------------------
@@ -21,38 +20,46 @@ _router
         return response
           .status(500)
           .json({
-            error: "can't check your identity"
+            error: `can't check your identity`
           });
       }
       if (!user) {
         return response
           .status(401)
           .json({
-            error: "Wrong authentification"
+            error: `Wrong authentification`
           });
       }
       user.checkPassword(password)
       .then(
         (isCorrect) => {
-          Logger.debug("pas d'user", isCorrect);
-          if (isCorrect) user.generateJwt({}, Date.now() + 3600 )
+          Logger.debug(`check password`, isCorrect);
+          if (isCorrect) user.generateJwt({}, Date.now() + 60 * 60 * 1000 ) // ms
           .then(
             (token) => {
+              user.lastConnection = new Date();
+              if (!user.firstConnection)
+                user.firstConnection = user.lastConnection;
+              user.save((err) => {
+                if (err) {
+                  Logger.error(`[user] fail to save last connection date`, user);
+                }
+              });
               response.json({token});
             },
             (err) => {
-              response.json({error: "Can't generate your token"});
+              response.json({error: `Can't generate your token`});
             }
           );
           else {
             return response.status(401).json({
-              error: "Wrong authentification"
-            });  
+              error: 'Wrong authentification'
+            });
           }
         },
         (err) => {
           return response.status(401).json({
-            error: "Wrong authentification"
+            error: 'Wrong authentification'
           });
         }
       );
