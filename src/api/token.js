@@ -23,6 +23,7 @@ _router
             error: `can't check your identity`
           });
       }
+
       if (!user) {
         return response
           .status(401)
@@ -30,39 +31,44 @@ _router
             error: `Wrong authentification`
           });
       }
-      user.checkPassword(password)
-      .then(
-        (isCorrect) => {
-          Logger.debug(`check password`, isCorrect);
-          if (isCorrect) user.generateJwt({}, Date.now() + 60 * 60 * 1000 ) // ms
-          .then(
-            (token) => {
-              user.lastConnection = new Date();
-              if (!user.firstConnection)
-                user.firstConnection = user.lastConnection;
-              user.save((err) => {
-                if (err) {
-                  Logger.error(`[user] fail to save last connection date`, user);
-                }
-              });
-              response.json({token});
-            },
-            (err) => {
-              response.json({error: `Can't generate your token`});
-            }
-          );
-          else {
-            return response.status(401).json({
+
+      user
+      .checkPassword(password)
+      .then((isCorrect) => {
+        if (!isCorrect) {
+          return response
+            .status(401)
+            .json({
               error: 'Wrong authentification'
             });
-          }
-        },
-        (err) => {
-          return response.status(401).json({
-            error: 'Wrong authentification'
-          });
         }
-      );
+
+        user.generateJwt({}, Date.now() + 60 * 60 * 1000 ) // ms
+          .then((token) => {
+            user.lastConnection = new Date();
+
+            if (!user.firstConnection)
+              user.firstConnection = user.lastConnection;
+
+            user.save((err) => {
+              if (err) {
+                Logger.error(`[user] fail to save last connection date`, user);
+              }
+            });
+
+            response.json({token});
+          })
+
+          .catch((err) => {
+            response.json({error: `Can't generate your token`});
+          });
+      })
+
+      .catch((err) => {
+        response.status(401).json({
+          error: 'Wrong authentification'
+        });
+      });
     });
   });
 
