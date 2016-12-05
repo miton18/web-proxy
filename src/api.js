@@ -7,7 +7,7 @@ const body = require('body-parser');
 const express = require('express');
 const router = express.Router;
 const morgan = require('morgan');
-const logger = require('./logger');
+const logger = require('./utils/logger');
 const methodOverride = require('method-override');
 const routes = require('./settings/routes');
 

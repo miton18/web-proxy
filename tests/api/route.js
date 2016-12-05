@@ -1,6 +1,6 @@
-const fetch = require('node-fetch');
+/* const fetch = require('node-fetch');
 const assert = require('assert');
-const db = require('../../src/database');
+const db = require('../../src/utils/database');
 
 describe('API /api/route', function() {
   let jwt;
@@ -97,4 +97,4 @@ describe('API /api/route', function() {
         .catch(reject);
     });
   });
-});
+}); */

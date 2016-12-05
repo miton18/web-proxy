@@ -2,17 +2,11 @@
 // requirements
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const uuid = require('uuid');
 const bcrypt = require('bcrypt-nodejs');
 
 // ----------------------------------------------------------------------------
 // create schema
 
-/**
- * no need to add username, password, salt and hash fields
- * because those will be added by the passport plugin
- * whose name is passport-local-mongoose
- */
 let UserSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -22,34 +16,36 @@ let UserSchema = new mongoose.Schema({
   },
 
   salt: {
+    // must be initialised with the first password
     type: String,
-    required: 'You must provide a password',
-    default: uuid
+    required: false
   },
 
   password: {
     type: String,
-    set(password) {
+    required: 'You must provide a password',
+    set: function(password) {
       let pepper = process.env.PROXY_PEPPER;
-
       if (!this.salt) {
         // generate a random salt here
-        this.salt = uuid();
+        this.salt = bcrypt.genSaltSync();
       }
-
-      // generate a fieldprint with sha512
-      return bcrypt.hashSync(`${this.salt}:${password}`, pepper);
+      return bcrypt.hashSync(`${pepper}:${password}`, this.salt);
     }
   },
 
   mail: {
-    type: String
+    type: String,
+    required: false
   },
 
-  firstConnection: Date,
+  firstConnection: {
+    type: Date,
+    required: false
+  },
   lastConnection: {
     type: Date,
-    default: Date.now
+    default: new Date()
   }
 });
 
@@ -66,25 +62,36 @@ UserSchema.methods.setPassword = function(password) {
   return new Promise((resolve, reject) => {
     let pepper = process.env.PROXY_PEPPER;
 
-    if (!this.salt) {
-      // generate a random salt here
-      this.salt = uuid();
-    }
-
-    // generate a fieldprint with sha512
-    bcrypt.hash(`${this.salt}:${password}`, pepper, () => {}, (error, password) => {
-      if (error) {
-        return reject(error);
-      }
-
-      this.password = password;
-      this.save((error) => {
+    new Promise((resolve, reject) => {
+      if (!this.salt) {
+        // generate a random salt here
+        bcrypt.genSalt((err, salt) => {
+          if (error) {
+            return reject(error);
+          }
+          this.salt = salt;
+          return resolve();
+        });
+      } else
+        return resolve();
+    }).then(() => {
+      // generate a fieldprint with BCrypt
+      bcrypt.hash(`${pepper}:${password}`, this.salt, () => {}, (error, password) => {
         if (error) {
           return reject(error);
         }
 
-        resolve(this);
+        this.password = password;
+        this.save((error) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(this);
+        });
       });
+    })
+    .catch((err) => {
+      reject(err);
     });
   });
 };
@@ -99,10 +106,11 @@ UserSchema.methods.checkPassword = function(password) {
     let pepper = process.env.PROXY_PEPPER;
 
     // generate a fieldprint with sha512
-    bcrypt.hash(`${this.salt}:${password}`, pepper, () => {}, (error, hash) => {
+    bcrypt.hash(`${pepper}:${password}`, this.salt, () => {}, (error, hash) => {
       if (error) {
         return reject(error);
       }
+
       resolve(this.password === hash);
     });
   });

@@ -52,8 +52,9 @@ class Reporter {
    */
   get traceApiKey() {
     let key = process.env.PROXY_TRACE_KEY || null;
-    if (key === null) Log.warn('No Trace reporter is defined, set PROXY_TRACE_KEY env var to enable it');
-    return key
+    if (key === null) Log.warn('No Trace reporter is defined, ' +
+      ' set PROXY_TRACE_KEY env var to enable it');
+    return key;
   }
 
   /**
@@ -61,10 +62,10 @@ class Reporter {
    * @return {String} the trace service name
    */
   get traceServiceName() {
-    let name = ''
-    if (cluster.isMaster) name = 'master'
-    else if (cluster.isWorker) name = cluster.worker.id
-    else name = 'unknow'
+    let name = '';
+    if (cluster.isMaster) name = 'master';
+    else if (cluster.isWorker) name = cluster.worker.id;
+    else name = 'unknow';
     return (
       `Proxy-${os.hostname()}:${name}`
     );

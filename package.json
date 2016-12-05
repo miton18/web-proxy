@@ -54,9 +54,6 @@
     "morgan": "^1.7.0",
     "node-fetch": "^1.6.3",
     "passport-local": "^1.0.0",
-    "sha512": "^0.0.1",
-    "uuid": "^3.0.0",
-    "walk": "^2.3.9",
     "winston": "^2.2.0",
     "winston-mongodb": "^1.6.1",
     "winston-ovh": "^1.2.2"

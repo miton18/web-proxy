@@ -1,7 +1,7 @@
 // ----------------------------------------------------------------------------
 // requirements
 const jwt = require('jsonwebtoken');
-const db = require('../database');
+const db = require('../utils/database');
 
 // ----------------------------------------------------------------------------
 // middlewares
@@ -15,7 +15,6 @@ const db = require('../database');
  */
 function authenticationJwt(request, response, next) {
   let {authorization} = request.headers;
-
   if (!/^JWT [\w\d\.\-_]+$/.test(authorization)) {
     return response
       .status(401)
@@ -43,7 +42,6 @@ function authenticationJwt(request, response, next) {
         .status(401)
         .json({error: new Error('Expiration date')});
     }
-
     next();
   });
 }
