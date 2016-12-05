@@ -145,7 +145,6 @@ UserSchema.methods.generateJwt = function(authorizations, expiration) {
     };
 
     jwt.sign(payload, process.env.PROXY_JWT_SECRET, options, (error, token) => {
-
       if (error) {
         return reject(error);
       }
