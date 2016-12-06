@@ -18,7 +18,7 @@ before_install:
 
 before_script:
 - sudo docker build -t test .
-- echo printenv | grep PROXY > env
+- env | grep PROXY > env
 - sudo docker run -d --net=host --env-file env test
 
 script:
