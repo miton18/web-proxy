@@ -47,6 +47,7 @@
     "cors": "^2.8.1",
     "dockerode": "^2.3.1",
     "express": "^4.14.0",
+    "express-ws": "^2.0.0",
     "helmet": "^3.1.0",
     "http-proxy": "^1.15.2",
     "jsonwebtoken": "^7.1.9",

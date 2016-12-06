@@ -3,6 +3,7 @@
 const eRouter = require('express').Router;
 const Router = require('../router');
 const {authenticationJwt} = require('../middlewares/authentication');
+const Logger = require('../utils/logger');
 
 // ----------------------------------------------------------------------------
 // variables
@@ -33,11 +34,12 @@ _router
       .addRoute({active, domain, host, port, ssl})
       .then((route) => {
         response.json({route});
-      })
-      .catch((error) => {
+        Logger.info('New route', route.toObject());
+      },
+      (error) => {
         response
           .status(500)
-          .end(error);
+          .json(error);
       });
   });
 
@@ -90,6 +92,7 @@ _router
         response
           .status(200)
           .json({route: request.proxyRoute});
+        Logger.info('Remove route', request.proxyRoute.toObject());
       })
 
       .catch((error) => {
