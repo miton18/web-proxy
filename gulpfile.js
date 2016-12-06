@@ -19,6 +19,10 @@ gulp.task('tests', ['tests:mocha', 'tests:lint']);
 gulp.task('tests:mocha', function() {
   return gulp
     .src(['tests/**/*.js'], {read: false})
+    .pipe(plugins.lineEndingCorrector({
+      eolc: 'LF',
+      encoding: 'utf8'
+    }))
     .pipe(plugins.mocha());
 });
 
@@ -26,6 +30,10 @@ gulp.task('tests:mocha', function() {
 gulp.task('tests:lint', function() {
   return gulp
     .src(['src/**/*.js', 'tests/**/*.js'])
+    .pipe(plugins.lineEndingCorrector({
+      eolc: 'LF',
+      encoding: 'utf8'
+    }))
     .pipe(plugins.eslint())
     .pipe(plugins.eslint.format())
     .pipe(plugins.eslint.failOnError());

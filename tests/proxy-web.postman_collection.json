@@ -25,7 +25,7 @@
 									"tests[\"No errors\"]          = data.err === undefined;",
 									"tests[\"Contain a token\"]    = data.token !== null;",
 									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 400; // pas cool",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 500; // pas cool",
 									"",
 									"",
 									"postman.setEnvironmentVariable('token', data.token);",
