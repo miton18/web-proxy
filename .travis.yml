@@ -21,11 +21,9 @@ install:
 - sudo docker build -t test .
 
 before_script:
-- sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_JWT_SECRET=$PROXY_JWT_SECRET -e PROXY_SALT=$PROXY_SALT
-  -e PROXY_ENV=$PROXY_ENV test
+- travis_wait 1 npm start
 
 script:
-- sleep 45
 - npm test
 
 after_success:
