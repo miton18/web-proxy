@@ -3,6 +3,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/*
+    THIS MODEL is jsut a wrapper to get logs
+    Winston must be the only documents creator.
+*/
+
 // ----------------------------------------------------------------------------
 // create schema
 const LogSchema = new Schema({
@@ -23,6 +28,13 @@ const LogSchema = new Schema({
 
   meta: {
     type: Object
+  }
+}, {
+  // Keep sync with logger
+  capped: {
+    size: 400000000, // In bytes (400M)
+    max: 1000000, // max 1000000 (documents)
+    autoIndexId: true
   }
 });
 

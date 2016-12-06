@@ -45,6 +45,7 @@ class Logger extends winston.Logger {
       tryReconnect: true,
       decolorize: true,
       capped: true,
+      // Keep sync with log model
       cappedSize: 400000000, // In bytes (400M)
       cappedMax: 1000000  // max 1000000 (documents)
     });

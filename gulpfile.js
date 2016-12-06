@@ -38,3 +38,12 @@ gulp.task('tests:lint', function() {
     .pipe(plugins.eslint.format())
     .pipe(plugins.eslint.failOnError());
 });
+
+gulp.task('format:file', function() {
+  return gulp.src('./**/**')
+    .pipe(plugins.lineEndingCorrector({
+      eolc: 'LF',
+      encoding: 'utf8'
+    }))
+    .pipe(gulp.dest('.'));
+});

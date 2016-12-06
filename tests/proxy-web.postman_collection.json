@@ -393,45 +393,27 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Get one route copy",
+					"name": "Get logs stats",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"/*var data = JSON.parse(responseBody);",
+									"var data = JSON.parse(responseBody);",
 									"var schemaRoute = {",
-									" \"_id\": {",
-									"    \"type\": \"string\"",
-									" },",
-									" \"destHost\": {",
-									"    \"type\": \"string\" ",
-									" },",
-									" \"destPort\":{",
-									"    \"type\": \"numeric\"",
-									" },",
-									" \"subDomain\": {",
-									"    \"type\": 'string'",
-									" },",
-									" \"active\": {",
-									"    \"type\": 'boolean'",
-									" }};",
+									" \"log_entries\": {",
+									"    \"type\": \"number\"",
+									" }",
+									"};",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.err === null;",
-									"tests[\"Contain a route\"]    = data.route !== null;",
+									"tests[\"No errors\"]          = data.error === undefined;",
 									"",
-									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
-									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-									"",
-									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;*/",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
 									""
 								]
 							}
@@ -458,7 +440,7 @@
 								}
 							]
 						},
-						"description": "Get just one route of proxy with a specified ID"
+						"description": "logs infos:\n - log_entries: number of log documents"
 					},
 					"response": []
 				}

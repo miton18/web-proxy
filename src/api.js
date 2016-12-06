@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const body = require('body-parser');
 const express = require('express');
+const expressWs = require('express-ws');
 const router = express.Router;
 const morgan = require('morgan');
 const logger = require('./utils/logger');
@@ -28,6 +29,7 @@ class Api {
       this.port = process.env.PROXY_API_PORT || 8080;
       this.application = express();
       this.api = router();
+      expressWs(this.application);
 
       this.application
         .use(cors())
