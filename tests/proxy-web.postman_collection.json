@@ -22,10 +22,10 @@
 									"var data = JSON.parse(responseBody);",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"No errors\"]          = data.err === undefined;",
 									"tests[\"Contain a token\"]    = data.token !== null;",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 500; // pas cool",
 									"",
 									"",
 									"postman.setEnvironmentVariable('token', data.token);",
@@ -71,29 +71,33 @@
 									" \"_id\": {",
 									"    \"type\": \"string\"",
 									" },",
-									" \"destHost\": {",
+									" \"host\": {",
 									"    \"type\": \"string\" ",
 									" },",
-									" \"destPort\":{",
+									" \"port\":{",
 									"    \"type\": \"numeric\"",
 									" },",
-									" \"subDomain\": {",
+									" \"domain\": {",
 									"    \"type\": 'string'",
 									" },",
 									" \"active\": {",
 									"    \"type\": 'boolean'",
+									" },",
+									" \"ssl\": {",
+									"    \"type\": \"boolean\"",
 									" }};",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"No errors\"]          = data.error === undefined;",
 									"tests[\"Contain a route\"]    = data.route !== undefined;",
 									"",
 									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
 									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"tests[\"Has a ssl\"]          = responseBody.has(data.route.ssl);",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									"",
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
@@ -114,14 +118,14 @@
 								"description": ""
 							},
 							{
-								"key": "x-token",
-								"value": "{{token}}",
+								"key": "authorization",
+								"value": "JWT {{token}}",
 								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8080,\n\t\"subDomain\": \"stat\",\n\t\"active\": true\n}"
+							"raw": "{\n\t\"host\": \"127.0.0.1\",\n\t\"port\": 8080,\n\t\"domain\": \"stat\",\n\t\"active\": true,\n\t\"ssl\": false\n}"
 						},
 						"description": "Create a new route in proxy"
 					},
@@ -140,33 +144,38 @@
 									" \"_id\": {",
 									"    \"type\": \"string\"",
 									" },",
-									" \"destHost\": {",
+									" \"host\": {",
 									"    \"type\": \"string\" ",
 									" },",
-									" \"destPort\":{",
+									" \"port\":{",
 									"    \"type\": \"numeric\"",
 									" },",
-									" \"subDomain\": {",
+									" \"domain\": {",
 									"    \"type\": 'string'",
 									" },",
 									" \"active\": {",
 									"    \"type\": 'boolean'",
-									" }};",
+									" },",
+									" \"ssl\": {",
+									"    \"type\": \"boolean\"",
+									" }",
+									"};",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"No errors\"]          = data.error === undefined;",
 									"tests[\"Contain a route\"]    = data.route !== null;",
 									"",
 									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
 									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"tests[\"Has a ssl\"]          = responseBody.has(data.route.ssl);",
 									"",
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -177,8 +186,8 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "x-token",
-								"value": "{{token}}",
+								"key": "authorization",
+								"value": "JWT {{token}}",
 								"description": ""
 							}
 						],
@@ -208,10 +217,11 @@
 									"var data = JSON.parse(responseBody);",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
 									"tests[\"Return an array\"]    = Array.isArray(data);",
 									"tests[\"At least one route\"] = data.length > 0;",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -222,8 +232,8 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "X-Token",
-								"value": "{{token}}",
+								"key": "authorization",
+								"value": "JWT {{token}}",
 								"description": ""
 							}
 						],
@@ -248,33 +258,37 @@
 									" \"_id\": {",
 									"    \"type\": \"string\"",
 									" },",
-									" \"destHost\": {",
+									" \"host\": {",
 									"    \"type\": \"string\" ",
 									" },",
-									" \"destPort\":{",
+									" \"port\":{",
 									"    \"type\": \"numeric\"",
 									" },",
-									" \"subDomain\": {",
+									" \"domain\": {",
 									"    \"type\": 'string'",
 									" },",
 									" \"active\": {",
 									"    \"type\": 'boolean'",
-									" }};",
+									" },",
+									" \"ssl\": {",
+									"    \"type\": \"boolean\"     ",
+									" }",
+									"};",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"No errors\"]          = data.err === undefined;",
 									"tests[\"Contain a route\"]    = data.route !== null;",
 									"",
 									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
 									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
 									"",
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -290,14 +304,14 @@
 								"description": ""
 							},
 							{
-								"key": "x-token",
-								"value": "{{token}}",
+								"key": "authorization",
+								"value": "JWT {{token}}",
 								"description": ""
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"destHost\": \"127.0.0.1\",\n\t\"destPort\": 8090,\n\t\"subDomain\": \"testRouteModified\",\n\t\"active\": false\n}"
+							"raw": "{\n\t\"host\": \"127.0.0.1\",\n\t\"port\": 8090,\n\t\"domain\": \"testRouteModified\",\n\t\"active\": false,\n\t\"ssl\": false\n}"
 						},
 						"description": "Change route parameters, based on route ID"
 					},
@@ -330,19 +344,20 @@
 									" }};",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"No errors\"]          = data.error === undefined;",
 									"tests[\"Contain a route\"]    = data.route !== null;",
 									"",
 									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
 									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"tests[\"Has a SSL\"]          = responseBody.has(data.route.ssl);",
 									"",
 									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									""
 								]
 							}
@@ -358,8 +373,8 @@
 								"description": ""
 							},
 							{
-								"key": "x-token",
-								"value": "{{token}}",
+								"key": "authorization",
+								"value": "JWT {{token}}",
 								"description": ""
 							}
 						],
@@ -368,6 +383,82 @@
 							"raw": ""
 						},
 						"description": "Remove a route from DB and proxy"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logs",
+			"description": "",
+			"item": [
+				{
+					"name": "Get one route copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"/*var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"destHost\": {",
+									"    \"type\": \"string\" ",
+									" },",
+									" \"destPort\":{",
+									"    \"type\": \"numeric\"",
+									" },",
+									" \"subDomain\": {",
+									"    \"type\": 'string'",
+									" },",
+									" \"active\": {",
+									"    \"type\": 'boolean'",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === null;",
+									"tests[\"Contain a route\"]    = data.route !== null;",
+									"",
+									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
+									"tests[\"Has a host\"]         = responseBody.has(data.route.destHost);",
+									"tests[\"Has a port\"]         = responseBody.has(data.route.destPort);",
+									"tests[\"Has a domain\"]       = responseBody.has(data.route.subDomain);",
+									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;*/",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/log",
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "_id",
+									"value": "575c96e27512737c104d3458",
+									"type": "text",
+									"enabled": false
+								}
+							]
+						},
+						"description": "Get just one route of proxy with a specified ID"
 					},
 					"response": []
 				}
@@ -388,10 +479,11 @@
 									"var data = JSON.parse(responseBody);",
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
 									"tests[\"Return an array\"]    = Array.isArray(data.users);",
 									"tests[\"At least one route\"] = data.users.length > 0;",
 									"",
-									"//tests[\"Response time is less than 200ms\"] = responseTime < 200;"
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;"
 								]
 							}
 						}
@@ -401,8 +493,8 @@
 						"method": "GET",
 						"header": [
 							{
-								"key": "X-Token",
-								"value": "{{token}}",
+								"key": "authorization",
+								"value": "JWT {{token}}",
 								"description": ""
 							}
 						],

@@ -1,75 +1,82 @@
-const Winston = require('winston');
+// ----------------------------------------------------------------------------
+// requirement
+const winston = require('winston');
 const cluster = require('cluster');
-const WinstonMongo = require('winston-mongodb').MongoDB;
+const Mongo   = require('winston-mongodb').MongoDB;
+const db      = require('./database');
+
+// miton I HATE THIS WAY TO DO; EXPORT YOUR MODULE; YOU SHOULD NOT ATTACH IT !
 require('winston-ovh');
 
+// ----------------------------------------------------------------------------
 /**
- * This class need a valid DB connexion
- * levels: error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5 
- * @class Logger
+ * class Logger
  */
-class Logger {
+class Logger extends winston.Logger {
+
 
   /**
    * Creates an instance of Logger.
-   * 
-   * @constructor
+   *
+   *
    * @memberOf Logger
    */
   constructor() {
+    super();
+    this.name = (cluster.isMaster)? 'master' : `worker-${cluster.worker.id}`;
 
-    this.nodeName = '';
-    if (cluster.isMaster) this.nodeName = 'master'
-    else if (cluster.isWorker) this.nodeName = `node-${cluster.worker.id}`
-    else this.nodeName = 'unknow'
-    this.pid = process.pid;
-
-    this.winston = new Winston.Logger({
-      
-      transports: [
-        // Console Transport
-        new Winston.transports.Console({
-          name: "console",
-          level: "debug",
-          colorize: true,
-          prettyPrint: true
-        }),
-        // Mongo Transport
-        new WinstonMongo({
-          name: 'mongo',
-          level: 'info',
-          db: process.env.PROXY_DB,
-          collection: 'log',
-          // Store hostname, for multiple instances
-          storeHost: false,
-          tryReconnect: true,
-          decolorize: true
-        })
-      ],
+    // -----------------------------------------------------------------------
+    // Log to console all level without silly
+    this.add(winston.transports.Console, {
+      name: 'console',
+      level: 'debug',
+      colorize: true,
+      prettyPrint: true
     });
 
-    this.winston.filters.push((level, msg, meta) => {
-          return `[${this.nodeName}] ${msg}`;
-    });
-    this.winston.rewriters.push((level, msg, meta) => {
-          meta.pid = this.pid;
-          return meta;
+    // -----------------------------------------------------------------------
+    // Log to MongoDB from error to info
+    this.add(Mongo, {
+      name: 'mongo',
+      level: 'info',
+      db: db.uri,
+      collection: 'logs',
+      storeHost: false,
+      tryReconnect: true,
+      decolorize: true,
+      capped: true,
+      cappedSize: 400000000, // In bytes (400M)
+      cappedMax: 1000000  // max 1000000 (documents)
     });
 
-    if (process.env.PROXY_OVH_KEY !== undefined) {
-      this.winston.add(Winston.transports.ovh, {
-        token: process.env.PROXY_OVH_KEY
+    if (process.env.PROXY_WINSTON_OVH_CREDENTIAL) {
+      this.add(Winston.transports.ovh, {
+        token: process.env.PROXY_WINSTON_OVH_CREDENTIAL
       });
     }
+
+    // -----------------------------------------------------------------------
+    // Used to rewrite log message, must return a message
+    this.filters =   [
+      (level, msg, meta) => {
+        return `[${this.name}] ${msg}`;
+      }
+    ];
+
+    // -----------------------------------------------------------------------
+    // Used to edit meta, must the return metas
+    this.rewriters = [
+      (level, msg, meta) => {
+        if (level === 'error' || level === 'warn')
+          meta.pid = process.pid;
+        return meta;
+      }
+    ];
   }
 
   /**
-   * 
-   * 
-   * @static
-   * @return {Logger}
-   * 
-   * @memberOf Logger
+   * get an instance of logger
+   * @return {Logger} the logger instance
    */
   static getInstance() {
     if (!(Logger.instance instanceof Logger))
@@ -78,4 +85,6 @@ class Logger {
   }
 }
 
-module.exports = Logger.getInstance().winston;
+// ----------------------------------------------------------------------------
+// exports
+module.exports = Logger.getInstance();

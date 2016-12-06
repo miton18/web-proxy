@@ -1,201 +1,211 @@
-const httpProxy = require('http-proxy');
+// ----------------------------------------------------------------------------
+// requirements
+const Proxy = require('http-proxy');
+const http = require('http');
+const logger = require('./utils/logger');
 const Db = require('./utils/database');
-const Log = require('./utils/logger');
 
+// ----------------------------------------------------------------------------
 /**
- * 
- * 
- * @class Router
+ * class Router
  */
 class Router {
 
   /**
-   * Creates an instance of Router.
-   * 
-   * @constructor
+   * constructor
    */
   constructor() {
-    // An array of Route model
     this.routes = [];
-    // Initialise Routes
-    this.loadRoutes();
-    // Proxy Core
-    this.proxy = httpProxy.createProxyServer({
+    this.proxy = Proxy.createProxyServer({
       ws: true,
-      // Donn't verify SSl certs
       secure: false,
-      proxyTimeout: 300 // ms
-    })
-    .on('error', Log.error);
+      proxyTimeout: 300
+    });
   }
 
   /**
-   * Singleton
-   * 
-   * @static
-   * @return {Router}
-   * 
-   * @memberOf Router
-   */ 
+   * get instance singleton
+   * @return {Router} the router instance
+   */
   static getInstance() {
-    if (!(Router.instance instanceof Router)) 
+    if (!(Router.instance instanceof Router))
       Router.instance = new Router();
     return Router.instance;
   }
 
   /**
-   * Load Routes from Mongo database
-   * 
-   * @memberOf Router
+   * Initialize function that is trigger at start
+   * @return {Promise<Object>} when the router is on
    */
-  loadRoutes() {
-    Db.models.Route.find(null, (err, routes) => {
-      if (err) {
-        Log.error(err);
-      } else {
-        this.routes = routes;
-      }
-    });
-  }
-
-  /**
-   * Create a new Route Return a Promise
-   * 
-   * @param {Object} Object with Route attributes
-   * @returns {Promise}
-   * 
-   * @memberOf Router
-   */
-  addRoute(obj) {
+  initialize() {
     return new Promise((resolve, reject) => {
-      let tmp = new (Db.models.Route)(obj);
-      tmp.save(err => {
-        if (err) {
-          Log.error('Failed to save new Route : ' + tmp.subDomain, obj);
-          reject(err);
-        } 
-        else {
-          this.routes.push(tmp);
-          Log.debug("OK add new Route", tmp.toObject());
-          resolve(tmp);
-          this.loadRoutes();
+      Db.models.Route.find({active: true}, (error, routes) => {
+        if (error) {
+          reject(error);
         }
+
+        this.routes = routes;
+        logger.info(`Load ${routes.length} routes`);
+
+        http
+          .createServer(this.handleRoute)
+          .listen(process.env.PROXY_PORT || 80, () => {
+            logger.info(`Proxy listen at ${process.env.PROXY_PORT || 80}`);
+
+            resolve();
+          });
       });
     });
   }
 
   /**
-   * Remove an existing route
-   * 
-   * @param {Route} route
-   * @returns {Promise}
-   * 
-   * @memberOf Router
+   * find a route by id
+   * @param {ObjectId} _id the id
+   * @return {RouteModel} the route
+   */
+  findRouteById(_id) {
+    for (const route of this.routes) {
+      if (route._id.equals(_id)) {
+        return route;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * find routes by destination host
+   * @param {String} host the host
+   * @return {RouteModel} routes
+   */
+  findRouteByHost(host) {
+    for (const route of this.routes) {
+      if (route.host === host) {
+        return route;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * find routes by request domain
+   * @param {String} domain the host
+   * @return {RouteModel} routes
+   */
+  findRouteByDomain(domain) {
+    for (const route of this.routes) {
+      if (route.domain === domain) {
+        return route;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * add a route
+   * @param {RouteSchema} schema the schema
+   * @return {Promise<RouteModel>} the result
+   */
+  addRoute(schema) {
+    return new Promise((resolve, reject) => {
+      let route = new Db.models.Route(schema);
+
+      route.save((error) => {
+        if (error) {
+          return reject(error);
+        }
+
+        this.routes.push(route);
+
+        resolve(route);
+      });
+    });
+  }
+
+  /**
+   * remove a route
+   * @param {RouteModel} route the route to remove
+   * @return {Promise<Object>} when the operation is finished
    */
   removeRoute(route) {
     return new Promise((resolve, reject) => {
-      route.remove(err => {
-        if (err) {
-          Log.error("Fail to remove this Route", route.toObject());
-          reject(err);
-        } else {
-          Log.debug("Route deleted", route.toObject());
-          resolve(route);
-          this.loadRoutes();
+      this.routes = this.routes.filter((item) => item._id !== route._id);
+      route.remove((error) => {
+        if (error) {
+          return reject(error);
         }
+
+        resolve();
       });
     });
   }
 
   /**
-   * Modify an existing route
-   * 
-   * @param {Route} route
-   * @returns {Promise}
-   * 
-   * @memberOf Router
+   * edit a route
+   * @param {RouteModel} route the route to edit
+   * @return {Promise<Object>} when the operation is finished
    */
-  editRoute(route) {
-    return new Promise((resolve, reject) => { 
-      route.save((err) => {
-        if (err) {
-          Log.error('Fail to update route', route.toObject());
-          reject(err);
-        } else {
-          resolve(route);
-        }
-      });
-    });
-  }
-
-  /**
-   * HTTP Request handle to proxy response
-   * Return an handler
-   * @return {Function}
-   * 
-   * @memberOf Router
-   */
-  getProxyApp() {
-    return (req, res) => {
-      // detect subDomain
-      let splited   = req.headers.host.split(/(\w+)\b/ig);
-      let subDomain = splited[splited.length - 6];
-      Log.debug(`Proxy request for ${subDomain}`);
-
-      let route = this.findRouteByHost(subDomain);
-      Log.debug(route);
-      if (route === null) {
-        res.writeHead(404, {'Content-Type': 'application/json'})
-        return res.write(JSON.stringify({
-          err: "Proxy don't know your route"
-        }));
+  updateRoute(route) {
+    return new Promise((resolve, reject) => {
+      if (!this.findRouteById(route._id)) {
+        return this
+          .addRoute(route)
+          .then(resolve)
+          .catch(reject);
       }
 
-      let target = `http${route.forwardSSL? 's': ''}://${route.destHost}:${route.destPort}`;
-      Log.debug(target);
-      this.proxy.web(req, res, { 
-        target: target  
-      }, (err) => {
-        if (err) {
-          Log.error(err);
-          res.writeHead(500, {'Content-Type': 'application/json'})
-          res.end(JSON.stringify({
-            err: 'An error occured'
-          }));
-        } 
+      const {_id} = route;
+      Db.models.Route.update({_id}, route, (error, route) => {
+        if (error) {
+          return reject(error);
+        }
+
+        this.routes = this.routes.map((item) => {
+          if (item._id === route._id) {
+            return route;
+          }
+
+          return item;
+        });
+
+        resolve(route);
       });
-    };
+    });
   }
 
   /**
-   * Find a route with a unique ID
-   * 
-   * @param {Number} id
-   * @return {Route}
-   * 
-   * @memberOf Router
+   * handle a route
+   * @param {any} request the request
+   * @param {any} response the response
+   * @return {void}
    */
-  findRouteById(id) {
-    for (let route of this.routes) {
-      if (route._id.toHexString() === id) return route;
-    }
-    return null;
-  }
+  handleRoute(request, response) {
+    const host = request.headers.host;
+    const route = this.findRouteByDomain(host);
 
-  /**
-   * Find a route with a Host name
-   * 
-   * @param {String} host
-   * @returns {Route}
-   * 
-   * @memberOf Router
-   */
-  findRouteByHost(host) {
-    for (let route of this.routes) {
-      if (route.subDomain === host) return route;
+    if (!route) {
+      return response
+        .status(404)
+        .end();
     }
-    return null;
+
+    let protocol = 'http';
+    if (route.ssl) {
+      protocol = 'https';
+    }
+
+    let target = `${protocol}://${route.host}:${route.port}`;
+    this.proxy.web(request, response, {target}, (error) => {
+      if (error) {
+        return response
+          .status(500)
+          .end();
+      }
+    });
   }
 }
 
+// ----------------------------------------------------------------------------
+// exports
 module.exports = Router.getInstance();

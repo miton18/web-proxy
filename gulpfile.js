@@ -13,18 +13,28 @@ gulp.task('watch', function() {
 });
 
 // test
-gulp.task('test', ['test:mocha', 'test:lint']);
+gulp.task('tests', ['tests:mocha', 'tests:lint']);
 
 // test:mocha
-gulp.task('test:mocha', function() {
-  return gulp.src(['tests/**/*.js'])
-             .pipe(plugins.mocha());
+gulp.task('tests:mocha', function() {
+  return gulp
+    .src(['tests/**/*.js'], {read: false})
+    .pipe(plugins.lineEndingCorrector({
+      eolc: 'LF',
+      encoding: 'utf8'
+    }))
+    .pipe(plugins.mocha());
 });
 
 // test:lint
-gulp.task('test:lint', function() {
-  return gulp.src(['src/**/*.js', 'tests/**/*.js'])
-             .pipe(plugins.eslint())
-             .pipe(plugins.eslint.format())
-             .pipe(plugins.eslint.failAterError());
+gulp.task('tests:lint', function() {
+  return gulp
+    .src(['src/**/*.js', 'tests/**/*.js'])
+    .pipe(plugins.lineEndingCorrector({
+      eolc: 'LF',
+      encoding: 'utf8'
+    }))
+    .pipe(plugins.eslint())
+    .pipe(plugins.eslint.format())
+    .pipe(plugins.eslint.failOnError());
 });

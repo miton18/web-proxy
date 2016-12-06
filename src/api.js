@@ -1,43 +1,60 @@
-const express     = require('express');
+// ----------------------------------------------------------------------------
+// requirements
+const cors = require('cors');
+const helmet = require('helmet');
 const compression = require('compression');
-const bodyParser  = require('body-parser');
-const jwt         = require('jwt-simple');
-const Router      = require('./router');
-const Log         = require('./utils/logger');
-const Db          = require('./utils/database');
-const protected   = require('./utils/auth');
+const body = require('body-parser');
+const express = require('express');
+const router = express.Router;
+const morgan = require('morgan');
+const logger = require('./utils/logger');
+const methodOverride = require('method-override');
+const routes = require('./settings/routes');
 
-const app = express();
-const api = express.Router();
+// ----------------------------------------------------------------------------
+/**
+ * class API
+ */
+class Api {
 
-/*************************** 
- * USES
-***************************/
-app.use('/api', api);
-app.use(compression());
-api.use(compression());
-app.use(bodyParser.json());
-api.use(bodyParser.json());
+  /**
+   * initialize the api
+   * @return {Promise<Object>} when the api is lauched
+   */
+  initialize() {
+    return new Promise((resolve, reject) => {
+      logger.info('[API] Create API');
 
-/*************************** 
- * Params
-***************************/
+      this.port = process.env.PROXY_API_PORT || 8080;
+      this.application = express();
+      this.api = router();
 
-/*************************** 
- * Routes
-***************************/ 
-app.get('/200', (req, res) => {
-  res.status(200).json({err: null, message: "It's fine !"});
-});
+      this.application
+        .use(cors())
+        .use(methodOverride())
+        .use(helmet())
+        .use(compression())
+        .use(body.json())
+        .use(body.urlencoded({extended: true}))
+        .use('/api', this.api);
 
-api.get('/check', (req, res) => {
-  res.json({});
-});
+      if (process.env.NODE_ENV !== 'production') {
+        this.application.use(morgan('dev'));
+      }
 
-api.use('/route', require('./controller/route'));
-api.use('/log',   require('./controller/log'));
-api.use('/token', require('./controller/token'));
-api.use('/user',  require('./controller/user'));
+      for (const route of routes)
+        this.api.use(route.mountpoint, require('./api/' + route.name));
 
+      this.application.listen(this.port, () => {
+        logger.info(`[API] Api listen on port ${this.port}`);
 
-module.exports = app;
+        resolve();
+      });
+    });
+  }
+
+}
+
+// ----------------------------------------------------------------------------
+// exports
+module.exports = Api;

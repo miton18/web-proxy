@@ -1,29 +1,41 @@
+// ----------------------------------------------------------------------------
+// requirements
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-/**
- * Route model
- * Used by Proxy
- */
-module.exports = mongoose.model("Route", new Schema({
 
+// ----------------------------------------------------------------------------
+// create schema
+let RouteSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true
   },
-  subDomain: {
+
+  domain: {
     type: String,
-    required: "You must provide a domain for a route"
+    required: 'You must provide a domain for a route'
   },
-  destPort: {
+
+  port: {
     type: Number,
-    required: "You must provide a port for a route"
+    required: 'You must provide a port for a route'
   },
-  destHost: {
+
+  host: {
     type: String,
-    default: "127.0.0.1"
+    required: 'You must provide a host for a route',
+    default: '127.0.0.1'
   },
-  forwardSSL: {
+
+  ssl: {
     type: Boolean,
     default: false
   }
-}));
+});
+
+// ----------------------------------------------------------------------------
+// create model from schema
+let RouteModel = mongoose.model('Route', RouteSchema);
+
+// ----------------------------------------------------------------------------
+// export model
+module.exports = RouteModel;

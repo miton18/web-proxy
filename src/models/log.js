@@ -1,24 +1,35 @@
+// ----------------------------------------------------------------------------
+// requirements
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-/**
- * Log model
- * This is the model used by Winston only change it with Winston update
- */
-module.exports = mongoose.model("Log", new Schema({
 
+// ----------------------------------------------------------------------------
+// create schema
+const LogSchema = new Schema({
   timestamp: {
     type: Date,
-    required: "Need a TS"
+    required: 'You must provide a timestamp'
   },
+
   message: {
     type: String,
-    required: "Logging without logging message?"
+    required: 'You must provide a message'
   },
+
   level: {
     type: String,
-    required: "Need a logging level"
+    required: 'You must provide a logging level'
   },
+
   meta: {
     type: Object
   }
-}));
+});
+
+// ----------------------------------------------------------------------------
+// create model
+const Log = mongoose.model('Log', LogSchema);
+
+// ----------------------------------------------------------------------------
+// exports
+module.exports = Log;

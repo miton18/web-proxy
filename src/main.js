@@ -1,71 +1,97 @@
-if (process.execArgv[0] != undefined)
-  process.execArgv[0] = process.execArgv[0].replace('-brk', '');
+// ----------------------------------------------------------------------------
+// vscode hack
+if (process.execArgv[1])
+  process.execArgv[1] = process.execArgv[1].replace('-brk', '');
 
-const cluster     = require('cluster'); 
-const Log         = require('./utils/logger');
-const Reporter    = require('./utils/reporter');
+// ----------------------------------------------------------------------------
+// requirements
+const cluster   = require('cluster');
+const reporter  = require('./utils/reporter');
+const logger    = require('./utils/logger');
 
+// ----------------------------------------------------------------------------
+// master
 if (cluster.isMaster) {
+  const os = require('os');
+  const init = require('./init');
 
-  let os      = require('os');
-  let init    = require('./init');
-  let env     = process.env;
-  let numCPUs = os.cpus().length;
-  // Force round-robin
-  cluster.schedulingPolicy = cluster.SCHED_RR;
+  // --------------------------------------------------------------------------
+  // environements
+  if (!process.env.PROXY_JWT_SECRET) {
+    logger.error('[bootstrap] PROXY_JWT_SECRET variable environement is not set');
 
-  Log.info('[bootstrap] Proxy master is starting');
-  Reporter.incrementMetric('action.start');
-
-  if (    env['PROXY_DB']   == undefined 
-      ||  env['PROXY_JWT_SECRET']  == undefined 
-      ||  env['PROXY_SALT'] == undefined ) {
-        console.error('[bootstrap] Missing at least one env var : PROXY_DB PROXY_KEY PROXY_SALT');
-        process.exit();
+    process.exit(1);
+  } else {
+    logger.info('[bootstrap] JWT secret loaded');
   }
 
-  // Do some stuff like create first user
-  init();
-  
-  for (let i = 0; i < numCPUs; i++) {
-    let t = cluster.fork();
-    t.on('exit', function(code, signal) {
-      this. 
+  if (!process.env.PROXY_MONGODB_ADDON_URI &&
+      (
+        !process.env.PROXY_MONGODB_ADDON_USER &&
+        !process.env.PROXY_MONGODB_ADDON_PASSWORD &&
+        !process.env.PROXY_MONGODB_ADDON_DB &&
+        !process.env.PROXY_MONGODB_ADDON_HOST &&
+        !process.env.PROXY_MONGODB_ADDON_PORT
+      )
+    ) {
+    logger.error('[bootstrap] Please set environements variables to connect mongodb');
+
+    process.exit(1);
+  } else {
+    logger.info('[bootstrap] MongoDB parameters loadeds');
+  }
+
+  if (!process.env.PROXY_PEPPER) {
+    logger.error(`[bootstrap] PROXY_PEPPER environement variable is not set`);
+    process.exit(1);
+  } else
+    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
+
+  if (!process.env.PROXY_JWT_ISSUER || ! process.env.PROXY_JWT_AUDIENCE) {
+    logger.error(`[bootstrap] PROXY_JWT_ISSUER or PROXY_JWT_AUDIENCE
+      environement variable is not set`);
+    process.exit(1);
+  } else
+    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
+
+  // --------------------------------------------------------------------------
+  // reporter
+  reporter.incrementMetric('action.start');
+
+  // --------------------------------------------------------------------------
+  // create workers
+  cluster.schedulingPolicy = cluster.SCHED_RR;
+  cluster.setupMaster({
+    silent: false
+  });
+
+  for (let i = 0, n = os.cpus().length; i < n; ++i) {
+    cluster
+    .fork()
+    .addListener('exit', (code, signal) => {
+      Log.warn(`[main] Worker exited, start new one`, {code, signal});
+      reporter.incrementMetric('worker.died', 1);
       cluster.fork();
     });
-    Log.debug(`[bootstrap] worker ${t.process.pid} is lunched`);
   }
 
-  cluster.on('exit', (worker, code, signal) => {
-    Log.warn(`Master ${worker.process.pid} died`);
+  cluster.addListener('online', (worker) => {
+    logger.info(`[main] Worker ${worker.process.pid} is online`);
   });
-  cluster.on('online', (worker) => {
-    Log.info('Worker ' + worker.process.pid + ' is online');
+
+  cluster.addListener('exit', (worker, code, signal) => {
+    logger.error(`[main] Master ${worker.process.pid} died`);
+    reporter.incrementMetric('master.died', 1);
   });
+
+  // -------------------------------------------------------------------------
+  // Create first user etc...
+  init();
+
+// ----------------------------------------------------------------------------
+// worker
+} else {
+  // --------------------------------------------------------------------------
+  // variables
+  require('./worker');
 }
-/**
- * Workers code
- */
-if (cluster.worker) {
-
-  const worker = require('./worker');
-  worker.start();
-}
-
-/**
- * Events on all process Master & workers
- */
-process.on('uncaughtException', err => {
-  Log.error(err.message, err
-  );
-  Reporter.incrementMetric('error.uncaught');
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  Log.error(reason, {
-    from: 'uncaughtException',
-    promise: promise
-  });
-  Reporter.incrementMetric('error.rejection');
-  Log.debug(promise);
-});

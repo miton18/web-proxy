@@ -15,17 +15,14 @@ cache:
 
 before_install:
 - npm install -g newman
-- npm install
-
-install:
-- sudo docker build -t test .
 
 before_script:
-- sudo docker run -d --net=host -e PROXY_DB=$PROXY_DB -e PROXY_JWT_SECRET=$PROXY_JWT_SECRET -e PROXY_SALT=$PROXY_SALT
-  -e PROXY_ENV=$PROXY_ENV test
+- sudo docker build -t test .
+- env | grep PROXY > env
+- sudo docker run -d --net=host --env-file env test
 
 script:
-- sleep 45
+- sleep 60
 - npm test
 
 after_success:

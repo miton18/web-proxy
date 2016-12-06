@@ -1,70 +1,77 @@
-const os = require('os');
-const log = require('./logger');
+// ----------------------------------------------------------------------------
+const os      = require('os');
 const cluster = require('cluster');
-
+const Log     = require('./logger');
 /**
- * Reporter is a Trace singleton
- *
- * @class Reporter
+ * class Reporter
  */
 class Reporter {
 
   /**
-   * Creates an instance of Reporter.
-   * 
-   * @constructor
-   * @memberOf Reporter
+   * constructor
    */
   constructor() {
-    if (process.env.PROXY_TRACE_KEY === undefined) {
-      log.warn('No Trace reporter is defined, set PROXY_TRACE_KEY env var to enable it');
-      this.active = false;
-    }
-    else {
-      this.nodeName = '';
-      if (cluster.isMaster) this.nodeName = 'master'
-      else if (cluster.isWorker) this.nodeName = cluster.worker.id
-      else this.nodeName = 'unknow'
+    this.active = false;
 
-      let name = `proxy-${os.hostname()}-${this.nodeName}`;
-      process.env.TRACE_SERVICE_NAME = name;
-      process.env.TRACE_API_KEY = process.env.PROXY_TRACE_KEY;
-
+    if (this.traceApiKey) {
+      this.active = true;
+      process.env.TRACE_SERVICE_NAME = this.traceServiceName;
+      process.env.TRACE_API_KEY      = this.traceApiKey;
       this.trace = require('@risingstack/trace');
 
-      /* this.trace.report('order/orderAmount', {test: true});
-      this.trace.incrementMetric('order/gpu');
-      this.trace.recordMetric('order/orderAmountaaa', 412); */
-
-      log.info('Trace reporter enabled, his name is : ' + name);
-      this.active = true;
+      Log.debug(`Reporter enabled, name : ${this.traceServiceName}`);
     }
   }
 
   /**
-   * Take a Trace metric, add 1 and store it
-   * 
-   * @param {String} Metric name
-   * 
-   * @memberOf Reporter
-   */
-  incrementMetric(m) {
-    if (this.active) this.trace.incrementMetric(m);
-  }
-
-  /**
-   * return an instance of Singleton
-   * 
-   * @static
-   * @return {Reporter}
-   * 
-   * @memberOf Reporter
+   * return a reporter instance
+   * @return {Reporter} the reporter instance
    */
   static getInstance() {
-    if (!(Reporter.instance instanceof Reporter)) 
+    if(!(Reporter.instance instanceof Reporter)) {
       Reporter.instance = new Reporter();
+    }
+
     return Reporter.instance;
   }
 
+  /**
+   * increment the trace metric
+   * @param {String} name the name of the the metric
+   * @param {Number} amount coefficient
+   */
+  incrementMetric(name, amount) {
+    if (this.active) {
+      this.trace.incrementMetric(name, amount);
+    }
+  }
+
+  /**
+   * get the trace api key
+   * @return {String} the trace api key
+   */
+  get traceApiKey() {
+    let key = process.env.PROXY_TRACE_KEY || null;
+    if (key === null) Log.warn('No Trace reporter is defined, ' +
+      ' set PROXY_TRACE_KEY env var to enable it');
+    return key;
+  }
+
+  /**
+   * get the trace service name
+   * @return {String} the trace service name
+   */
+  get traceServiceName() {
+    let name = '';
+    if (cluster.isMaster) name = 'master';
+    else if (cluster.isWorker) name = cluster.worker.id;
+    else name = 'unknow';
+    return (
+      `Proxy-${os.hostname()}:${name}`
+    );
+  }
 }
+
+// ----------------------------------------------------------------------------
+// exports
 module.exports = Reporter.getInstance();

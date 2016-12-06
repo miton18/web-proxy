@@ -1,108 +1,162 @@
+// ----------------------------------------------------------------------------
+// requirements
 const mongoose = require('mongoose');
-const bCrypt = require('bcrypt-nodejs');
-const jwt = require('jwt-simple');
-const Log = require('../utils/logger');
-const Schema = mongoose.Schema;
-const authorisations = require('../schemas/authorisations');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt-nodejs');
+const uuid = require('uuid');
 
-/**
- * User model
- * Used by Proxy
- */
-let UserSchema = new Schema({
+// ----------------------------------------------------------------------------
+// create schema
 
-  username:{
+let UserSchema = new mongoose.Schema({
+  username: {
     type: String,
-    index: true,
+    required: 'You must provide a user name',
     unique: true,
-    required: "You must provide a user name"
+    index: true
   },
+
+  salt: {
+    // must be initialised with the first password
+    type: String,
+    required: false
+  },
+
   password: {
     type: String,
-    set: setPassword,
-    required: "You must provide a password"
+    required: 'You must provide a password',
+    set: function(password) {
+      let pepper = process.env.PROXY_PEPPER;
+      if (!this.salt) {
+        // generate a random salt here
+        this.salt = bcrypt.genSaltSync();
+      }
+      return bcrypt.hashSync(`${pepper}:${password}`, this.salt);
+    }
   },
+
+  mail: {
+    type: String,
+    required: false
+  },
+
   firstConnection: {
     type: Date,
-    default: null
+    required: false
   },
   lastConnection: {
     type: Date,
     default: new Date()
-  },
-  mail: {
-    type: String
-  },
+  }
 });
 
+// ----------------------------------------------------------------------------
+// methods
+
 /**
- * Compare each Hash
- * return a promise
- * 
- * param {String} password to check
- * return {Boolean}
+ * set the password of the user, if no salt exists it will be created. The hash
+ * field is sha512 fieldprint
+ * @param {String} password the user password
+ * @return {Promise<UserModel>} return a promise with the user model in parameter
  */
-UserSchema.methods.checkPassword = function(password) {
-  
+UserSchema.methods.setPassword = function(password) {
   return new Promise((resolve, reject) => {
-    let salt = process.env.PROXY_SALT;
-    if (salt === undefined) {
-      reject("You must set a PROXY_SALT variable");
-    }
-    bCrypt.compare(password + salt, this.password, (err, res) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(res);
+    let pepper = process.env.PROXY_PEPPER;
+
+    new Promise((resolve, reject) => {
+      if (!this.salt) {
+        // generate a random salt here
+        bcrypt.genSalt((err, salt) => {
+          if (error) {
+            return reject(error);
+          }
+          this.salt = salt;
+          return resolve();
+        });
+      } else
+        return resolve();
+    }).then(() => {
+      // generate a fieldprint with BCrypt
+      bcrypt.hash(`${pepper}:${password}`, this.salt, () => {}, (error, password) => {
+        if (error) {
+          return reject(error);
+        }
+
+        this.password = password;
+        this.save((error) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(this);
+        });
+      });
+    })
+    .catch((err) => {
+      reject(err);
     });
   });
-}
+};
 
 /**
- * Hash and store password
- * return true or false
- * 
- * @param {String} password
- * @returns {String} Hashed password
+ * check if the password is correct
+ * @param {String} password the user password
+ * @return {Promise<boolean>} a boolean if is the correct password
  */
-function setPassword (password) {
+UserSchema.methods.checkPassword = function(password) {
+  return new Promise((resolve, reject) => {
+    let pepper = process.env.PROXY_PEPPER;
 
-    let salt = process.env.PROXY_SALT;
-    if (salt === undefined) {
-      Log.error("You must set a env.PROXY_SALT variable");
-      salt = '';
-    }
+    // generate a fieldprint with sha512
+    bcrypt.hash(`${pepper}:${password}`, this.salt, () => {}, (error, hash) => {
+      if (error) {
+        return reject(error);
+      }
 
-    let hash = bCrypt.hashSync(password + salt, '');
-    return hash; 
-  }
+      resolve(this.password === hash);
+    });
+  });
+};
 
 /**
- * Generate a JWT for a user
- * Take an array of authorisation(Schema) and a Date of expiration
- * @params {Array} Paths
- * @param {Date} Expiration date
+ * generate a personnal json web token
+ * @param {Array<{method: String, path: String}>} authorizations
+ * routes that the user is able to use
+ * @param {Date} expiration the date of expiration of the json web token
+ * @return {Promise<String>} a promise that return the token
  */
-UserSchema.methods.generateJwt = function(authorisations, expirationDate) {
+UserSchema.methods.generateJwt = function(authorizations, expiration) {
+  return new Promise((resolve, reject) => {
+    const {_id} = this;
 
-  if (process.env.PROXY_JWT_SECRET === undefined) {
-    Log.error("You must provide a key to generate JWTs");
-    return null;
-  }
+    let payload = {
+      sub: _id,
+      authorizations,
+      expirationAt: expiration,
+      creationAt: Date.now()
+    };
 
-  if( isNaN(expirationDate) ) {
-    expirationDate = expirationDate.getTime();
-  }
+    let options = {
+      algorithm: 'HS512',
+      expiresIn: expiration - Date.now(),
+      notBefore: 0,
+      issuer: process.env.PROXY_JWT_ISSUER,
+      audience: process.env.PROXY_JWT_AUDIENCE,
+      jwtid: uuid()
+    };
 
-  return jwt.encode({  
-    _id: this._id,
-    username: this.username,
-    mail: this.mail,
-    authorisations: authorisations,
-    expiration: expirationDate,
-    creation: Date.now()
+    jwt.sign(payload, process.env.PROXY_JWT_SECRET, options, (error, token) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(token);
+    });
+  });
+};
 
-  }, process.env.PROXY_JWT_SECRET);
-}
+// ----------------------------------------------------------------------------
+// create model from schema
+let UserModel = mongoose.model('User', UserSchema);
 
-module.exports = mongoose.model("User", UserSchema);
+// ----------------------------------------------------------------------------
+// exports
+module.exports = UserModel;

@@ -1,12 +1,10 @@
+// ----------------------------------------------------------------------------
+// requirements
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-/**
- * Certificates model
- * Used by Let's Encrypt
- */
-module.exports = mongoose.model("Certificate", new Schema({
-
+// ----------------------------------------------------------------------------
+// create schema
+let CertificateSchema = new mongoose.Schema({
   privkey: String,
   cert: String,
   chain: String,
@@ -14,5 +12,12 @@ module.exports = mongoose.model("Certificate", new Schema({
   issuedAt: String,
   subject: String,
   altnames: String
+});
 
-}));
+// ----------------------------------------------------------------------------
+// create model from schema
+let CertificateModel = mongoose.model('Certificate', CertificateSchema);
+
+// ----------------------------------------------------------------------------
+// exports model
+module.exports = CertificateModel;
