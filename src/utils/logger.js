@@ -43,7 +43,10 @@ class Logger extends winston.Logger {
       collection: 'logs',
       storeHost: false,
       tryReconnect: true,
-      decolorize: true
+      decolorize: true,
+      capped: true,
+      cappedSize: 400000000, // In bytes (400M)
+      cappedMax: 1000000  // max 1000000 (documents)
     });
 
     if (process.env.PROXY_WINSTON_OVH_CREDENTIAL) {

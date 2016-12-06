@@ -17,13 +17,12 @@ before_install:
 - npm install -g newman
 - npm install
 
-install:
-- sudo docker build -t test .
-
 before_script:
-- travis_wait 1 npm start
+- sudo docker build -t test .
+- sudo docker run -d --net=host --env-file <(env | grep PROXY) test
 
 script:
+- sleep 60
 - npm test
 
 after_success:
