@@ -18,24 +18,26 @@ _router
     Db.models.Log.count({}, (error, count) => {
       if (error) return json.status(500).json({error});
       res.json({
-        log_entries: count 
+        log_entries: count
       });
-    })
+    });
   });
 
 _router.ws('/stream', (ws, req) => {
   ws.on('message', (token) => {
-    //auth
+    // auth
     authenticationJwt({  // Request
       headers: {
         authorization: token
       }
     }, {  // Response
-      status: (code) => { return {
-        json: (authResponse) => {
-          return ws.send(`Fail : ${JSON.stringify(authResponse)}`);
-        }
-      }}
+      status: (code) => {
+        return {
+          json: (authResponse) => {
+            return ws.send(JSON.stringify(authResponse));
+          }
+        };
+      }
     }, () => { // Next
       ws.send('stream starting...');
       Db.models.Log.find({
@@ -50,7 +52,6 @@ _router.ws('/stream', (ws, req) => {
       }).on('error', (error) => {
         Log.error('[api][ws] error', error);
       }).on('close', () => {
-        
       });
     });
   });
