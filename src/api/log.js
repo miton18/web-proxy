@@ -27,9 +27,7 @@ _router.ws('/stream', (ws, req) => {
   ws.on('message', (token) => {
     // auth
     authenticationJwt({  // Request
-      headers: {
-        authorization: token
-      }
+      headers: JSON.parse(token)
     }, {  // Response
       status: (code) => {
         return {
