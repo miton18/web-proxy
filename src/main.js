@@ -83,6 +83,23 @@ if (cluster.isMaster) {
     logger.error(`[main] Master ${worker.process.pid} died`);
     reporter.incrementMetric('master.died', 1);
   });
+  cluster.on('message', (worker, msg) => {
+    logger.debug('message from worker', msg);
+    switch (msg.component) {
+      case 'Router':
+        switch (msg.action) {
+          case 'refresh':
+            for(let id in cluster.workers)
+              if(cluster.workers.hasOwnProperty(id))
+                cluster.workers[id].send({
+                  component: 'Router',
+                  action: 'refresh'
+                });
+            break;
+        };
+        break;
+    };
+  });
 
   // -------------------------------------------------------------------------
   // Create first user etc...

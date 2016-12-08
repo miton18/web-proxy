@@ -4,6 +4,7 @@ const Proxy = require('http-proxy');
 const http = require('http');
 const logger = require('./utils/logger');
 const Db = require('./utils/database');
+const cluster = require('cluster');
 
 // ----------------------------------------------------------------------------
 /**
@@ -15,11 +16,25 @@ class Router {
    * constructor
    */
   constructor() {
-    this.routes = [];
+    this.mapRoutesID = new Map();
+    this.mapRoutesDomain = new Map();
     this.proxy = Proxy.createProxyServer({
       ws: true,
       secure: false,
-      proxyTimeout: 300
+      proxyTimeout: 500
+    });
+
+    process.on('message', (msg) => {
+      if (msg.component == 'Router')
+        switch (msg.action) {
+          case 'refresh':
+            this.loadRoutes().then(() => {
+              logger.info('[router] Router update his routes');
+            }).catch((err) => {
+              logger.error('[router] Router fail to update his routes', error);
+            });
+            break;
+        }
     });
   }
 
@@ -39,22 +54,64 @@ class Router {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      Db.models.Route.find({active: true}, (error, routes) => {
-        if (error) {
-          reject(error);
-        }
-
-        this.routes = routes;
-        logger.info(`Load ${routes.length} routes`);
-
-        http
-          .createServer(this.handleRoute)
+      this.loadRoutes()
+      .then(
+        ()=> {
+          http
+          .createServer(Router.handleRoute)
           .listen(process.env.PROXY_PORT || 80, () => {
-            logger.info(`Proxy listen at ${process.env.PROXY_PORT || 80}`);
+            logger.info(`[router] Proxy listen at ${process.env.PROXY_PORT || 80}`);
 
             resolve();
           });
+        })
+        .catch((err) => {
+          logger.error(`[router] Fail to load initial routes`);
+          reject();
+        });
+    });
+  }
+
+  /**
+   * add all DB routes in router instance
+   * @return {Promise<Object>} resolve when routes loaded
+   */
+  loadRoutes() {
+    return new Promise((resolve) => {
+      this.mapRoutesID.clear();
+      this.mapRoutesDomain.clear();
+      Db.models.Route.find({active: true}, (error, routes) => {
+        if (error)
+          return reject(error);
+        for (const route of routes) {
+          this.mapRoutesID.set(route._id.toString(), route);
+          this.mapRoutesDomain.set(route.domain, route);
+        }
+        logger.info(`[router] Load ${routes.length} routes`);
+        resolve();
       });
+    });
+  }
+
+  /**
+   * implement routes simple array
+   * @return {Array<Route>} all Router routes
+   */
+  get routes() {
+    let res = [];
+    for(const route of this.mapRoutesID.values())
+      res.push(route);
+    return res;
+  }
+
+  /**
+   * Notify others workers to update their routes
+   */
+  notifyWorkers() {
+    logger.info('emit to cluster');
+    cluster.worker.send({
+      component: 'Router',
+      action: 'refresh'
     });
   }
 
@@ -64,12 +121,7 @@ class Router {
    * @return {RouteModel} the route
    */
   findRouteById(_id) {
-    for (const route of this.routes) {
-      if (route._id.equals(_id)) {
-        return route;
-      }
-    }
-    return null;
+    return this.mapRoutesID.get(_id);
   }
 
   /**
@@ -78,23 +130,20 @@ class Router {
    * @return {RouteModel} routes
    */
   findRouteByHost(host) {
-    for (const route of this.routes) {
-      if (route.host === host) {
+    for(const route of this.routes) {
+      if(route.host === host)
         return route;
-      }
     }
-
-    return null;
   }
 
   /**
    * find routes by request domain
-   * @param {String} domain the host
+   * @param {String} reqDomain the host
    * @return {RouteModel} routes
    */
-  findRouteByDomain(domain) {
-    for (const route of this.routes) {
-      if (route.domain === domain) {
+  findRouteByDomain(reqDomain) {
+    for (const [domain, route] of this.mapRoutesDomain) {
+      if (domain.includes(reqDomain)) {
         return route;
       }
     }
@@ -115,10 +164,8 @@ class Router {
         if (error) {
           return reject(error);
         }
-
-        this.routes.push(route);
-
         resolve(route);
+        this.notifyWorkers();
       });
     });
   }
@@ -130,13 +177,10 @@ class Router {
    */
   removeRoute(route) {
     return new Promise((resolve, reject) => {
-      this.routes = this.routes.filter((item) => item._id !== route._id);
-      route.remove((error) => {
-        if (error) {
-          return reject(error);
-        }
-
+      route.remove((err) => {
+        if (err) return reject(err);
         resolve();
+        this.notifyWorkers();
       });
     });
   }
@@ -148,28 +192,16 @@ class Router {
    */
   updateRoute(route) {
     return new Promise((resolve, reject) => {
-      if (!this.findRouteById(route._id)) {
-        return this
-          .addRoute(route)
-          .then(resolve)
-          .catch(reject);
+      if (!route._id) {
+        return resolve(this.addRoute(route));
       }
 
-      const {_id} = route;
-      Db.models.Route.update({_id}, route, (error, route) => {
+      route.update((error) => {
         if (error) {
           return reject(error);
         }
-
-        this.routes = this.routes.map((item) => {
-          if (item._id === route._id) {
-            return route;
-          }
-
-          return item;
-        });
-
         resolve(route);
+        this.notifyWorkers();
       });
     });
   }
@@ -180,14 +212,14 @@ class Router {
    * @param {any} response the response
    * @return {void}
    */
-  handleRoute(request, response) {
+  static handleRoute(request, response) {
+    const _router = Router.getInstance();
     const host = request.headers.host;
-    const route = this.findRouteByDomain(host);
+    const route = _router.findRouteByDomain(host);
 
     if (!route) {
-      return response
-        .status(404)
-        .end();
+      response.writeHead(404);
+      return response.end();
     }
 
     let protocol = 'http';
@@ -196,11 +228,10 @@ class Router {
     }
 
     let target = `${protocol}://${route.host}:${route.port}`;
-    this.proxy.web(request, response, {target}, (error) => {
+    _router.proxy.web(request, response, {target}, (error) => {
       if (error) {
-        return response
-          .status(500)
-          .end();
+        response.writeHead(500);
+        return response.end();
       }
     });
   }
