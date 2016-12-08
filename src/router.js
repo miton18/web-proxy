@@ -32,7 +32,7 @@ class Router {
               logger.info('[router] Router update his routes');
             }).catch((err) => {
               logger.error('[router] Router fail to update his routes', error);
-            })
+            });
             break;
         }
     });
@@ -54,7 +54,6 @@ class Router {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      // 
       this.loadRoutes()
       .then(
         ()=> {
@@ -82,7 +81,7 @@ class Router {
       this.mapRoutesID.clear();
       this.mapRoutesDomain.clear();
       Db.models.Route.find({active: true}, (error, routes) => {
-        if (error) 
+        if (error)
           return reject(error);
         for (let route of routes) {
           this.mapRoutesID.set(route._id.toString(), route);
@@ -100,7 +99,7 @@ class Router {
    */
   get routes() {
     let res = [];
-    for(let [k, route] of this.mapRoutesID)
+    for(let route of this.mapRoutesID.values())
       res.push(route);
     return res;
   }
@@ -140,7 +139,7 @@ class Router {
 
   /**
    * find routes by request domain
-   * @param {String} domain the host
+   * @param {String} reqDomain the host
    * @return {RouteModel} routes
    */
   findRouteByDomain(reqDomain) {
@@ -166,9 +165,6 @@ class Router {
         if (error) {
           return reject(error);
         }
-
-        //this.mapRoutesDomain.set(route.domain, route);
-        //this.mapRoutesID.set(route._id.toString(), route);
         resolve(route);
         this.notifyWorkers();
       });
@@ -184,8 +180,6 @@ class Router {
     return new Promise((resolve, reject) => {
       route.remove((err) => {
         if (err) return reject(err);
-        //this.mapRoutesDomain.delete(route.domain);
-        //this.mapRoutesID.delete(route._id.toString());
         resolve();
         this.notifyWorkers();
       });
@@ -210,9 +204,6 @@ class Router {
         if (error) {
           return reject(error);
         }
-
-        //this.mapRoutesID.set(route._id.toString(), route);
-        //this.mapRoutesDomain.set(route.domain, route);
         resolve(route);
         this.notifyWorkers();
       });
@@ -231,8 +222,8 @@ class Router {
     const route = _router.findRouteByDomain(host);
 
     if (!route) {
-      response.writeHead(404)
-      return response.end();  
+      response.writeHead(404);
+      return response.end();
     }
 
     let protocol = 'http';
