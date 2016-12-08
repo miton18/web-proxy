@@ -84,7 +84,7 @@ class Router {
         if (error)
           return reject(error);
         for (const route of routes) {
-          this.mapRoutesID.set(route._id.toString(), route);  
+          this.mapRoutesID.set(route._id.toString(), route);
           this.mapRoutesDomain.set(route.domain, route);
         }
         logger.info(`[router] Load ${routes.length} routes`);
