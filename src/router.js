@@ -61,7 +61,7 @@ class Router {
           http
           .createServer(Router.handleRoute)
           .listen(process.env.PROXY_PORT || 80, () => {
-            logger.info(`Proxy listen at ${process.env.PROXY_PORT || 80}`);
+            logger.info(`[router] Proxy listen at ${process.env.PROXY_PORT || 80}`);
 
             resolve();
           });
@@ -88,7 +88,7 @@ class Router {
           this.mapRoutesID.set(route._id.toString(), route);
           this.mapRoutesDomain.set(route.domain, route);
         }
-        logger.info(`Load ${routes.length} routes`);
+        logger.info(`[router] Load ${routes.length} routes`);
         resolve();
       });
     });
