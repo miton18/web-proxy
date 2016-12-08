@@ -83,8 +83,8 @@ class Router {
       Db.models.Route.find({active: true}, (error, routes) => {
         if (error)
           return reject(error);
-        for (let route of routes) {
-          this.mapRoutesID.set(route._id.toString(), route);
+        for (const route of routes) {
+          this.mapRoutesID.set(route._id.toString(), route);  
           this.mapRoutesDomain.set(route.domain, route);
         }
         logger.info(`[router] Load ${routes.length} routes`);
@@ -99,7 +99,7 @@ class Router {
    */
   get routes() {
     let res = [];
-    for(let route of this.mapRoutesID.values())
+    for(const route of this.mapRoutesID.values())
       res.push(route);
     return res;
   }
@@ -130,11 +130,10 @@ class Router {
    * @return {RouteModel} routes
    */
   findRouteByHost(host) {
-    for(let route of this.routes) {
+    for(const route of this.routes) {
       if(route.host === host)
         return route;
     }
-    return undefined;
   }
 
   /**
@@ -194,10 +193,7 @@ class Router {
   updateRoute(route) {
     return new Promise((resolve, reject) => {
       if (!route._id) {
-        return resolve(this
-          .addRoute(route)
-          .then(resolve)
-          .catch(reject));
+        return resolve(this.addRoute(route));
       }
 
       route.update((error) => {
