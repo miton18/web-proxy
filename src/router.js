@@ -15,11 +15,12 @@ class Router {
    * constructor
    */
   constructor() {
-    this.routes = [];
+    this.mapRoutesID = new Map();
+    this.mapRoutesDomain = new Map();
     this.proxy = Proxy.createProxyServer({
       ws: true,
       secure: false,
-      proxyTimeout: 300
+      proxyTimeout: 500
     });
   }
 
@@ -41,14 +42,16 @@ class Router {
     return new Promise((resolve, reject) => {
       Db.models.Route.find({active: true}, (error, routes) => {
         if (error) {
-          reject(error);
+          return reject(error);
         }
-
-        this.routes = routes;
+        for (let route of routes) {
+          this.mapRoutesID.set(route._id.toString(), route);
+          this.mapRoutesDomain.set(route.domain, route);
+        }
         logger.info(`Load ${routes.length} routes`);
 
         http
-          .createServer(this.handleRoute)
+          .createServer(Router.handleRoute)
           .listen(process.env.PROXY_PORT || 80, () => {
             logger.info(`Proxy listen at ${process.env.PROXY_PORT || 80}`);
 
@@ -58,18 +61,20 @@ class Router {
     });
   }
 
+  get routes() {
+    let res = [];
+    for(let [k, route] of this.mapRoutesID)
+      res.push(route);
+    return res;
+  }
+
   /**
    * find a route by id
    * @param {ObjectId} _id the id
    * @return {RouteModel} the route
    */
   findRouteById(_id) {
-    for (const route of this.routes) {
-      if (route._id.equals(_id)) {
-        return route;
-      }
-    }
-    return null;
+    return this.mapRoutesID.get(_id);
   }
 
   /**
@@ -78,13 +83,11 @@ class Router {
    * @return {RouteModel} routes
    */
   findRouteByHost(host) {
-    for (const route of this.routes) {
-      if (route.host === host) {
+    for(let route of this.routes) {
+      if(route.host === host)
         return route;
-      }
     }
-
-    return null;
+    return undefined;
   }
 
   /**
@@ -92,9 +95,9 @@ class Router {
    * @param {String} domain the host
    * @return {RouteModel} routes
    */
-  findRouteByDomain(domain) {
-    for (const route of this.routes) {
-      if (route.domain === domain) {
+  findRouteByDomain(reqDomain) {
+    for (const [domain, route] of this.mapRoutesDomain) {
+      if (domain.includes(reqDomain)) {
         return route;
       }
     }
@@ -116,7 +119,8 @@ class Router {
           return reject(error);
         }
 
-        this.routes.push(route);
+        this.mapRoutesDomain.set(route.domain, route);
+        this.mapRoutesID.set(route._id.toString(), route);
 
         resolve(route);
       });
@@ -130,13 +134,10 @@ class Router {
    */
   removeRoute(route) {
     return new Promise((resolve, reject) => {
-      this.routes = this.routes.filter((item) => item._id !== route._id);
-      route.remove((error) => {
-        if (error) {
-          return reject(error);
-        }
-
-        resolve();
+      route.remove((err) => {
+        if (err) return reject(err);
+        this.mapRoutesDomain.delete(route.domain);
+        this.mapRoutesID.delete(route._id.toString());
       });
     });
   }
@@ -148,28 +149,21 @@ class Router {
    */
   updateRoute(route) {
     return new Promise((resolve, reject) => {
-      if (!this.findRouteById(route._id)) {
-        return this
+      if (!route._id) {
+        return resolve(this
           .addRoute(route)
           .then(resolve)
-          .catch(reject);
+          .catch(reject));
       }
 
-      const {_id} = route;
-      Db.models.Route.update({_id}, route, (error, route) => {
+      route.update((error) => {
         if (error) {
           return reject(error);
         }
 
-        this.routes = this.routes.map((item) => {
-          if (item._id === route._id) {
-            return route;
-          }
-
-          return item;
-        });
-
-        resolve(route);
+        this.mapRoutesID.set(route._id.toString(), route);
+        this.mapRoutesDomain.set(route.domain, route);
+        return resolve(route);
       });
     });
   }
@@ -180,14 +174,14 @@ class Router {
    * @param {any} response the response
    * @return {void}
    */
-  handleRoute(request, response) {
+  static handleRoute(request, response) {
+    const _router = Router.getInstance();
     const host = request.headers.host;
-    const route = this.findRouteByDomain(host);
+    const route = _router.findRouteByDomain(host);
 
     if (!route) {
-      return response
-        .status(404)
-        .end();
+      response.writeHead(404)
+      return response.end();
     }
 
     let protocol = 'http';
@@ -196,11 +190,10 @@ class Router {
     }
 
     let target = `${protocol}://${route.host}:${route.port}`;
-    this.proxy.web(request, response, {target}, (error) => {
+    _router.proxy.web(request, response, {target}, (error) => {
       if (error) {
-        return response
-          .status(500)
-          .end();
+        response.writeHead(500);
+        return response.end();
       }
     });
   }

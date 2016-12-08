@@ -58,6 +58,11 @@ _router
   })
 
   .put((request, response) => {
+    if (!request.proxyRoute) {
+      return response
+        .status(500)
+        .json({error: 'Route not exist'});
+    }
     const {active, domain, host, port, ssl} = request.body;
 
     request.proxyRoute.active = active;
