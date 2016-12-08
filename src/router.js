@@ -4,6 +4,7 @@ const Proxy = require('http-proxy');
 const http = require('http');
 const logger = require('./utils/logger');
 const Db = require('./utils/database');
+const cluster = require('cluster');
 
 // ----------------------------------------------------------------------------
 /**
@@ -21,6 +22,19 @@ class Router {
       ws: true,
       secure: false,
       proxyTimeout: 500
+    });
+
+    process.on('message', (msg) => {
+      if (msg.component == 'Router')
+        switch (msg.action) {
+          case 'refresh':
+            this.loadRoutes().then(() => {
+              logger.info('[router] Router update his routes');
+            }).catch((err) => {
+              logger.error('[router] Router fail to update his routes', error);
+            })
+            break;
+        }
     });
   }
 
@@ -40,32 +54,66 @@ class Router {
    */
   initialize() {
     return new Promise((resolve, reject) => {
-      Db.models.Route.find({active: true}, (error, routes) => {
-        if (error) {
-          return reject(error);
-        }
-        for (let route of routes) {
-          this.mapRoutesID.set(route._id.toString(), route);
-          this.mapRoutesDomain.set(route.domain, route);
-        }
-        logger.info(`Load ${routes.length} routes`);
-
-        http
+      // 
+      this.loadRoutes()
+      .then(
+        ()=> {
+          http
           .createServer(Router.handleRoute)
           .listen(process.env.PROXY_PORT || 80, () => {
             logger.info(`Proxy listen at ${process.env.PROXY_PORT || 80}`);
 
             resolve();
           });
+        })
+        .catch((err) => {
+          logger.error(`[router] Fail to load initial routes`);
+          reject();
+        });
+    });
+  }
+
+  /**
+   * add all DB routes in router instance
+   * @return {Promise<Object>} resolve when routes loaded
+   */
+  loadRoutes() {
+    return new Promise((resolve) => {
+      this.mapRoutesID.clear();
+      this.mapRoutesDomain.clear();
+      Db.models.Route.find({active: true}, (error, routes) => {
+        if (error) 
+          return reject(error);
+        for (let route of routes) {
+          this.mapRoutesID.set(route._id.toString(), route);
+          this.mapRoutesDomain.set(route.domain, route);
+        }
+        logger.info(`Load ${routes.length} routes`);
+        resolve();
       });
     });
   }
 
+  /**
+   * implement routes simple array
+   * @return {Array<Route>} all Router routes
+   */
   get routes() {
     let res = [];
     for(let [k, route] of this.mapRoutesID)
       res.push(route);
     return res;
+  }
+
+  /**
+   * Notify others workers to update their routes
+   */
+  notifyWorkers() {
+    logger.info('emit to cluster');
+    cluster.worker.send({
+      component: 'Router',
+      action: 'refresh'
+    });
   }
 
   /**
@@ -119,10 +167,10 @@ class Router {
           return reject(error);
         }
 
-        this.mapRoutesDomain.set(route.domain, route);
-        this.mapRoutesID.set(route._id.toString(), route);
-
+        //this.mapRoutesDomain.set(route.domain, route);
+        //this.mapRoutesID.set(route._id.toString(), route);
         resolve(route);
+        this.notifyWorkers();
       });
     });
   }
@@ -136,8 +184,10 @@ class Router {
     return new Promise((resolve, reject) => {
       route.remove((err) => {
         if (err) return reject(err);
-        this.mapRoutesDomain.delete(route.domain);
-        this.mapRoutesID.delete(route._id.toString());
+        //this.mapRoutesDomain.delete(route.domain);
+        //this.mapRoutesID.delete(route._id.toString());
+        resolve();
+        this.notifyWorkers();
       });
     });
   }
@@ -161,9 +211,10 @@ class Router {
           return reject(error);
         }
 
-        this.mapRoutesID.set(route._id.toString(), route);
-        this.mapRoutesDomain.set(route.domain, route);
-        return resolve(route);
+        //this.mapRoutesID.set(route._id.toString(), route);
+        //this.mapRoutesDomain.set(route.domain, route);
+        resolve(route);
+        this.notifyWorkers();
       });
     });
   }
@@ -181,7 +232,7 @@ class Router {
 
     if (!route) {
       response.writeHead(404)
-      return response.end();
+      return response.end();  
     }
 
     let protocol = 'http';
