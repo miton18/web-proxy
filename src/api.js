@@ -7,10 +7,10 @@ const body = require('body-parser');
 const express = require('express');
 const expressWs = require('express-ws');
 const router = express.Router;
-const morgan = require('morgan');
 const logger = require('./utils/logger');
 const methodOverride = require('method-override');
 const routes = require('./settings/routes');
+const {trafficLogger} = require('./middlewares/http-logger');
 
 // ----------------------------------------------------------------------------
 /**
@@ -38,11 +38,8 @@ class Api {
         .use(compression())
         .use(body.json())
         .use(body.urlencoded({extended: true}))
+        .use(trafficLogger)
         .use('/api', this.api);
-
-      if (process.env.NODE_ENV !== 'production') {
-        this.application.use(morgan('dev'));
-      }
 
       for (const route of routes)
         this.api.use(route.mountpoint, require('./api/' + route.name));
