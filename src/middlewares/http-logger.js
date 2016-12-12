@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------------
 // requirements
 const logger = require('../utils/logger');
+const colors = require('colors');
 
 // ----------------------------------------------------------------------------
 // create middleware
@@ -24,7 +25,27 @@ function trafficLogger(request, response, next) {
     method = method.toUpperCase();
     httpVersion = httpVersion || '';
 
-    logger.info(`${protocol} ${httpVersion} ${method} ${statusCode} ${duration}ms ${url}`);
+    if (statusCode < 200) {
+      statusCode = colors.blue(statusCode);
+    } else if (statusCode < 300) {
+      statusCode = colors.green(statusCode);
+    } else if (statusCode < 400) {
+      statusCode = colors.yellow(statusCode);
+    } else {
+      statusCode = colors.red(statusCode);
+    }
+
+    if (duration < 100) {
+      duration = colors.blue(duration);
+    } else if (duration < 200) {
+      duration = colors.green(duration);
+    } else if (duration < 500) {
+      duration = colors.yellow(duration);
+    } else {
+      duration = colors.red(duration);
+    }
+
+    logger.silly(`${protocol} ${httpVersion} ${method} ${statusCode} ${duration} ms ${url}`);
   });
 
   next();
