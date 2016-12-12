@@ -10,9 +10,15 @@ let RouteSchema = new mongoose.Schema({
     default: true
   },
 
-  domain: {
+  path: {
     type: String,
     required: 'You must provide a domain for a route'
+  },
+
+  domain: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Domain',
+    required: 'A route must be linked to a domain'
   },
 
   port: {

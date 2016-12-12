@@ -69,7 +69,7 @@ if (cluster.isMaster) {
     cluster
     .fork()
     .addListener('exit', (code, signal) => {
-      Log.warn(`[main] Worker exited, start new one`, {code, signal});
+      logger.warn(`[main] Worker exited, start new one`, {code, signal});
       reporter.incrementMetric('worker.died', 1);
       cluster.fork();
     });

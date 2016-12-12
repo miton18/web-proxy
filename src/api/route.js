@@ -29,11 +29,11 @@ _router
   })
   .post((request, response) => {
     // filter to keep ONLY wanted params
-    const {active, domain, host, port, ssl} = request.body;
+    const {active, domain, host, path, port, ssl} = request.body;
     Router
-      .addRoute({active, domain, host, port, ssl})
+      .addRoute({active, domain, path, host, port, ssl})
       .then((route) => {
-        response.json({route});
+        response.json(route);
         Logger.info('New route', route.toObject());
       },
       (error) => {
@@ -54,7 +54,7 @@ _router
         .status(404)
         .json({error: 'Route not found'});
     } else
-      return response.json({route: request.proxyRoute});
+      return response.json(request.proxyRoute);
   })
 
   .put((request, response) => {
@@ -63,18 +63,19 @@ _router
         .status(500)
         .json({error: 'Route not exist'});
     }
-    const {active, domain, host, port, ssl} = request.body;
+    const {active, domain, path, host, port, ssl} = request.body;
 
     request.proxyRoute.active = active;
     request.proxyRoute.host = host;
     request.proxyRoute.port = port;
     request.proxyRoute.ssl = ssl;
     request.proxyRoute.domain = domain;
+    request.proxyRoute.path = path;
 
     Router
       .updateRoute(request.proxyRoute)
       .then((route) => {
-        response.json({route: request.proxyRoute});
+        response.json(request.proxyRoute);
       })
 
       .catch((error) => {
@@ -96,7 +97,7 @@ _router
       .then(() => {
         response
           .status(200)
-          .json({route: request.proxyRoute});
+          .json(request.proxyRoute);
         Logger.info('Remove route', request.proxyRoute.toObject());
       })
 
