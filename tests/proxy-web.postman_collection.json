@@ -55,7 +55,213 @@
 			]
 		},
 		{
-			"name": "2 Routes",
+			"name": "2 Domains",
+			"description": "",
+			"item": [
+				{
+					"name": "Create a domain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"domain\": {",
+									"    \"type\": \"string\" ",
+									" }};",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 200;",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"if (data._id) postman.setEnvironmentVariable('domainID', data._id);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/domain",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"localA.dev\"\n}"
+						},
+						"description": "Create a new domain in proxy"
+					},
+					"response": []
+				},
+				{
+					"name": "Get all domains",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
+									"tests[\"Return an array\"]    = Array.isArray(data);",
+									"tests[\"At least one route\"] = data.length > 0;",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/domain",
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"description": "List all domains of the proxy"
+					},
+					"response": []
+				},
+				{
+					"name": "Get one domain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"domain\": {",
+									"    \"type\": \"string\" ",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
+									"tests[\"Contain a route\"]    = typeof data === 'object';",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/domain/{{domainID}}",
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "_id",
+									"value": "575c96e27512737c104d3458",
+									"type": "text",
+									"enabled": false
+								}
+							]
+						},
+						"description": "Get just one route of proxy with a specified ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Edit domain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"domain\": {",
+									"    \"type\": \"string\" ",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.err === undefined;",
+									"tests[\"Contain a domain\"]   = typeof data === 'object';",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/domain/{{domainID}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"local.dev\"\n}"
+						},
+						"description": "Change domain parameters, based on route ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3 Routes",
 			"description": "",
 			"item": [
 				{
@@ -80,6 +286,9 @@
 									" \"domain\": {",
 									"    \"type\": 'string'",
 									" },",
+									" \"path\": {",
+									"    \"type\": 'string'",
+									" },",
 									" \"active\": {",
 									"    \"type\": 'boolean'",
 									" },",
@@ -88,21 +297,13 @@
 									" }};",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"tests[\"No errors\"]          = data.error === undefined;",
-									"tests[\"Contain a route\"]    = data.route !== undefined;",
-									"",
-									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
-									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-									"tests[\"Has a ssl\"]          = responseBody.has(data.route.ssl);",
 									"",
 									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
 									"",
-									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
-									"postman.setEnvironmentVariable('routeID', data.route._id);",
+									"if (data._id !== undefined) postman.setEnvironmentVariable('routeID', data._id);",
 									""
 								]
 							}
@@ -125,7 +326,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"host\": \"127.0.0.1\",\n\t\"port\": 8080,\n\t\"domain\": \"stat\",\n\t\"active\": true,\n\t\"ssl\": false\n}"
+							"raw": "{\n\t\"host\": \"127.0.0.1\",\n\t\"port\": 8090,\n\t\"domain\": \"{{domainID}}\",\n\t\"path\": \"stat\",\n\t\"active\": true,\n\t\"ssl\": false\n}"
 						},
 						"description": "Create a new route in proxy"
 					},
@@ -163,16 +364,9 @@
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"tests[\"No errors\"]          = data.error === undefined;",
-									"tests[\"Contain a route\"]    = data.route !== null;",
+									"tests[\"Contain a route\"]    = typeof data === 'object';",
 									"",
-									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
-									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-									"tests[\"Has a ssl\"]          = responseBody.has(data.route.ssl);",
-									"",
-									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
 									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
@@ -277,15 +471,9 @@
 									"",
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"tests[\"No errors\"]          = data.err === undefined;",
-									"tests[\"Contain a route\"]    = data.route !== null;",
+									"tests[\"Contain a route\"]    = typeof data === 'object';",
 									"",
-									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
-									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-									"",
-									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
 									"console.log(\"Validation failed: \", tv4.error);",
 									"",
 									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
@@ -311,85 +499,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"host\": \"127.0.0.1\",\n\t\"port\": 8090,\n\t\"domain\": \"testRouteModified\",\n\t\"active\": false,\n\t\"ssl\": false\n}"
+							"raw": "{\n\t\"host\": \"127.0.0.1\",\n\t\"port\": 8080,\n\t\"domain\": \"{{domainID}}\",\n\t\"path\": \"status\",\n\t\"active\": true,\n\t\"ssl\": false\n}"
 						},
 						"description": "Change route parameters, based on route ID"
-					},
-					"response": []
-				},
-				{
-					"name": "Delete a route",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var data = JSON.parse(responseBody);",
-									"var schemaRoute = {",
-									" \"_id\": {",
-									"    \"type\": \"string\"",
-									" },",
-									" \"destHost\": {",
-									"    \"type\": \"string\" ",
-									" },",
-									" \"destPort\":{",
-									"    \"type\": \"numeric\"",
-									" },",
-									" \"subDomain\": {",
-									"    \"type\": 'string'",
-									" },",
-									" \"active\": {",
-									"    \"type\": 'boolean'",
-									" }};",
-									"",
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"tests[\"No errors\"]          = data.error === undefined;",
-									"tests[\"Contain a route\"]    = data.route !== null;",
-									"",
-									"tests[\"Has a new ID\"]       = responseBody.has(data.route._id);",
-									"tests[\"Has a host\"]         = responseBody.has(data.route.host);",
-									"tests[\"Has a port\"]         = responseBody.has(data.route.port);",
-									"tests[\"Has a domain\"]       = responseBody.has(data.route.domain);",
-									"tests[\"Has a active\"]       = responseBody.has(data.route.active);",
-									"tests[\"Has a SSL\"]          = responseBody.has(data.route.ssl);",
-									"",
-									"tests[\"Check route properties type\"] = tv4.validate(data.route, schemaRoute);",
-									"console.log(\"Validation failed: \", tv4.error);",
-									"",
-									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{host}}/api/route/{{routeID}}",
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							},
-							{
-								"key": "authorization",
-								"value": "JWT {{token}}",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"description": "Remove a route from DB and proxy"
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "Logs",
+			"name": "4 Logs",
 			"description": "",
 			"item": [
 				{
@@ -447,7 +566,7 @@
 			]
 		},
 		{
-			"name": "Users",
+			"name": "5 Users",
 			"description": "",
 			"item": [
 				{
@@ -491,9 +610,130 @@
 			]
 		},
 		{
-			"name": "domain tests",
+			"name": "6 domain tests",
 			"description": "",
 			"item": []
+		},
+		{
+			"name": "7 clean",
+			"description": "",
+			"item": [
+				{
+					"name": "Delete a route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"destHost\": {",
+									"    \"type\": \"string\" ",
+									" },",
+									" \"destPort\":{",
+									"    \"type\": \"numeric\"",
+									" },",
+									" \"subDomain\": {",
+									"    \"type\": 'string'",
+									" },",
+									" \"active\": {",
+									"    \"type\": 'boolean'",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
+									"tests[\"Contain a route\"]    = typeof data === 'object';",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/route/{{routeID}}",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": "Remove a route from DB and proxy"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a domain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var data = JSON.parse(responseBody);",
+									"var schemaRoute = {",
+									" \"_id\": {",
+									"    \"type\": \"string\"",
+									" },",
+									" \"domain\": {",
+									"    \"type\": \"string\" ",
+									" }};",
+									"",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"tests[\"No errors\"]          = data.error === undefined;",
+									"tests[\"Contain a route\"]    = typeof data === 'object';",
+									"",
+									"tests[\"Check route properties type\"] = tv4.validate(data, schemaRoute);",
+									"console.log(\"Validation failed: \", tv4.error);",
+									"",
+									"tests[\"Response time is less than 200ms\"] = responseTime < 400;",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{host}}/api/domain/{{domainID}}",
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "authorization",
+								"value": "JWT {{token}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": "Remove a domain from DB and proxy"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

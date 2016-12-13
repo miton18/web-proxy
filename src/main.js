@@ -117,9 +117,10 @@ if (cluster.isMaster) {
   require('./worker');
 }
 
+// this refer to worker
+/* eslint no-invalid-this: "off" */
 /**
  * When a worker exit we need to reload it
- * this refer to worker
  * @param  {Number} code
  * @param  {String} signal
  */
