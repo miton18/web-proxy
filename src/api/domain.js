@@ -44,6 +44,7 @@ _router
     const tmp = new Db.models.Domain({name});
     tmp.save( (err) => {
       if (err) return res.status(500).json({error: `Fail to save new domains`});
+      Log.info('[API] new domain', tmp.toObject());
       res.json(tmp.toObject());
     });
   });
