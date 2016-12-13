@@ -29,7 +29,7 @@ class Logger extends winston.Logger {
     // Log to console all level without silly
     this.add(winston.transports.Console, {
       name: 'console',
-      level: 'debug',
+      level: 'silly',
       colorize: true,
       prettyPrint: true
     });
