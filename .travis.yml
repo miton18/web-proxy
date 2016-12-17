@@ -19,7 +19,7 @@ before_install:
 before_script:
 - sudo docker build -t test .
 - env | grep PROXY > env
-- sudo docker run -d -it --net=host --env-file env test
+- sudo docker run -d --net=host --env-file env test
 
 script:
 - sleep 60
