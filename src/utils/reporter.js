@@ -64,7 +64,7 @@ class Reporter {
   get traceServiceName() {
     let name = '';
     if (cluster.isMaster) name = 'master';
-    else if (cluster.isWorker) name = cluster.worker.id;
+    else if (cluster.isWorker) name = process.env.WORKER_NUMBER;
     else name = 'unknow';
     return (
       `Proxy-${os.hostname()}:${name}`

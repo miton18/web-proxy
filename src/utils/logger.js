@@ -23,7 +23,7 @@ class Logger extends winston.Logger {
    */
   constructor() {
     super();
-    this.name = (cluster.isMaster)? 'master' : `worker-${cluster.worker.id}`;
+    this.name = (cluster.isMaster)? 'master' : `worker-${process.env.WORKER_NUMBER}`;
 
     // -----------------------------------------------------------------------
     // Log to console all level without silly

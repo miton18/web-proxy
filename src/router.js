@@ -16,8 +16,9 @@ class Router {
    * constructor
    */
   constructor() {
-    this.mapRoutesID = new Map();
-    this.mapRoutesDomain = new Map();
+    this.mapToRoute = new Map(); // domainName => []routePath = Route
+    this.mapRoutes = new Map();  // route ID to route
+    this.mapDomains = new Map();  // domain ID to Domain
     this.proxy = Proxy.createProxyServer({
       ws: true,
       secure: false,
@@ -78,17 +79,30 @@ class Router {
    */
   loadRoutes() {
     return new Promise((resolve) => {
-      this.mapRoutesID.clear();
-      this.mapRoutesDomain.clear();
-      Db.models.Route.find({active: true}, (error, routes) => {
-        if (error)
-          return reject(error);
+      this.mapToRoute.clear();
+      this.mapRoutes.clear();
+      this.mapDomains.clear();
+
+      Db.models.Route
+      .find()
+      .populate('domain')
+      .exec((err, routes) => {
+        if (err) return reject(err);
         for (const route of routes) {
-          this.mapRoutesID.set(route._id.toString(), route);
-          this.mapRoutesDomain.set(route.domain, route);
+          if (route.active) {
+            if (!this.mapToRoute.has(route.domain.name))
+              this.mapToRoute.set(route.domain.name, new Map());
+            this.mapToRoute.get(route.domain.name).set(route.path, route.toObject());
+          }
+          this.mapRoutes.set(route._id.toString(), route);
         }
-        logger.info(`[router] Load ${routes.length} routes`);
-        resolve();
+        Db.models.Domain.find({}, (err, domains) => {
+          if (err) return reject(err);
+          for (const domain of domains) {
+            this.mapDomains.set(domain._id, domain);
+          }
+          resolve();
+        });
       });
     });
   }
@@ -99,8 +113,19 @@ class Router {
    */
   get routes() {
     let res = [];
-    for(const route of this.mapRoutesID.values())
+    for(const route of this.mapRoutes.values())
       res.push(route);
+    return res;
+  }
+
+  /**
+   * implement routes simple array
+   * @return {Array<Route>} all Router routes
+   */
+  get domains() {
+    let res = [];
+    for(const dom of this.mapDomains.values())
+      res.push(dom);
     return res;
   }
 
@@ -121,33 +146,33 @@ class Router {
    * @return {RouteModel} the route
    */
   findRouteById(_id) {
-    return this.mapRoutesID.get(_id);
+    return this.mapRoutes.get(_id);
   }
 
   /**
    * find routes by destination host
-   * @param {String} host the host
+   * @param {String} domain the host
+   * @param {String} path the host
    * @return {RouteModel} routes
    */
-  findRouteByHost(host) {
-    for(const route of this.routes) {
-      if(route.host === host)
-        return route;
-    }
+  findRouteByHost(domain, path) {
+    return this.mapToRoute.get(domain).get(path);
   }
 
   /**
    * find routes by request domain
-   * @param {String} reqDomain the host
+   * @param {String} reqDomain the complete host from HTTP header
    * @return {RouteModel} routes
    */
-  findRouteByDomain(reqDomain) {
-    for (const [domain, route] of this.mapRoutesDomain) {
-      if (domain.includes(reqDomain)) {
-        return route;
-      }
-    }
-
+  findActiveRouteByDomain(reqDomain) {
+    if(/(\d{1,3}.){3}\d{1}/g.test(reqDomain))  // request by IP, no routes....
+      return null;
+    let s = reqDomain.match(/\w+/g);
+    let domain = `${s[s.length - 2]}.${s[s.length - 1]}`;
+    let path = (s[s.length - 3])? s[s.length - 3] : null;
+    logger.debug('request domain / path', domain, path);
+    if (this.mapToRoute.has(domain))
+      return this.mapToRoute.get(domain).get(path);
     return null;
   }
 
@@ -196,7 +221,7 @@ class Router {
         return resolve(this.addRoute(route));
       }
 
-      route.update((error) => {
+      route.save((error) => {
         if (error) {
           return reject(error);
         }
@@ -215,7 +240,7 @@ class Router {
   static handleRoute(request, response) {
     const _router = Router.getInstance();
     const host = request.headers.host;
-    const route = _router.findRouteByDomain(host);
+    const route = _router.findActiveRouteByDomain(host);
 
     if (!route) {
       response.writeHead(404);

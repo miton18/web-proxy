@@ -37,6 +37,7 @@ class EventsHandler {
       from: 'uncaughtException',
       error: error
     });
+    process.exit(1);
   }
 
   /**
@@ -51,6 +52,7 @@ class EventsHandler {
       from: 'unhandledRejection',
       promise: promise
     });
+    process.exit(1);
   }
 
 }
