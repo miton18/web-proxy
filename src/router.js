@@ -89,7 +89,7 @@ class Router {
       .exec((err, routes) => {
         if (err) return reject(err);
         for (const route of routes) {
-          if (route.active) {
+          if (route.active && route.domain) {
             if (!this.mapToRoute.has(route.domain.name))
               this.mapToRoute.set(route.domain.name, new Map());
             this.mapToRoute.get(route.domain.name).set(route.path, route.toObject());

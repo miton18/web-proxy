@@ -13,11 +13,12 @@ const _router = eRouter();
 // route params
 _router.param('_id', (request, response, next, _id) => {
   Db.models.Domain.findById(_id, (err, domain) => {
-    if (err) {
+    if (domain)
+      request.proxyDomain = domain;
+    else {
       Log.warn('[api][domain] not found', err);
       request.proxyDomain = null;
-    } else
-      request.proxyDomain = domain;
+    }
     next();
   });
 });
@@ -58,9 +59,12 @@ _router.route('/:_id')
     res.json(req.proxyDomain);
   })
   .put((req, res) => {
+    if (!req.proxyDomain)
+      return res.status(500).json({error: 'Domain not exist'});
+
     const {name} = req.body;
     req.proxyDomain.name = name;
-    req.proxyDomain.save(function(err, raw) {
+    req.proxyDomain.save(function(err) {
       if (err) return res.status(500).json({error: `Fail to update domain`});
       res.json(req.proxyDomain);
     });

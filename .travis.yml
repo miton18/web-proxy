@@ -14,7 +14,7 @@ cache:
   - node_modules
 
 before_install:
-- npm install -g newman
+- npm install --only=dev
 
 before_script:
 - sudo docker build -t test .

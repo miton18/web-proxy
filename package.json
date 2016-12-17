@@ -39,7 +39,7 @@
     "nodemon": "^1.11.0"
   },
   "dependencies": {
-    "@risingstack/trace": "^2.36.0",
+    "@risingstack/trace": "^3.0.0",
     "async": "^2.1.2",
     "bcrypt-nodejs": "^0.0.3",
     "body-parser": "^1.15.2",
