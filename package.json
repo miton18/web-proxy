@@ -1,6 +1,6 @@
 {
   "name": "web-proxy",
-  "version": "3.0.0",
+  "version": "3.0.14",
   "description": "A proxy that you will fall in love <3",
   "main": "src/index.js",
   "repository": {
