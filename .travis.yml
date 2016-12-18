@@ -3,7 +3,7 @@ sudo: required
 language: node_js
 
 node_js:
-- node
+- 7.2.1
 
 services:
 - mongodb
@@ -15,10 +15,10 @@ cache:
 
 install:
 - npm install --only=dev
-
-before_script:
 - sudo docker build -t test .
 - env | grep PROXY > env
+
+before_script:
 - sudo docker run -d --net=host --env-file env test
 
 script:
