@@ -5,10 +5,13 @@ if (process.execArgv[1])
 
 // ----------------------------------------------------------------------------
 // requirements
-const cluster   = require('cluster');
-const reporter  = require('./utils/reporter');
-const logger    = require('./utils/logger');
-idToPid         = new Map();
+const cluster     = require('cluster');
+const reporter    = require('./utils/reporter');
+const logger      = require('./utils/logger');
+const Joi         = require('joi');
+const {EnvSchema} = require('./models/env');
+idToPid           = new Map();
+
 // ----------------------------------------------------------------------------
 // master
 if (cluster.isMaster) {
@@ -17,97 +20,70 @@ if (cluster.isMaster) {
 
   // --------------------------------------------------------------------------
   // environements
-  if (!process.env.PROXY_JWT_SECRET) {
-    logger.error('[bootstrap] PROXY_JWT_SECRET variable environement is not set');
+  Joi.validate(process.env, EnvSchema, {allowUnknown: true}, (error) => {
+    // --------------------------------------------------------------------------
+    // error
+    if (error) {
+      logger.error(error.message);
 
-    process.exit(1);
-  } else {
-    logger.info('[bootstrap] JWT secret loaded');
-  }
+      process.exit(1);
+    }
 
-  if (!process.env.PROXY_MONGODB_ADDON_URI &&
-      (
-        !process.env.PROXY_MONGODB_ADDON_USER &&
-        !process.env.PROXY_MONGODB_ADDON_PASSWORD &&
-        !process.env.PROXY_MONGODB_ADDON_DB &&
-        !process.env.PROXY_MONGODB_ADDON_HOST &&
-        !process.env.PROXY_MONGODB_ADDON_PORT
-      )
-    ) {
-    logger.error('[bootstrap] Please set environements variables to connect mongodb');
+    // --------------------------------------------------------------------------
+    // reporter
+    reporter.incrementMetric('action.start');
 
-    process.exit(1);
-  } else {
-    logger.info('[bootstrap] MongoDB parameters loadeds');
-  }
+    // --------------------------------------------------------------------------
+    // create workers
+    cluster.schedulingPolicy = cluster.SCHED_RR;
+    cluster.setupMaster({
+      silent: false
+    });
 
-  if (!process.env.PROXY_PEPPER) {
-    logger.error(`[bootstrap] PROXY_PEPPER environement variable is not set`);
-    process.exit(1);
-  } else
-    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
-
-  if (!process.env.PROXY_JWT_ISSUER || ! process.env.PROXY_JWT_AUDIENCE) {
-    logger.error(`[bootstrap] PROXY_JWT_ISSUER or PROXY_JWT_AUDIENCE
-      environement variable is not set`);
-    process.exit(1);
-  } else
-    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
-
-  // --------------------------------------------------------------------------
-  // reporter
-  reporter.incrementMetric('action.start');
-
-  // --------------------------------------------------------------------------
-  // create workers
-  cluster.schedulingPolicy = cluster.SCHED_RR;
-  cluster.setupMaster({
-    silent: false
-  });
-
-  for (let i = 0, n = os.cpus().length; i < n; ++i) {
-    let tmp = cluster
-    .fork({
-      WORKER_NUMBER: i+1
-    })
-    .addListener('exit', workerExitedHandlerfunction);
-    // Keep a map of process ID and worker number
-    idToPid.set(tmp.process.pid, i+1);
-  };
-
-  cluster.addListener('online', (worker) => {
-    logger.info(`[main] Worker ${worker.process.pid} is online`);
-  });
-
-  cluster.addListener('exit', (worker, code, signal) => {
-    logger.error(`[main] Master ${worker.process.pid} died`);
-    reporter.incrementMetric('master.died', 1);
-  });
-
-  /**
-   * double switch for workers-master events
-   */
-  cluster.on('message', (worker, msg) => {
-    logger.debug('message from worker', msg);
-    switch (msg.component) {
-      case 'Router':
-        switch (msg.action) {
-          case 'refresh':
-            for(let id in cluster.workers)
-              if(cluster.workers.hasOwnProperty(id))
-                cluster.workers[id].send({
-                  component: 'Router',
-                  action: 'refresh'
-                });
-            break;
-        };
-        break;
+    for (let i = 0, n = os.cpus().length; i < n; ++i) {
+      let tmp = cluster
+      .fork({
+        WORKER_NUMBER: i+1
+      })
+      .addListener('exit', workerExitedHandlerfunction);
+      // Keep a map of process ID and worker number
+      idToPid.set(tmp.process.pid, i+1);
     };
-  });
 
-  // -------------------------------------------------------------------------
-  // Create first user etc...
-  init();
+    cluster.addListener('online', (worker) => {
+      logger.info(`[main] Worker ${worker.process.pid} is online`);
+    });
+
+    cluster.addListener('exit', (worker, code, signal) => {
+      logger.error(`[main] Master ${worker.process.pid} died`);
+      reporter.incrementMetric('master.died', 1);
+    });
+
+    /**
+     * double switch for workers-master events
+     */
+    cluster.on('message', (worker, msg) => {
+      logger.debug('message from worker', msg);
+      switch (msg.component) {
+        case 'Router':
+          switch (msg.action) {
+            case 'refresh':
+              for(let id in cluster.workers)
+                if(cluster.workers.hasOwnProperty(id))
+                  cluster.workers[id].send({
+                    component: 'Router',
+                    action: 'refresh'
+                  });
+              break;
+          };
+          break;
+      };
+    });
+
+    // -------------------------------------------------------------------------
+    // Create first user etc...
+    init();
+  });
 
 // ----------------------------------------------------------------------------
 // worker
