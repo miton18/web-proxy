@@ -11,11 +11,11 @@ services:
     #network_mode: "host"
     environment:
       NODE_ENV: "production" 
-      PROXY_DB: "mongodb://mongo:27017/proxy"
-      PROXY_KEY: "a"
-      PROXY_SALT: "a"
-      #PROXY_OVH_KEY: ""
-      PROXY_TRACE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3ZTU4NmIxZjE0ODhhMDBiMzkwYjcyMyIsImlhdCI6MTQ3NDY2MDAxN30.urxsBxRhNuA86keISxM-MNDMy3KikZH3UhpYv3rXsvg"
+      PROXY_MONGODB_ADDON_URI: "mongodb://mongo:27017/proxy"
+      PROXY_JWT_SECRET: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      PROXY_PEPPER: "a"
+      PROXY_JWT_ISSUER: "aaa"
+      PROXY_JWT_AUDIENCE: "bbbb"
     depends_on:
       - "mongo"
 
