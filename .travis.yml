@@ -22,7 +22,7 @@ before_script:
 - sudo docker run -d --net=host --env-file env test
 
 script:
-- sleep 120
+- sleep 60
 - npm test
 
 after_success:
