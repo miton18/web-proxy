@@ -26,6 +26,7 @@ script:
 - npm test
 
 after_success:
+- bash <(curl -s https://codecov.io/bash)
 - sudo docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - sudo docker tag test miton18/web-proxy:latest
 - sudo docker push miton18/web-proxy:latest
