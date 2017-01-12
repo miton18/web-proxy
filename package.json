@@ -8,7 +8,7 @@
     "type": "git"
   },
   "scripts": {
-    "test": "gulp tests && newman run ./tests/proxy-web.postman_collection.json -e ./tests/proxy-web-dev.postman_environment.json -n 3 --timeout-request 30000",
+    "test": "gulp tests && newman run ./tests/proxy-web.postman_collection.json -e ./tests/proxy-web-dev.postman_environment.json -n 3 --timeout-request 10000 --bail",
     "start": "node src/main.js",
     "dev": "nodemon src/main.js",
     "build": "docker build -t miton18/web-proxy .",
@@ -35,7 +35,6 @@
     "gulp-mocha": "^3.0.1",
     "gulp-plumber": "^1.1.0",
     "mocha": "^3.1.2",
-    "newman": "^3.3.1",
     "nodemon": "^1.11.0"
   },
   "dependencies": {
@@ -48,12 +47,14 @@
     "dockerode": "^2.3.1",
     "express": "^4.14.0",
     "express-ws": "^2.0.0",
+    "gulp-util": "^3.0.8",
     "helmet": "^3.1.0",
     "http-proxy": "^1.15.2",
     "joi": "^10.0.6",
     "jsonwebtoken": "^7.1.9",
     "method-override": "^2.3.7",
     "mongoose": "^4.6.8",
+    "newman": "^3.4.2",
     "node-fetch": "^1.6.3",
     "passport-local": "^1.0.0",
     "uuid": "^3.0.1",

@@ -2,6 +2,12 @@
 
 [![Build Status](https://travis-ci.org/miton18/web-proxy.svg?branch=master)][travis] 
 [![codecov](https://codecov.io/gh/miton18/web-proxy/branch/master/graph/badge.svg)](https://codecov.io/gh/miton18/web-proxy)
+[![Docker Pulls](https://img.shields.io/docker/pulls/miton18/web-proxy.svg)]()
+[![Github All Releases](https://img.shields.io/github/downloads/miton18/web-proxy/total.svg)]()
+[![GitHub release](https://img.shields.io/github/release/miton18/web-proxy.svg)]()
+[![GitHub issues](https://img.shields.io/github/issues/miton18/web-proxy.svg)]()
+[![license](https://img.shields.io/github/license/miton18/web-proxy.svg)]()
+
 
 [DockerHub:Web-proxy][dockerhub] 
 

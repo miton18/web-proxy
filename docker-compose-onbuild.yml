@@ -2,8 +2,8 @@ version: '2.1'
 services: 
   web-proxy:
     hostname: "DESKTOP-D3SGNJI"
-    build: .
-    # will EXPOSE 80 443 8080
+    build: 
+      context: .
     ports: 
       - 80:80
       - 443:443
@@ -11,16 +11,16 @@ services:
     #network_mode: "host"
     environment:
       NODE_ENV: "production" 
-      PROXY_MONGODB_ADDON_URI: "mongodb://mongo:27017/proxy"
-      PROXY_JWT_SECRET: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      PROXY_PEPPER: "a"
-      PROXY_JWT_ISSUER: "aaa"
-      PROXY_JWT_AUDIENCE: "bbbb"
+      PROXY_MONGODB_ADDON_URI: "mongodb://web-proxy-mongo:27017/proxy"
+      PROXY_JWT_SECRET: "myJWTSecret"
+      PROXY_PEPPER: "myPasswordPepper"
+      PROXY_JWT_ISSUER: "myJWTIssuer"
+      PROXY_JWT_AUDIENCE: "myJWTAudience"
     depends_on:
       - "mongo"
 
   mongo:
-    image: mongo
+    image: mongo:latest
     ports:
       - 27017:27017
 #    volumes:

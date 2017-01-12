@@ -1,16 +1,22 @@
-FROM node:7.2.1
+FROM node:7
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+MAINTAINER miton18 <contact@rcdinfo.fr>
+
+RUN mkdir -p /usr/src/web-proxy
+WORKDIR /usr/src/web-proxy
 
 ENV NODE_ENV $NODE_ENV
 
-COPY package.json /usr/src/app/
-COPY yarn.lock /usr/src/app/
 RUN npm install -g yarn
-RUN yarn install
-COPY . /usr/src/app
+
+# Install deps
+COPY package.json /usr/src/web-proxy/
+COPY yarn.lock /usr/src/web-proxy/
+RUN yarn install --prod
+
+# Copy app
+COPY . /usr/src/web-proxy
 
 EXPOSE 80 443 8080
 
-ENTRYPOINT [ "npm", "start" ]
+ENTRYPOINT yarn start
