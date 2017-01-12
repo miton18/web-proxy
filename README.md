@@ -1,12 +1,12 @@
 # Web Proxy 
 
 [![Build Status](https://travis-ci.org/miton18/web-proxy.svg?branch=master)][travis] 
-[![codecov](https://codecov.io/gh/miton18/web-proxy/branch/master/graph/badge.svg)](https://codecov.io/gh/miton18/web-proxy)
 [![Docker Pulls](https://img.shields.io/docker/pulls/miton18/web-proxy.svg)]()
 [![Github All Releases](https://img.shields.io/github/downloads/miton18/web-proxy/total.svg)]()
 [![GitHub release](https://img.shields.io/github/release/miton18/web-proxy.svg)]()
 [![GitHub issues](https://img.shields.io/github/issues/miton18/web-proxy.svg)]()
 [![license](https://img.shields.io/github/license/miton18/web-proxy.svg)]()
+[![Code Climate](https://codeclimate.com/github/miton18/web-proxy/badges/gpa.svg)][codeClimate]
 
 
 [DockerHub:Web-proxy][dockerhub] 
@@ -108,4 +108,5 @@ fetch('http://127.0.0.1:8080/api/route', {
 [laas]: <https://www.ovh.com/fr/data-platforms/logs/>
 [trace]: <https://trace.risingstack.com>
 [JWT]: <https://jwt.io>
+[codeclimate]: <https://codeclimate.com/github/miton18/web-proxy>
 
