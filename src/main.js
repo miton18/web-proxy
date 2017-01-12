@@ -51,8 +51,11 @@ if (cluster.isMaster) {
     logger.error(`[bootstrap] PROXY_JWT_ISSUER or PROXY_JWT_AUDIENCE
       environement variable is not set`);
     process.exit(1);
-  } else
-    logger.info(`[bootstrap] App pepper loaded, ready for cook`);
+  }
+
+  if (!process.env.PROXY_WARP10_URI || !process.env.PROXY_WARP10_WRITE_TOKEN) {
+    logger.error('All warp10 environement variables are not set');
+  }
 
   // --------------------------------------------------------------------------
   // reporter

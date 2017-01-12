@@ -11,6 +11,7 @@ const logger = require('./utils/logger');
 const methodOverride = require('method-override');
 const routes = require('./settings/routes');
 const {trafficLogger} = require('./middlewares/http-logger');
+const {warp10} = require('./middlewares/warp10');
 
 // ----------------------------------------------------------------------------
 /**
@@ -39,6 +40,7 @@ class Api {
         .use(body.json())
         .use(body.urlencoded({extended: true}))
         .use(trafficLogger)
+        .use(warp10)
         .use('/api', this.api);
 
       for (const route of routes)
