@@ -12,7 +12,7 @@ RUN npm install -g yarn
 # Install deps
 COPY package.json /usr/src/web-proxy/
 COPY yarn.lock /usr/src/web-proxy/
-RUN yarn install
+RUN yarn install --prod
 
 # Copy app
 COPY . /usr/src/web-proxy

@@ -2,8 +2,8 @@ version: '2.1'
 services: 
   web-proxy:
     hostname: "DESKTOP-D3SGNJI"
-    build: .
-    # will EXPOSE 80 443 8080
+    build: 
+      context: .
     ports: 
       - 80:80
       - 443:443
@@ -20,7 +20,7 @@ services:
       - "mongo"
 
   mongo:
-    image: mongo
+    image: mongo:latest
     ports:
       - 27017:27017
 #    volumes:
