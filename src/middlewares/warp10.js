@@ -15,6 +15,10 @@ const logger = require('../utils/logger');
  */
 function warp10(request, response, next) {
   if (!process.env.PROXY_WARP10_URI || !process.env.PROXY_WARP10_WRITE_TOKEN) {
+    if (next) {
+      next();
+    }
+
     return;
   }
 
