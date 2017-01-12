@@ -3,7 +3,8 @@ sudo: required
 language: node_js
 
 node_js:
-- 7.2.1
+- node #latest
+- 6.9.4 #last LTS
 
 services:
 - mongodb
@@ -14,7 +15,7 @@ cache:
   - node_modules
 
 install:
-- npm install --only=dev
+- yarn install
 - sudo docker build -t test .
 - env | grep PROXY > env
 - wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
@@ -24,7 +25,7 @@ before_script:
 - sudo docker run -d --net=host --env-file env test
 
 script:
-- ./wait-for-it.sh localhost:8080 -- npm test
+- ./wait-for-it.sh localhost:8080 -- yarn run test
 
 after_success:
 #- bash <(curl -s https://codecov.io/bash)

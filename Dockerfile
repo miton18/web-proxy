@@ -1,4 +1,4 @@
-FROM node:7.2.1
+FROM node:7
 
 MAINTAINER miton18 <contact@rcdinfo.fr>
 
@@ -19,4 +19,4 @@ COPY . /usr/src/web-proxy
 
 EXPOSE 80 443 8080
 
-ENTRYPOINT npm start
+ENTRYPOINT yarn start

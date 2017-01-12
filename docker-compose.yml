@@ -11,10 +11,10 @@ services:
     environment:
       NODE_ENV: "production" 
       PROXY_MONGODB_ADDON_URI: "mongodb://web-proxy-mongo:27017/proxy"
-      PROXY_JWT_SECRET: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      PROXY_PEPPER: "a"
-      PROXY_JWT_ISSUER: "aaa"
-      PROXY_JWT_AUDIENCE: "bbbb"
+      PROXY_JWT_SECRET: "myJWTSecret"
+      PROXY_PEPPER: "myPasswordPepper"
+      PROXY_JWT_ISSUER: "myJWTIssuer"
+      PROXY_JWT_AUDIENCE: "myJWTAudience"
     depends_on:
       - "web-proxy-mongo"
 
