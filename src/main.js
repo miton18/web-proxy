@@ -55,7 +55,6 @@ if (cluster.isMaster) {
 
   if (!process.env.PROXY_WARP10_URI || !process.env.PROXY_WARP10_WRITE_TOKEN) {
     logger.error('All warp10 environement variables are not set');
-    process.exit(1);
   }
 
   // --------------------------------------------------------------------------

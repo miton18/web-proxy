@@ -14,6 +14,10 @@ const logger = require('../utils/logger');
  * @return {void}
  */
 function warp10(request, response, next) {
+  if (!process.env.PROXY_WARP10_URI || !process.env.PROXY_WARP10_WRITE_TOKEN) {
+    return;
+  }
+
   let start = Date.now();
 
   response.on('finish', function() {
@@ -28,7 +32,7 @@ function warp10(request, response, next) {
       {key: 'status', value: statusCode}
     ];
 
-    fetch(`http://freegeoip.net/json/${host}`).then((data) => {
+    fetch(`https://freegeoip.net/json/${host}`).then((data) => {
       const {latitude, longitude} = data;
       const duration = Date.now() - start;
       const body = warp10Format('proxy.request', labels, duration, latitude, longitude);
