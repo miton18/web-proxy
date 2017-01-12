@@ -51,7 +51,7 @@ class Logger extends winston.Logger {
     });
 
     if (process.env.PROXY_WINSTON_OVH_CREDENTIAL) {
-      this.add(Winston.transports.ovh, {
+      this.add(winston.transports.ovh, {
         token: process.env.PROXY_WINSTON_OVH_CREDENTIAL
       });
     }

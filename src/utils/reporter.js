@@ -17,8 +17,8 @@ class Reporter {
       this.active = true;
       process.env.TRACE_SERVICE_NAME = this.traceServiceName;
       process.env.TRACE_API_KEY      = this.traceApiKey;
-      this.trace = require('@risingstack/trace');
-
+      // this.trace = require('@risingstack/trace');
+      Log.debug(`REPORTER IS DISABLED BY FORCE`);
       Log.debug(`Reporter enabled, name : ${this.traceServiceName}`);
     }
   }
@@ -42,7 +42,7 @@ class Reporter {
    */
   incrementMetric(name, amount) {
     if (this.active) {
-      this.trace.incrementMetric(name, amount);
+      // this.trace.incrementMetric(name, amount);
     }
   }
 

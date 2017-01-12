@@ -5,6 +5,7 @@ const http = require('http');
 const logger = require('./utils/logger');
 const Db = require('./utils/database');
 const cluster = require('cluster');
+const {warp10} = require('./middlewares/warp10');
 
 // ----------------------------------------------------------------------------
 /**
@@ -58,9 +59,11 @@ class Router {
       this.loadRoutes()
       .then(
         ()=> {
-          http
-          .createServer(Router.handleRoute)
-          .listen(process.env.PROXY_PORT || 80, () => {
+          let server = http.createServer(Router.handleRoute);
+
+          server.on('request', warp10);
+
+          server.listen(process.env.PROXY_PORT || 80, () => {
             logger.info(`[router] Proxy listen at ${process.env.PROXY_PORT || 80}`);
 
             resolve();
@@ -89,7 +92,7 @@ class Router {
       .exec((err, routes) => {
         if (err) return reject(err);
         for (const route of routes) {
-          if (route.active) {
+          if (route.active && route.domain) {
             if (!this.mapToRoute.has(route.domain.name))
               this.mapToRoute.set(route.domain.name, new Map());
             this.mapToRoute.get(route.domain.name).set(route.path, route.toObject());

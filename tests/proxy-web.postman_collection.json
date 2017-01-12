@@ -142,10 +142,7 @@
 								"description": ""
 							}
 						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
+						"body": {},
 						"description": "List all domains of the proxy"
 					},
 					"response": []
@@ -431,10 +428,7 @@
 								"description": ""
 							}
 						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
+						"body": {},
 						"description": "List all routes of the proxy"
 					},
 					"response": []
@@ -599,10 +593,7 @@
 								"description": ""
 							}
 						],
-						"body": {
-							"mode": "formdata",
-							"formdata": []
-						},
+						"body": {},
 						"description": "List all users of the proxy"
 					},
 					"response": []
