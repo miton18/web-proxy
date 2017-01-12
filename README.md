@@ -34,6 +34,8 @@
 |PROXY_JWT_ISSUER|null|jwt issuer||
 |PROXY_JWT_AUDIENCE|null|jwt audience||
 |PROXY_PEPPER|null|Pepper of the application, encrypt password|[x]|
+|PROXY_WARP10_URI|null|URI to warp10||
+|PROXY_WARP10_WRITE_TOKEN|null|Write token to warp10||
 
 ## Usage
 
