@@ -17,13 +17,14 @@ install:
 - npm install --only=dev
 - sudo docker build -t test .
 - env | grep PROXY > env
+- wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+- chmod +x ./wait-for-it.sh
 
 before_script:
 - sudo docker run -d --net=host --env-file env test
 
 script:
-- sleep 60
-- npm test
+- ./wait-for-it.sh localhost:8080 -- npm test
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
