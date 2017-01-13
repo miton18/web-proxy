@@ -18,7 +18,7 @@ _router
     Db.models.Log.count({}, (error, count) => {
       if (error) return json.status(500).json({error});
       res.json({
-        log_entries: count
+        logEntries: count
       });
     });
   });
