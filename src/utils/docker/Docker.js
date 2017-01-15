@@ -137,7 +137,7 @@ class Docker {
 
   /**
    * start the docker
-   * @return {Promise<Docker>} trigger when docker has stopped
+   * @return {Promise<Docker>} trigger when docker has started
    */
   start() {
     return new Promise((resolve, reject) => {

@@ -35,7 +35,7 @@ _router
               .json({error: error.message});
           }
 
-          response.json({dockers});
+          response.json({containers: dockers});
         });
       })
 
@@ -52,7 +52,7 @@ _router
       .then((docker) =>  {
         response
           .status(201)
-          .json({docker});
+          .json({container: docker});
       })
 
       .catch((error) => {
@@ -83,7 +83,7 @@ _router
       })
 
       .then((information) => {
-        response.json({docker: information});
+        response.json({container: information});
       })
 
       .catch((error) => {
@@ -112,8 +112,9 @@ _router
 
       .then((docker) => {
         response
-          .status(200)
-          .end();
+          .json({
+            container: docker
+          });
       })
 
       .catch((error) => {
