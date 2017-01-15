@@ -1,6 +1,7 @@
 // ----------------------------------------------------------------------------
 const os      = require('os');
 const cluster = require('cluster');
+const fetch = require('node-fetch');
 const Log     = require('./logger');
 /**
  * class Reporter
@@ -63,12 +64,98 @@ class Reporter {
    */
   get traceServiceName() {
     let name = '';
-    if (cluster.isMaster) name = 'master';
-    else if (cluster.isWorker) name = process.env.WORKER_NUMBER;
-    else name = 'unknow';
+    if (cluster.isMaster) {
+      name = 'master';
+    } else if (cluster.isWorker) {
+      name = 'worker';
+    } else {
+      name = 'unknow';
+    }
     return (
       `Proxy-${os.hostname()}:${name}`
     );
+  }
+
+  /**
+   * format a string to send to warp10 instance
+   * @param {string} name the name of the metric
+   * @param {Object} labels the name of labels
+   * @param {any} value the value of the metric
+   * @param {number?} latitude the latitude
+   * @param {longitude?} longitude the longitude
+   * @param {elevation?} elevation the elevation
+   * @return {string} a beautiful string to send
+   */
+  toWarp10Format(name, labels, value, latitude, longitude, elevation) {
+    elevation = elevation || '';
+    let position = '';
+
+    if (latitude && longitude) {
+      position = `${latitude}:${longitude}`;
+    }
+
+    if (typeof value === 'string') {
+      value = `'${value}'`;
+    }
+
+    labels = labels.map((label) => `${label.key}=${label.value}`);
+    return `
+      ${this.getMicroSeconds()}/${position}/${elevation} ${name}{${labels.join(',')}} ${value}
+    `;
+  }
+
+  /**
+   * Send metrics to Warp10
+   * @param {Array} metrics Array or string of metric to send
+   */
+  sendWarp10Metric(metrics) {
+    if (!process.env.PROXY_WARP10_URI || !process.env.PROXY_WARP10_WRITE_TOKEN) {
+      return;
+    }
+    if(Array.isArray(metrics)) {
+      metrics = metrics.join('\n');
+    }
+    Log.silly('Warp10 metric', metrics);
+
+    fetch(`${process.env.PROXY_WARP10_URI}/api/v0/update`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Warp10-Token': process.env.PROXY_WARP10_WRITE_TOKEN
+      },
+      body: metrics
+    })
+    .then((res) => {
+      if (res.status === 200) {
+        return Log.debug('warp10 metric sent');
+      }
+      Log.error('[reporter] fail to store Warp10 metric', err);
+    })
+    .catch((err) => {
+      Log.error('[reporter] fail to send Warp10 metric', err);
+      console.log(err);
+    });
+  }
+
+  /**
+   * @param {string} name Metric name
+   * @param {Object} labels the name of labels
+   * @param {any} value the value of the metric
+   * @param {number?} latitude the latitude
+   * @param {longitude?} longitude the longitude
+   * @param {elevation?} elevation the elevation
+   */
+  simpleMetric(name, labels, value, latitude, longitude, elevation) {
+    const l = this.toWarp10Format(name, labels, value, latitude, longitude, elevation);
+    this.sendWarp10Metric(l);
+  }
+
+  /**
+   * Get the current Timestamp in microsecond
+   * @return {number} Timestamp in microsecond
+   */
+  getMicroSeconds() {
+    return Date.now() * 1e3;
   }
 }
 
