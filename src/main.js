@@ -10,7 +10,7 @@ const reporter    = require('./utils/reporter');
 const logger      = require('./utils/logger');
 const Joi         = require('joi');
 const {EnvSchema} = require('./models/env');
-idToPid           = new Map();
+const idToPid     = new Map();
 
 // ----------------------------------------------------------------------------
 // master
