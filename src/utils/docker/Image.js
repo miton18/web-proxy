@@ -87,7 +87,7 @@ class Image {
     return new Promise((resolve, reject) => {
       Image.list().catch(reject).then((images) => {
         async.reduce(images, null, (state, image, done) => {
-          image.information.then((information) => {
+          image.information().then((information) => {
             if (information.RepoTags.indexOf(name) !== -1) {
               state = image;
             }
@@ -112,7 +112,7 @@ class Image {
    * get information
    * @return {Promise<any>} raw information about the image
    */
-  get information() {
+  information() {
     return new Promise((resolve, reject) => {
       connection.getImage(this.identifier).inspect((error, information) => {
         if (error) {

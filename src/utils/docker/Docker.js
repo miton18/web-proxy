@@ -98,7 +98,7 @@ class Docker {
   static exists(identifier) {
     return new Promise((resolve, reject) => {
       Docker.list().catch(reject).then((dockers) => {
-        async.reduce(docker, null, (state, docker, done) => {
+        async.reduce(dockers, null, (state, docker, done) => {
           if (docker.identifier === identifier) {
             state = docker;
           }
@@ -121,7 +121,7 @@ class Docker {
    * get raw information about the docker
    * @return {Promise<any>} a promise with docker information
    */
-  get information() {
+  information() {
     return new Promise((resolve, reject) => {
       connection.getContainer(this.identifier).inspect((error, information) => {
         if (error) {
