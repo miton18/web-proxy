@@ -43,6 +43,10 @@ class Api {
         .use(warp10)
         .use('/api', this.api);
 
+      if (process.env.PROXY_DOCKER_SOCKET) {
+        this.api.use('/container', require('./api/container'));
+      }
+
       for (const route of routes)
         this.api.use(route.mountpoint, require('./api/' + route.name));
 
