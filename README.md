@@ -41,6 +41,7 @@
 |PROXY_PEPPER|null|Pepper of the application, encrypt password|[x]|
 |PROXY_WARP10_URI|null|URI to warp10||
 |PROXY_WARP10_WRITE_TOKEN|null|Write token to warp10||
+|PROXY_DOCKER_SOCKET|null|Give to proxy to manage container||
 
 ## Usage
 
