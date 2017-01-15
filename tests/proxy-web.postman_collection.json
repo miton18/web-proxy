@@ -515,7 +515,7 @@
 								"exec": [
 									"var data = JSON.parse(responseBody);",
 									"var schemaRoute = {",
-									" \"log_entries\": {",
+									" \"logEntries\": {",
 									"    \"type\": \"number\"",
 									" }",
 									"};",

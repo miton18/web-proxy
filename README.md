@@ -6,8 +6,7 @@
 [![GitHub release](https://img.shields.io/github/release/miton18/web-proxy.svg)]()
 [![GitHub issues](https://img.shields.io/github/issues/miton18/web-proxy.svg)]()
 [![license](https://img.shields.io/github/license/miton18/web-proxy.svg)]()
-[![Code Climate](https://codeclimate.com/github/miton18/web-proxy/badges/gpa.svg)][codeClimate]
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d9eec3be9aec4494accc86ff6bd4ca04)](https://www.codacy.com/app/miton18/web-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=miton18/web-proxy&amp;utm_campaign=Badge_Grade)
 
 [DockerHub:Web-proxy][dockerhub] 
 
@@ -108,5 +107,3 @@ fetch('http://127.0.0.1:8080/api/route', {
 [laas]: <https://www.ovh.com/fr/data-platforms/logs/>
 [trace]: <https://trace.risingstack.com>
 [JWT]: <https://jwt.io>
-[codeclimate]: <https://codeclimate.com/github/miton18/web-proxy>
-

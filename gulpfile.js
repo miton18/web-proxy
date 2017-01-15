@@ -1,5 +1,7 @@
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
+const istanbul = require('gulp-istanbul');
+const codacy = require('codacy-coverage').reporter;
 
 // default
 gulp.task('default', ['watch']);
@@ -23,7 +25,10 @@ gulp.task('tests:mocha', function() {
       eolc: 'LF',
       encoding: 'utf8'
     }))
-    .pipe(plugins.mocha());
+    .pipe(plugins.mocha())
+    .pipe(istanbul.writeReports({
+      dir: './dist/report'
+    }));
 });
 
 // test:lint
@@ -46,4 +51,13 @@ gulp.task('format:file', function() {
       encoding: 'utf8'
     }))
     .pipe(gulp.dest('.'));
+});
+
+gulp.task('tests:codacy', ['tests:mocha'], function() {
+  return gulp
+    .src(['./reports'], {read: true})
+    .pipe(codacy({
+      token: 'fc95d428cd18422ca30668684b4dbd7a'
+    }))
+  ;
 });
