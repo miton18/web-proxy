@@ -177,7 +177,7 @@ class Docker {
    */
   remove() {
     return new Promise((resolve, reject) => {
-      connection.getContainer(this.identifier).remove((error, information) => {
+      connection.getContainer(this.identifier).remove((error) => {
         if (error) {
           logger.error(error.message);
 

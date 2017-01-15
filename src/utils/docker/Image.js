@@ -52,7 +52,7 @@ class Image {
           return reject(error);
         }
 
-        connection.modem.followProgress(stream, (error, outputs) => {
+        connection.modem.followProgress(stream, (error) => {
           if (error) {
             logger.error(error.message);
 
