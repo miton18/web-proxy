@@ -49,8 +49,9 @@ class Worker {
    * @return {Worker} worker instance
    */
   static getInstance() {
-    if(!(Worker.instance instanceof Worker))
+    if(!(Worker.instance instanceof Worker)) {
       Worker.instance = new Worker();
+    }
 
     return Worker.instance;
   }

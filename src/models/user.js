@@ -73,8 +73,9 @@ UserSchema.methods.setPassword = function(password) {
           this.salt = salt;
           return resolve();
         });
-      } else
+      } else {
         return resolve();
+      }
     }).then(() => {
       // generate a fieldprint with BCrypt
       bcrypt.hash(`${pepper}:${password}`, this.salt, () => {}, (error, password) => {

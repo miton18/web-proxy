@@ -47,8 +47,9 @@ _router
           .then((token) => {
             user.lastConnection = new Date();
 
-            if (!user.firstConnection)
+            if (!user.firstConnection) {
               user.firstConnection = user.lastConnection;
+            }
 
             user.save((err) => {
               if (err) {

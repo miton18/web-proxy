@@ -53,8 +53,11 @@ class Reporter {
    */
   get traceApiKey() {
     let key = process.env.PROXY_TRACE_KEY || null;
-    if (key === null) Log.warn('No Trace reporter is defined, ' +
-      ' set PROXY_TRACE_KEY env var to enable it');
+    if (key === null) {
+      Log.warn('No Trace reporter is defined, ' +
+        ' set PROXY_TRACE_KEY env var to enable it');
+    }
+
     return key;
   }
 

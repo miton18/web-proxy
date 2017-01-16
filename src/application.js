@@ -44,7 +44,7 @@ class Application {
           .catch(callback);
       }, 1);
 
-      for (const component of this.components) {
+      for (let component of this.components) {
         q.push(component, (err) => {
           if (err) {
             rejected = true;

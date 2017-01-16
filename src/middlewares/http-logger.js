@@ -16,7 +16,7 @@ const colors = require('colors');
 function trafficLogger(request, response, next) {
   let start = Date.now();
 
-  response.addListener('finish', function() {
+  response.addListener('finish', () => {
     let {protocol, method, httpVersion, url} = request;
     let {statusCode} = response;
     let duration = Date.now() - start;

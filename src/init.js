@@ -10,8 +10,9 @@ module.exports = () => {
     .then( (userCount) => {
       Log.info('[init] [user] User creation :');
 
-      if (userCount > 0)
+      if (userCount > 0) {
         return Log.info('[init] [user] SKIP users already exists');
+      }
 
       Log.info('[init] [user] add Admin account');
       let user = new Db.models.User({

@@ -16,7 +16,10 @@ _router
   .all(authenticationJwt)
   .get((req, res) => {
     Db.models.Log.count({}, (error, count) => {
-      if (error) return json.status(500).json({error});
+      if (error) {
+        return json.status(500).json({error});
+      }
+
       res.json({
         logEntries: count
       });

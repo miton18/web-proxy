@@ -27,7 +27,7 @@ class Router {
     });
 
     process.on('message', (msg) => {
-      if (msg.component == 'Router')
+      if (msg.component == 'Router') {
         switch (msg.action) {
           case 'refresh':
             this.loadRoutes().then(() => {
@@ -37,6 +37,7 @@ class Router {
             });
             break;
         }
+      }
     });
   }
 
@@ -45,8 +46,10 @@ class Router {
    * @return {Router} the router instance
    */
   static getInstance() {
-    if (!(Router.instance instanceof Router))
+    if (!(Router.instance instanceof Router)) {
       Router.instance = new Router();
+    }
+
     return Router.instance;
   }
 
@@ -90,20 +93,31 @@ class Router {
       .find()
       .populate('domain')
       .exec((err, routes) => {
-        if (err) return reject(err);
-        for (const route of routes) {
+        if (err) {
+          return reject(err);
+        }
+
+        for (let route of routes) {
           if (route.active && route.domain) {
-            if (!this.mapToRoute.has(route.domain.name))
+            if (!this.mapToRoute.has(route.domain.name)) {
               this.mapToRoute.set(route.domain.name, new Map());
+            }
+
             this.mapToRoute.get(route.domain.name).set(route.path, route.toObject());
           }
+
           this.mapRoutes.set(route._id.toString(), route);
         }
+
         Db.models.Domain.find({}, (err, domains) => {
-          if (err) return reject(err);
-          for (const domain of domains) {
+          if (err) {
+            return reject(err);
+          }
+
+          for (let domain of domains) {
             this.mapDomains.set(domain._id, domain);
           }
+
           resolve();
         });
       });
@@ -116,8 +130,10 @@ class Router {
    */
   get routes() {
     let res = [];
-    for(const route of this.mapRoutes.values())
+    for(let route of this.mapRoutes.values()) {
       res.push(route);
+    }
+
     return res;
   }
 
@@ -127,8 +143,10 @@ class Router {
    */
   get domains() {
     let res = [];
-    for(const dom of this.mapDomains.values())
+    for(let dom of this.mapDomains.values()) {
       res.push(dom);
+    }
+
     return res;
   }
 
@@ -168,14 +186,18 @@ class Router {
    * @return {RouteModel} routes
    */
   findActiveRouteByDomain(reqDomain) {
-    if(/(\d{1,3}.){3}\d{1}/g.test(reqDomain))  // request by IP, no routes....
+    if(/(\d{1,3}.){3}\d{1}/g.test(reqDomain)) { // request by IP, no routes....
       return null;
+    }
+
     let s = reqDomain.match(/\w+/g);
     let domain = `${s[s.length - 2]}.${s[s.length - 1]}`;
     let path = (s[s.length - 3])? s[s.length - 3] : null;
     logger.debug('request domain / path', domain, path);
-    if (this.mapToRoute.has(domain))
+    if (this.mapToRoute.has(domain)) {
       return this.mapToRoute.get(domain).get(path);
+    }
+
     return null;
   }
 
@@ -206,7 +228,10 @@ class Router {
   removeRoute(route) {
     return new Promise((resolve, reject) => {
       route.remove((err) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
+
         resolve();
         this.notifyWorkers();
       });
