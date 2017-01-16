@@ -58,7 +58,7 @@ if (cluster.isMaster) {
       silent: false
     });
 
-    for (let i = 0, n = os.cpus().length; i < n; i++) {
+    for (let i = 0, n = os.cpus().length; i < n; ++i) {
       cluster
       .fork()
       .addListener('exit', workerExitedHandlerfunction);
@@ -71,7 +71,7 @@ if (cluster.isMaster) {
     cluster.addListener('exit', (worker, code) => {
       logger.error(`[main] Master ${worker.process.pid} died`);
       // reporter.incrementMetric('master.died', 1);
-      reporter.simpleMetric('proxy.master.dead', [], 1);
+      reporter.simpleMetric('proxy.master.dead', [{key: 'code', value: code}], 1);
     });
 
     /**
