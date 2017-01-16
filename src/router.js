@@ -27,7 +27,7 @@ class Router {
     });
 
     process.on('message', (msg) => {
-      if (msg.component == 'Router') {
+      if (msg.component === 'Router') {
         switch (msg.action) {
           case 'refresh':
             this.loadRoutes().then(() => {
