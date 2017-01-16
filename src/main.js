@@ -68,10 +68,16 @@ if (cluster.isMaster) {
       logger.info(`[main] Worker ${worker.process.pid} is online`);
     });
 
-    cluster.addListener('exit', (worker, code) => {
+    cluster.addListener('exit', (worker, code, signal) => {
       logger.error(`[main] Master ${worker.process.pid} died`);
       // reporter.incrementMetric('master.died', 1);
-      reporter.simpleMetric('proxy.master.dead', [{key: 'code', value: code}], 1);
+      reporter.simpleMetric('proxy.master.dead', [{
+        key: 'code',
+        value: code
+      }, {
+        key: 'signal',
+        value: signal
+      }], 1);
     });
 
     /**
