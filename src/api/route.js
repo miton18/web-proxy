@@ -108,7 +108,9 @@ _router
       .catch((error) => {
         response
           .status(500)
-          .end();
+          .json({
+            error: error.message
+          });
       });
   });
 
