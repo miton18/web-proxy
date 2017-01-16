@@ -37,17 +37,6 @@ class Reporter {
   }
 
   /**
-   * increment the trace metric
-   * @param {String} name the name of the the metric
-   * @param {Number} amount coefficient
-   */
-  incrementMetric(name, amount) {
-    if (this.active) {
-      // this.trace.incrementMetric(name, amount);
-    }
-  }
-
-  /**
    * get the trace api key
    * @return {String} the trace api key
    */

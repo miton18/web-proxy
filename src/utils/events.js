@@ -31,7 +31,7 @@ class EventsHandler {
    * @param {Error} error the error thrown
    */
   uncaughtException(error) {
-    reporter.incrementMetric('error.uncaught');
+    reporter.simpleMetric('error.uncaught', [], 1);
 
     logger.error(error.message, {
       from: 'uncaughtException',
@@ -46,7 +46,7 @@ class EventsHandler {
    * @param {Promise} promise the promise
    */
   unhandledRejection(reason, promise) {
-    reporter.incrementMetric('error.rejection');
+    reporter.simpleMetric('error.rejection', [], 1);
 
     logger.error(reason, {
       from: 'unhandledRejection',

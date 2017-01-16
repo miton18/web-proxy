@@ -45,7 +45,7 @@ class Database {
    * @return {Promise} a promise when is finish to load
    */
   loadModels() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       let entity;
       for (let {name} of models) {
         entity = name;

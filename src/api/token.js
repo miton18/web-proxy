@@ -60,8 +60,8 @@ _router
             response.json({token});
           })
 
-          .catch((err) => {
-            response.json({error: `Can't generate your token`});
+          .catch((error) => {
+            response.json({error: error.message});
           });
       })
 

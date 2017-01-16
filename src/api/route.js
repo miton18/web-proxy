@@ -76,14 +76,16 @@ _router
 
     Router
       .updateRoute(request.proxyRoute)
-      .then((route) => {
+      .then(() => {
         response.json(request.proxyRoute);
       })
 
       .catch((error) => {
         response
           .status(500)
-          .end();
+          .json({
+            error: error.message
+          });
       });
   })
 

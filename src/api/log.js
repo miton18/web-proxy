@@ -26,13 +26,13 @@ _router
     });
   });
 
-_router.ws('/stream', (ws, req) => {
+_router.ws('/stream', (ws) => {
   ws.on('message', (token) => {
     // auth
     authenticationJwt({  // Request
       headers: JSON.parse(token)
     }, {  // Response
-      status: (code) => {
+      status: () => {
         return {
           json: (authResponse) => {
             return ws.send(JSON.stringify(authResponse));

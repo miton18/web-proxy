@@ -68,23 +68,38 @@ _router.route('/:_id')
     res.json(req.proxyDomain);
   })
   .put((req, res) => {
-    if (!req.proxyDomain)
-      return res.status(500).json({error: 'Domain not exist'});
+    if (!req.proxyDomain) {
+      return res
+        .status(500)
+        .json({error: 'Domain not exist'});
+    }
 
     const {name} = req.body;
     req.proxyDomain.name = name;
     req.proxyDomain.save(function(err) {
-      if (err) return res.status(500).json({error: `Fail to update domain`});
+      if (err) {
+        return res
+          .status(500)
+          .json({error: `Fail to update domain`});
+      }
+
       res.json(req.proxyDomain);
     });
   })
   .delete((req, res) => {
-    if(!req.proxyDomain) return res
-      .status(500)
-      .json({error: `Domain doesn't exist`});
+    if(!req.proxyDomain) {
+      return res
+        .status(500)
+        .json({error: `Domain doesn't exist`});
+    }
 
     req.proxyDomain.remove((err) => {
-      if (err) return res.status(500).json({error: `Fail to remove domain`});
+      if (err) {
+        return res
+          .status(500)
+          .json({error: `Fail to remove domain`});
+      }
+
       res.json(req.proxyDomain);
     });
   });

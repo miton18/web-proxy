@@ -13,6 +13,24 @@ const Joi         = require('joi');
 const {EnvSchema} = require('./models/env');
 
 // ----------------------------------------------------------------------------
+// this refer to worker
+/* eslint no-invalid-this: "off" */
+/**
+ * When a worker exit we need to reload it
+ * @param  {Number} code
+ * @param  {String} signal
+ */
+function workerExitedHandlerfunction(code, signal) {
+  logger.warn(`[main] Worker exited, start new one`, {code, signal});
+  // reporter.incrementMetric('worker.died', 1);
+  reporter.simpleMetric('proxy.worker.dead', [], 1);
+
+  cluster
+    .fork()
+    .addListener('exit', workerExitedHandlerfunction);
+}
+
+// ----------------------------------------------------------------------------
 // master
 if (cluster.isMaster) {
   const os    = require('os');
@@ -53,7 +71,13 @@ if (cluster.isMaster) {
     cluster.addListener('exit', (worker, code, signal) => {
       logger.error(`[main] Master ${worker.process.pid} died`);
       // reporter.incrementMetric('master.died', 1);
-      reporter.simpleMetric('proxy.master.dead', [], 1);
+      reporter.simpleMetric('proxy.master.dead', [{
+        key: 'code',
+        value: code
+      }, {
+        key: 'signal',
+        value: signal
+      }], 1);
     });
 
     /**
@@ -91,21 +115,4 @@ if (cluster.isMaster) {
   // --------------------------------------------------------------------------
   // variables
   require('./worker');
-}
-
-// this refer to worker
-/* eslint no-invalid-this: "off" */
-/**
- * When a worker exit we need to reload it
- * @param  {Number} code
- * @param  {String} signal
- */
-function workerExitedHandlerfunction(code, signal) {
-  logger.warn(`[main] Worker exited, start new one`, {code, signal});
-  // reporter.incrementMetric('worker.died', 1);
-  reporter.simpleMetric('proxy.worker.dead', [], 1);
-
-  cluster
-  .fork()
-  .addListener('exit', workerExitedHandlerfunction);
 }
