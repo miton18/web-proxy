@@ -53,8 +53,10 @@ _router
       return response
         .status(404)
         .json({error: 'Route not found'});
-    } else
-      return response.json(request.proxyRoute);
+    } else {
+      return response
+        .json(request.proxyRoute);
+    }
   })
 
   .put((request, response) => {

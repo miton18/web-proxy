@@ -47,7 +47,7 @@ class Database {
   loadModels() {
     return new Promise((resolve, reject) => {
       let entity;
-      for (const {name} of models) {
+      for (let {name} of models) {
         entity = name;
         entity = entity.toLowerCase();
         entity = entity.charAt(0).toUpperCase() + entity.substr(1);

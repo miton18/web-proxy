@@ -13,12 +13,13 @@ const _router = eRouter();
 // route params
 _router.param('_id', (request, response, next, _id) => {
   Db.models.Domain.findById(_id, (err, domain) => {
-    if (domain)
+    if (domain) {
       request.proxyDomain = domain;
-    else {
+    } else {
       Log.warn('[api][domain] not found', err);
       request.proxyDomain = null;
     }
+
     next();
   });
 });
@@ -44,7 +45,12 @@ _router
 
     const tmp = new Db.models.Domain({name});
     tmp.save( (err) => {
-      if (err) return res.status(500).json({error: `Fail to save new domains`});
+      if (err) {
+        return res
+          .status(500)
+          .json({error: `Fail to save new domains`});
+      }
+      
       Log.info('[API] new domain', tmp.toObject());
       res.json(tmp.toObject());
     });
@@ -53,9 +59,12 @@ _router
 _router.route('/:_id')
   .all(authenticationJwt)
   .get((req, res) => {
-    if(!req.proxyDomain) return res
-      .status(500)
-      .json({error: 'Unknow domain'});
+    if(!req.proxyDomain) {
+      return res
+        .status(500)
+        .json({error: 'Unknow domain'});
+    }
+
     res.json(req.proxyDomain);
   })
   .put((req, res) => {

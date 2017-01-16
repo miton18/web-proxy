@@ -68,8 +68,10 @@ class Logger extends winston.Logger {
     // Used to edit meta, must the return metas
     this.rewriters = [
       (level, msg, meta) => {
-        if (level === 'error' || level === 'warn')
+        if (level === 'error' || level === 'warn') {
           meta.pid = process.pid;
+        }
+
         return meta;
       }
     ];
@@ -80,8 +82,10 @@ class Logger extends winston.Logger {
    * @return {Logger} the logger instance
    */
   static getInstance() {
-    if (!(Logger.instance instanceof Logger))
+    if (!(Logger.instance instanceof Logger)) {
       Logger.instance = new Logger();
+    }
+    
     return Logger.instance;
   }
 }

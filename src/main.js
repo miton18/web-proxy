@@ -1,7 +1,8 @@
 // ----------------------------------------------------------------------------
 // vscode hack
-if (process.execArgv[1])
+if (process.execArgv[1]) {
   process.execArgv[1] = process.execArgv[1].replace('-brk', '');
+}
 
 // ----------------------------------------------------------------------------
 // requirements
@@ -65,11 +66,12 @@ if (cluster.isMaster) {
           switch (msg.action) {
             case 'refresh':
               for(let id in cluster.workers)
-                if(cluster.workers.hasOwnProperty(id))
+                if(cluster.workers.hasOwnProperty(id)) {
                   cluster.workers[id].send({
                     component: 'Router',
                     action: 'refresh'
                   });
+                }
               break;
           };
           break;

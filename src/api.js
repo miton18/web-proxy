@@ -47,8 +47,9 @@ class Api {
         this.api.use('/container', require('./api/container'));
       }
 
-      for (const route of routes)
+      for (let route of routes) {
         this.api.use(route.mountpoint, require('./api/' + route.name));
+      }
 
       this.application.listen(this.port, () => {
         logger.info(`[API] Api listen on port ${this.port}`);
