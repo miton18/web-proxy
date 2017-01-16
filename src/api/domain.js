@@ -50,7 +50,7 @@ _router
           .status(500)
           .json({error: `Fail to save new domains`});
       }
-      
+
       Log.info('[API] new domain', tmp.toObject());
       res.json(tmp.toObject());
     });

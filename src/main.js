@@ -65,13 +65,15 @@ if (cluster.isMaster) {
         case 'Router':
           switch (msg.action) {
             case 'refresh':
-              for(let id in cluster.workers)
+              for(let id in cluster.workers) {
                 if(cluster.workers.hasOwnProperty(id)) {
                   cluster.workers[id].send({
                     component: 'Router',
                     action: 'refresh'
                   });
                 }
+              }
+
               break;
           };
           break;

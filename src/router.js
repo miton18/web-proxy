@@ -49,7 +49,7 @@ class Router {
     if (!(Router.instance instanceof Router)) {
       Router.instance = new Router();
     }
-    
+
     return Router.instance;
   }
 
@@ -130,7 +130,7 @@ class Router {
    */
   get routes() {
     let res = [];
-    for(const route of this.mapRoutes.values()) {
+    for(let route of this.mapRoutes.values()) {
       res.push(route);
     }
 

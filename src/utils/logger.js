@@ -85,7 +85,7 @@ class Logger extends winston.Logger {
     if (!(Logger.instance instanceof Logger)) {
       Logger.instance = new Logger();
     }
-    
+
     return Logger.instance;
   }
 }
