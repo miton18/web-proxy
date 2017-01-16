@@ -65,10 +65,12 @@ _router
           });
       })
 
-      .catch((err) => {
-        response.status(401).json({
-          error: 'Wrong authentification'
-        });
+      .catch((error) => {
+        response
+          .status(401)
+          .json({
+            error: error.message
+          });
       });
     });
   });

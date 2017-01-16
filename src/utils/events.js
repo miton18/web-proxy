@@ -14,7 +14,7 @@ class EventsHandler {
    * @return {Promise} trigger when finish to set handler
    */
   initialize() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       process.removeListener('uncaughtException', this.uncaughtException);
       process.addListener('uncaughtException', this.uncaughtException);
 
