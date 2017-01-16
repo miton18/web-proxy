@@ -59,7 +59,7 @@ class Logger extends winston.Logger {
     // -----------------------------------------------------------------------
     // Used to rewrite log message, must return a message
     this.filters =   [
-      (level, msg, meta) => {
+      (level, msg) => {
         return `[${this.name}] ${msg}`;
       }
     ];

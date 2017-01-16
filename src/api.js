@@ -24,7 +24,7 @@ class Api {
    * @return {Promise<Object>} when the api is lauched
    */
   initialize() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       logger.info('[API] Create API');
 
       this.port = process.env.PROXY_API_PORT || 8080;

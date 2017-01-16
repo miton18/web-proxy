@@ -32,7 +32,7 @@ class Router {
           case 'refresh':
             this.loadRoutes().then(() => {
               logger.info('[router] Router update his routes');
-            }).catch((err) => {
+            }).catch((error) => {
               logger.error('[router] Router fail to update his routes', error);
             });
             break;
@@ -72,9 +72,9 @@ class Router {
             resolve();
           });
         })
-        .catch((err) => {
-          logger.error(`[router] Fail to load initial routes`);
-          reject();
+        .catch((error) => {
+          logger.error(`[router] Fail to load initial routes`, error);
+          reject(error);
         });
     });
   }

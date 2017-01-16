@@ -20,12 +20,15 @@ module.exports = () => {
         password: 'pr0xy-p455w0rd'
       });
       user.save( (err) => {
-        if (err) Log.error(err);
-        else Log.info('[init] [user] Admin user created');
+        if (err) {
+          Log.error(err);
+        } else {
+          Log.info('[init] [user] Admin user created');
+        }
       });
     }, (err) => {
       Log.error(err);
-    }, (err) => {
+    }, () => {
       Log.error('Fail to connect DB');
     });
   });
