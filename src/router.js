@@ -231,7 +231,7 @@ class Router {
         if (err) {
           return reject(err);
         }
-        
+
         resolve();
         this.notifyWorkers();
       });
