@@ -77,9 +77,7 @@ class Database {
    */
   get user() {
     return (
-      process.env.PROXY_MONGODB_ADDON_USER ||
-      process.env.MONGODB_ADDON_USER ||
-      null
+      process.env.PROXY_MONGODB_ADDON_USER || null
     );
   }
 
@@ -89,9 +87,7 @@ class Database {
    */
   get password() {
     return (
-      process.env.PROXY_MONGODB_ADDON_PASSWORD ||
-      process.env.MONGODB_ADDON_PASSWORD ||
-      null
+      process.env.PROXY_MONGODB_ADDON_PASSWORD || null
     );
   }
 
@@ -101,9 +97,7 @@ class Database {
    */
   get base() {
     return (
-      process.env.PROXY_MONGODB_ADDON_DB ||
-      process.env.MONGODB_ADDON_DB ||
-      'proxy'
+      process.env.PROXY_MONGODB_ADDON_DB || 'proxy'
     );
   }
 
@@ -113,9 +107,7 @@ class Database {
    */
   get host() {
     return (
-      process.env.PROXY_MONGODB_ADDON_HOST ||
-      process.env.MONGODB_ADDON_HOST ||
-      'localhost'
+      process.env.PROXY_MONGODB_ADDON_HOST || 'localhost'
     );
   }
 
@@ -125,9 +117,7 @@ class Database {
    */
   get port() {
     return (
-      process.env.PROXY_MONGODB_ADDON_PORT ||
-      process.env.MONGODB_ADDON_PORT ||
-      27017
+      process.env.PROXY_MONGODB_ADDON_PORT || 27017
     );
   }
 
@@ -142,9 +132,7 @@ class Database {
     }
 
     return (
-      process.env.PROXY_MONGODB_ADDON_URI ||
-      process.env.MONGODB_ADDON_URI ||
-      uri
+      process.env.PROXY_MONGODB_ADDON_URI || uri
     );
   }
 }
