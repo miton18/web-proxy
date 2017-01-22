@@ -6,7 +6,10 @@ if (process.execArgv[1]) {
 
 // ----------------------------------------------------------------------------
 // requirements
+require('./utils/config').load();
 const cluster     = require('cluster');
+const os          = require('os');
+const init        = require('./init');
 const reporter    = require('./utils/reporter');
 const logger      = require('./utils/logger');
 const Joi         = require('joi');
@@ -33,13 +36,10 @@ function workerExitedHandlerfunction(code, signal) {
 // ----------------------------------------------------------------------------
 // master
 if (cluster.isMaster) {
-  const os    = require('os');
-  const init  = require('./init');
-
   // --------------------------------------------------------------------------
   // environements
   Joi.validate(process.env, EnvSchema, {allowUnknown: true}, (error) => {
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // error
     if (error) {
       logger.error(error.message);
@@ -47,11 +47,11 @@ if (cluster.isMaster) {
       process.exit(1);
     }
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // reporter
     reporter.simpleMetric('proxy.action', [], 'start');
 
-    // --------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // create workers
     cluster.schedulingPolicy = cluster.SCHED_RR;
     cluster.setupMaster({
@@ -104,7 +104,7 @@ if (cluster.isMaster) {
       };
     });
 
-    // -------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
     // Create first user etc...
     init();
   });
