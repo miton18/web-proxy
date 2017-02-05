@@ -22,11 +22,12 @@ class Image {
 
   /**
    * list image
+   * @param {any} options options to pass to docker command
    * @return {Promise<Image[]>} promise with the list of available image
    */
-  static list() {
+  static list(options = {all: true}) {
     return new Promise((resolve, reject) => {
-      connection.listImages({}, (error, images) => {
+      connection.listImages(options, (error, images) => {
         if (error) {
           logger.error(error.message);
 

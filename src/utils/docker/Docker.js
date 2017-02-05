@@ -25,11 +25,12 @@ class Docker {
 
   /**
    * get list of docker
+   * @param {any} options options to pass to docker command
    * @return {Promise<Docker[]>} a list of docker that is manage by the docker daemon
    */
-  static list() {
+  static list(options = {all: true}) {
     return new Promise((resolve, reject) => {
-      connection.listContainers((error, containers) => {
+      connection.listContainers(options, (error, containers) => {
         if (error) {
           logger.error(error.message);
 
@@ -177,15 +178,54 @@ class Docker {
    */
   remove() {
     return new Promise((resolve, reject) => {
-      connection.getContainer(this.identifier).remove((error) => {
-        if (error) {
-          logger.error(error.message);
+      this
+        .information()
+        .catch(reject)
+        .then((information) => {
+          connection.getContainer(this.identifier).remove((error) => {
+            if (error) {
+              logger.error(error.message);
 
-          return reject(error);
-        }
+              return reject(error);
+            }
 
-        resolve(this);
-      });
+            Docker
+              .list()
+              .catch(reject)
+              .then((dockers) => {
+                async.reduce(dockers, [], (state, docker, done) => {
+                  docker
+                    .information()
+                    .catch(done)
+                    .then((info) => {
+                      if (info.Image === information.Image) {
+                        state.push(docker);
+                      }
+
+                      done(null, state);
+                    });
+                }, (error, state) => {
+                  if (error) {
+                    logger.error(error.message);
+
+                    return reject(error);
+                  }
+
+                  if (state.length) {
+                    return resolve(this);
+                  }
+
+                  let image = new Image(information.Image);
+
+                  image
+                    .remove()
+                    .then(() => {
+                      resolve(this);
+                    }).catch(reject);
+                });
+              });
+          });
+        });
     });
   }
 }
