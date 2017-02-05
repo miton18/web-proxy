@@ -46,6 +46,9 @@ if (cluster.isMaster) {
 
       process.exit(1);
     }
+    process.on('SIGINT', () => {
+      reporter.simpleMetric('proxy.action', [], 'stop');
+    });
 
     // ------------------------------------------------------------------------
     // reporter
