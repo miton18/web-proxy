@@ -1,12 +1,12 @@
 # Web Proxy 
 
 [![Build Status](https://travis-ci.org/miton18/web-proxy.svg?branch=master)][travis] 
-[![Docker Pulls](https://img.shields.io/docker/pulls/miton18/web-proxy.svg)]()
-[![Github All Releases](https://img.shields.io/github/downloads/miton18/web-proxy/total.svg)]()
-[![GitHub release](https://img.shields.io/github/release/miton18/web-proxy.svg)]()
-[![GitHub issues](https://img.shields.io/github/issues/miton18/web-proxy.svg)]()
-[![license](https://img.shields.io/github/license/miton18/web-proxy.svg)]()
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d9eec3be9aec4494accc86ff6bd4ca04)](https://www.codacy.com/app/miton18/web-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=miton18/web-proxy&amp;utm_campaign=Badge_Grade)
+[![Docker Pulls](https://img.shields.io/docker/pulls/miton18/web-proxy.svg)][dockerhub]
+[![Github All Releases](https://img.shields.io/github/downloads/miton18/web-proxy/total.svg)][githubReleases]
+[![GitHub release](https://img.shields.io/github/release/miton18/web-proxy.svg)][githubReleaseLatest]
+[![GitHub issues](https://img.shields.io/github/issues/miton18/web-proxy.svg)][githubIssues]
+[![license](https://img.shields.io/github/license/miton18/web-proxy.svg)][license]
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d9eec3be9aec4494accc86ff6bd4ca04)][codacy]
 
 [DockerHub:Web-proxy][dockerhub] 
 
@@ -23,27 +23,7 @@
 
 ## Installation
 
-### Environment variables
-
-|Variable name|Default value|Variable utility|required|
-|-------------|----------------|-------------|--------|
-|PROXY_TRACE_KEY|null|Set the environment variable to use [@risingstack/trace](https://npmjs.com/package/@risingstack/trace)||
-|PROXY_WINSTON_OVH_CREDENTIAL|null|Set the environment variable to export your data with [winston-ovh](https://npmjs.com/package/winston-ovh)||
-|PROXY_MONGODB_ADDON_USER|MONGODB_ADDON_USER|user to authenticate to mongdb||
-|PROXY_MONGODB_ADDON_PASSWORD|MONGODB_ADDON_PASSWORD|password to authenticate to mongdb||
-|PROXY_MONGODB_ADDON_HOST|MONGODB_ADDON_HOST|host of mongodb||
-|PROXY_MONGODB_ADDON_PORT|MONGODB_ADDON_PORT|port of mongodb||
-|PROXY_MONGODB_ADDON_DB|MONGODB_ADDON_DB|database to use in mongodb||
-|PROXY_MONGODB_ADDON_URI|MONGODB_ADDON_URI|uri of mongodb if not present other variables is used to recreate it||
-|MONGODB_ADDON_URI|null|uri compatibility to [clever-cloud](https://clever-cloud.io)||
-|PROXY_API_PORT|8080|proxy api port||
-|PROXY_JWT_SECRET|null|jwt secret|[x]|
-|PROXY_JWT_ISSUER|null|jwt issuer||
-|PROXY_JWT_AUDIENCE|null|jwt audience||
-|PROXY_PEPPER|null|Pepper of the application, encrypt password|[x]|
-|PROXY_WARP10_URI|null|URI to warp10||
-|PROXY_WARP10_WRITE_TOKEN|null|Write token to warp10||
-|PROXY_DOCKER_SOCKET|null|Give to proxy to manage container||
+see [CONFIGURATION.md](CONFIGURATION.md)
 
 ## Usage
 
@@ -110,3 +90,8 @@ fetch('http://127.0.0.1:8080/api/route', {
 [laas]: <https://www.ovh.com/fr/data-platforms/logs/>
 [trace]: <https://trace.risingstack.com>
 [JWT]: <https://jwt.io>
+[codacy]: <https://www.codacy.com/app/miton18/web-proxy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=miton18/web-proxy&amp;utm_campaign=Badge_Grade>
+[githubReleases]: <https://github.com/miton18/web-proxy/releases>
+[githubReleaseLatest]: <https://github.com/miton18/web-proxy/releases/latest>
+[githubIssues]: <https://github.com/miton18/web-proxy/issues>
+[license]: <https://raw.githubusercontent.com/miton18/web-proxy/master/LICENSE.md>

@@ -121,7 +121,7 @@ class Reporter {
       if (res.status === 200) {
         return Log.debug('warp10 metric sent');
       }
-      Log.error('[reporter] fail to store Warp10 metric', err);
+      Log.error('[reporter] fail to store Warp10 metric', res.body);
     })
     .catch((err) => {
       Log.error('[reporter] fail to send Warp10 metric', err);

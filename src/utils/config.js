@@ -1,8 +1,10 @@
+
+const Path = require('path');
 const configPaths = [
   '/etc/web-proxy/config.js',
   '/usr/share/web-proxy/config.js',
   // project path
-  `${__dirname}/../config.js`
+  `${__dirname}/../../config.js`
 ];
 
 /**
@@ -25,11 +27,11 @@ function load() {
 
   for( let path of configPaths) {
     try {
-      conf = require(path);
+      conf = require(Path.resolve(path));
     } catch(e) {
       continue;
     }
-    console.info(`Found config file, use ${path}`);
+    console.info(`Found config file, use ${Path.resolve(path)}`);
     break;
   }
 
