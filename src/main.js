@@ -9,6 +9,7 @@ if (process.execArgv[1]) {
 require('./utils/config').load();
 const cluster     = require('cluster');
 const os          = require('os');
+const v8          = require('v8');
 const init        = require('./init');
 const reporter    = require('./utils/reporter');
 const logger      = require('./utils/logger');
@@ -48,6 +49,7 @@ if (cluster.isMaster) {
     }
     process.on('SIGINT', () => {
       reporter.simpleMetric('proxy.action', [], 'stop');
+      process.exit(1);
     });
 
     // ------------------------------------------------------------------------
@@ -61,7 +63,7 @@ if (cluster.isMaster) {
       silent: false
     });
 
-    for (let i = 0, n = os.cpus().length; i < n; ++i) {
+    for (let i = 0, n = os.cpus().length - 1; i < n; ++i) {
       cluster
       .fork()
       .addListener('exit', workerExitedHandlerfunction);
@@ -100,7 +102,6 @@ if (cluster.isMaster) {
                   });
                 }
               }
-
               break;
           };
           break;
@@ -110,6 +111,20 @@ if (cluster.isMaster) {
     // ------------------------------------------------------------------------
     // Create first user etc...
     init();
+
+    let heap = {};
+    setInterval(() => {
+      heap = v8.getHeapStatistics();
+      reporter.simpleMetric('proxy.v8.heap', [], heap.total_heap_size);
+      reporter.simpleMetric('proxy.v8.heap.executable', [], heap.total_heap_size_executable);
+      reporter.simpleMetric('proxy.v8.heap.limit', [], heap.heap_size_limit);
+      reporter.simpleMetric('proxy.v8.heap.used', [], heap.used_heap_size);
+      reporter.simpleMetric('proxy.v8.physical', [], heap.total_physical_size);
+      reporter.simpleMetric('proxy.v8.available', [], heap.total_available_size);
+      reporter.simpleMetric('proxy.v8.memory.malloced', [], heap.malloced_memory);
+      reporter.simpleMetric('proxy.v8.memory.malloced.peak', [], heap.peak_malloced_memory );
+      // reporter.simpleMetric('proxy.heap.', [], heap.does_zap_garbage );
+    }, 10000);
   });
 
 // ----------------------------------------------------------------------------
