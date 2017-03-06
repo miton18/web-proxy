@@ -147,7 +147,7 @@ class Reporter {
    * @return {number} Timestamp in microsecond
    */
   getMicroSeconds() {
-    return Date.now() * 1e3;
+    return (new Date().getTime()) * 1e3;
   }
 }
 

@@ -41,6 +41,7 @@ module.exports = {
 |PROXY_MONGODB_ADDON_URI|null|uri of mongodb if not present other variables is used to recreate it|:x:|
 |MONGODB_ADDON_URI|null|uri compatibility to [clever-cloud](https://clever-cloud.io)|:x:|
 |PROXY_API_PORT|8080|proxy api port|:x:|
+|PROXY_API_PORT_SSL|8443|proxy SSL api port|:x:|
 |PROXY_JWT_SECRET|null|jwt secret| :white_check_mark: |
 |PROXY_JWT_ISSUER|null|jwt issuer|:x:|
 |PROXY_JWT_AUDIENCE|null|jwt audience|:x:|
@@ -48,3 +49,5 @@ module.exports = {
 |PROXY_WARP10_URI|null|URI to warp10|:x:|
 |PROXY_WARP10_WRITE_TOKEN|null|Write token to warp10|:x:|
 |PROXY_DOCKER_SOCKET|null|Give to proxy to manage container|:x:|
+|PROXY_SSL_KEY|null|Static SSL configuration for proxy + API (secret key)|:x:|
+|PROXY_SSL_CERT|null|Static SSL configuration for proxy + API (certificate)|:x:|
