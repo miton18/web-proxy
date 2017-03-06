@@ -27,15 +27,14 @@ class Api {
    * @return {Promise<Object>} when the api is lauched
    */
   initialize() {
+    logger.info('[API] Create API');
+    this.port = process.env.PROXY_API_PORT || 8080;
+    this.portSSL = process.env.PROXY_API_PORT_SSL || 8443;
+    this.application = express();
+    this.api = router();
+    expressWs(this.application);
+
     return new Promise((resolve) => {
-      logger.info('[API] Create API');
-
-      this.port = process.env.PROXY_API_PORT || 8080;
-      this.portSSL = process.env.PROXY_API_PORT_SSL || 8443;
-      this.application = express();
-      this.api = router();
-      expressWs(this.application);
-
       this.application
         .use(cors())
         .use(methodOverride())
@@ -46,10 +45,6 @@ class Api {
         .use(trafficLogger)
         .use(warp10)
         .use('/api', this.api);
-
-      if (process.env.PROXY_DOCKER_SOCKET) {
-        this.api.use('/container', require('./api/container'));
-      }
 
       for (let route of routes) {
         this.api.use(route.mountpoint, require('./api/' + route.name));

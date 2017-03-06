@@ -4,5 +4,6 @@ module.exports = [
   {mountpoint: '/token', name: 'token'},
   {mountpoint: '/user', name: 'user'},
   {mountpoint: '/works', name: 'works'},
-  {mountpoint: '/log', name: 'log'}
+  {mountpoint: '/log', name: 'log'},
+  {mountpoint: '/container', name: 'container'}
 ];
