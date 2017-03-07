@@ -7,7 +7,8 @@ WORKDIR /usr/src/web-proxy
 
 ENV NODE_ENV $NODE_ENV
 
-RUN npm install -g yarn
+RUN curl -o- -L https://yarnpkg.com/install.sh | bash && \
+    export PATH=$HOME/.yarn/bin:$PATH
 
 # Install deps
 COPY package.json /usr/src/web-proxy/

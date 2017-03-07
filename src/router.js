@@ -2,6 +2,8 @@
 // requirements
 const Proxy = require('http-proxy');
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const logger = require('./utils/logger');
 const Db = require('./utils/database');
 const cluster = require('cluster');
@@ -60,22 +62,31 @@ class Router {
   initialize() {
     return new Promise((resolve, reject) => {
       this.loadRoutes()
-      .then(
-        ()=> {
-          let server = http.createServer(Router.handleRoute);
-
-          server.on('request', warp10);
-
-          server.listen(process.env.PROXY_PORT || 80, () => {
-            logger.info(`[router] Proxy listen at ${process.env.PROXY_PORT || 80}`);
-
-            resolve();
-          });
-        })
-        .catch((error) => {
-          logger.error(`[router] Fail to load initial routes`, error);
-          reject(error);
+      .then(() => {
+        let server = http.createServer(Router.handleRoute);
+        server.on('request', warp10);
+        server.listen(process.env.PROXY_PORT || 80, () => {
+          logger.info(`[router] Proxy listen at ${process.env.PROXY_PORT || 80}`);
+          resolve();
         });
+
+        let sslOptions = {
+          keyPath: process.env.PROXY_SSL_KEY || null,
+          certPath: process.env.PROXY_SSL_CERT || null
+        };
+        if (sslOptions.certPath && sslOptions.keyPath) {
+          sslOptions.key = fs.readFileSync(sslOptions.keyPath, 'utf8');
+          sslOptions.cert = fs.readFileSync(sslOptions.certPath, 'utf8');
+          https
+          .createServer(sslOptions, Router.handleRoute)
+          .listen(443)
+          .on('request', warp10);
+        }
+      })
+      .catch((error) => {
+        logger.error(`[router] Fail to load initial routes`, error);
+        reject(error);
+      });
     });
   }
 
